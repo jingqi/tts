@@ -1,6 +1,6 @@
 package tts.stream;
 
-public class ScanStream implements IScanReader, IBuferWriter {
+public class CharArrayScanReader implements IScanReader, IBuferWriter {
 
 	private static final int DEFAULT_INITIAL_CAPACITY = 16;
 
@@ -8,17 +8,17 @@ public class ScanStream implements IScanReader, IBuferWriter {
 	private int size;
 	private int index;
 
-	public ScanStream() {
+	public CharArrayScanReader() {
 		this(DEFAULT_INITIAL_CAPACITY);
 	}
 
-	public ScanStream(int initialCapacity) {
+	public CharArrayScanReader(int initialCapacity) {
 		buffer = new char[initialCapacity];
 		size = 0;
 		index = 0;
 	}
 
-	public ScanStream(char[] s) {
+	public CharArrayScanReader(char[] s) {
 		buffer = new char[s.length];
 		System.arraycopy(s, 0, buffer, 0, s.length);
 		size = s.length;
@@ -212,10 +212,9 @@ public class ScanStream implements IScanReader, IBuferWriter {
 	public void backward(int len) {
 		if (len < 0 || len > index)
 			throw new IllegalArgumentException();
-		index -= 0;
+		index -= len;
 	}
 
-	@Override
 	public int available() {
 		return size - index;
 	}

@@ -1,52 +1,85 @@
 package tts.scanner;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import tts.scanner.Token.TokenType;
 import tts.stream.IScanReader;
 
+/**
+ * ragel 语法规则: <br/>
+ * 
+ * Boolean = 'true' | 'false'; <br/>
+ * Integer = [\+\-]? digit+ 'L'i?; <br/>
+ * Hex = '0x' xdigit+ 'L'i?; <br/>
+ * Float = [\+\-]? ((digit+ '.' digit*) | ('.' digit+)) 'F'i?; <br/>
+ * Sentic = (Integer | Float) 'E'i [\+\-]? digit+ 'F'i?; <br/>
+ * 
+ * String1 = ['] ([^\\\n\'] | ('\' any))* [']; <br/>
+ * String2 = ["] ([^\\\n\"] | ('\' any))* ["]; <br/>
+ * String3 = ['''] ([^\\\"] | ('\' any))* [''']; <br/>
+ * String4 = ["""] ([^\\\"] | ('\' any))* ["""]; <br/>
+ * String = String1 | String2 | String3 | String4; <br/>
+ * 
+ * Keyword = 'if' | 'else' | 'while' ...; <br/>
+ * Identifier = (('_' | alpha) ('_' | alnum)*) - Keyword; <br/>
+ * Separator = '>>>' | '<<<' | '+=' | '>' ...; <br/>
+ * 
+ * @author jingqi
+ * 
+ */
 public class TokenScanner {
 
-	IScanReader reader;
+	// 输入
+	private IScanReader reader;
 
-	boolean inLineCode = false;
-	boolean inBlockCode = false;
+	// 是否在行代码模式
+	private boolean inLineCode = false;
+
+	// 是否在块代码模式
+	private boolean inBlockCode = false;
 
 	// 代码起止标记
-	static final String BLOCK_CODE_START = "$${";
-	static final String BLOCK_CODE_END = "}$$";
-	static final String LINE_CODE_START = "$$";
+	static final String BLOCK_CODE_START = "$${"; // 块代码起始标记
+	static final String BLOCK_CODE_END = "}$$"; // 块代码结束标记
+	static final String LINE_CODE_START = "$$"; // 行代码起始标记
 
 	// 关键字
 	static final Set<String> KEY_WORDS = new HashSet<String>();
 	static {
-		String[] keywords = { "if", "else", "void" };
+		String[] keywords = { "if", "else", "for", "do", "while", "char",
+				"int", "long", "return", "switch", "case", "break", "void" };
 		for (int i = 0, len = keywords.length; i < len; ++i)
 			KEY_WORDS.add(keywords[i]);
 	}
 
-	static final String[] SEPARATORS1 = { "{", "}" };
-	static final String[] SEPARATORS2 = { "==", };
-	static final String[] SEPARATORS3 = { ">>>", };
+	static final String[] SEPARATORS = {
+			// 字符从多到少排列
+			">>>", "<<<", "<<=", ">>=", "==", ">=", "<=", "!=", "+=", "-=",
+			"*=", "/=", "++", "--", "&=", "^=", "|=", ">>", "<<", "{", "}",
+			">", "<", "=", "+", "-", "*", "%", "!", "~", "^", "&", "|", "(",
+			")", ";", ";", ".", };
 
-	public Token nextToken() {
+	public TokenScanner(IScanReader reader) {
+		this.reader = reader;
+	}
 
-		int old_pos = -1;
+	public Token nextToken() throws IOException {
+
 		TEXT_CODE_LOOP: while (true) {
 			if (reader.eof())
 				return null;
-			if (old_pos == reader.tell())
-				throw new ScannerException("unknown token");
-			old_pos = reader.tell();
 
 			if (!inLineCode && !inBlockCode) {
 				if (reader.preMatch(BLOCK_CODE_START)) {
+					reader.skip(BLOCK_CODE_START.length());
 					inBlockCode = true;
 					continue;
 				}
 				if (reader.preMatch(LINE_CODE_START)) {
-					inBlockCode = true;
+					reader.skip(LINE_CODE_START.length());
+					inLineCode = true;
 					continue;
 				}
 
@@ -107,7 +140,7 @@ public class TokenScanner {
 		}
 	}
 
-	private Token getToken() {
+	private Token getToken() throws IOException {
 		assert !reader.eof();
 		char c = reader.read();
 
@@ -161,22 +194,20 @@ public class TokenScanner {
 
 	private Token getSeparator() {
 		assert !reader.eof();
-		for (int i = 0, len = SEPARATORS3.length; i < len; ++i)
-			if (reader.preMatch(SEPARATORS3[i]))
-				return new Token(TokenType.SEPARATOR, SEPARATORS3[i]);
-
-		for (int i = 0, len = SEPARATORS2.length; i < len; ++i)
-			if (reader.preMatch(SEPARATORS2[i]))
-				return new Token(TokenType.SEPARATOR, SEPARATORS2[i]);
-
-		for (int i = 0, len = SEPARATORS1.length; i < len; ++i)
-			if (reader.preMatch(SEPARATORS1[i]))
-				return new Token(TokenType.SEPARATOR, SEPARATORS1[i]);
-
+		for (int i = 0, len = SEPARATORS.length; i < len; ++i) {
+			if (reader.preMatch(SEPARATORS[i])) {
+				try {
+					reader.skip(SEPARATORS[i].length());
+				} catch (IOException e) {
+					throw new RuntimeException("不可能发生");
+				}
+				return new Token(TokenType.SEPARATOR, SEPARATORS[i]);
+			}
+		}
 		return null;
 	}
 
-	private void skipComment() {
+	private void skipComment() throws IOException {
 		if (reader.preMatch("//")) {
 			// 行注释
 			reader.skip(2);
@@ -208,7 +239,7 @@ public class TokenScanner {
 	}
 
 	// 处理整数部分
-	private long getInteger() {
+	private long getInteger() throws IOException {
 		long v = 0;
 		while (!reader.eof()) {
 			char c = reader.read();
@@ -223,7 +254,7 @@ public class TokenScanner {
 	}
 
 	// 处理小数点后面的数字
-	private double getDecimal() {
+	private double getDecimal() throws IOException {
 		double v = 0;
 		int w = 0;
 		while (!reader.eof()) {
@@ -240,7 +271,7 @@ public class TokenScanner {
 	}
 
 	// 处理整数、浮点数、科学计数法
-	private Token getNumber() {
+	private Token getNumber() throws IOException {
 		assert !reader.eof();
 		if (reader.preMatch("0x"))
 			return getHexNumber();
@@ -310,7 +341,7 @@ public class TokenScanner {
 	}
 
 	// 处理16进制数
-	private Token getHexNumber() {
+	private Token getHexNumber() throws IOException {
 		assert reader.preMatch("0x");
 		reader.skip(2);
 
@@ -353,7 +384,7 @@ public class TokenScanner {
 	}
 
 	// 处理转义字符
-	private char convertChar() {
+	private char convertChar() throws IOException {
 		if (reader.eof())
 			throw new ScannerException("end of string expected");
 		char c = reader.read();
@@ -425,7 +456,7 @@ public class TokenScanner {
 	}
 
 	// 处理字符串
-	private Token getString() {
+	private Token getString() throws IOException {
 		assert !reader.eof();
 		char c = reader.read();
 		assert c == '\"' || c == '\'';
@@ -498,7 +529,7 @@ public class TokenScanner {
 	}
 
 	// 处理标识符、关键字、布尔常量
-	private Token getIdentifierOrKeyword() {
+	private Token getIdentifierOrKeyword() throws IOException {
 		assert !reader.eof();
 		char c = reader.read();
 		assert isFirstIdentifierChar(c);
@@ -528,7 +559,7 @@ public class TokenScanner {
 	}
 
 	// 处理文本模板
-	private Token getTextTemplate() {
+	private Token getTextTemplate() throws IOException {
 		StringBuilder sb = new StringBuilder();
 		while (true) {
 			if (reader.eof() || reader.preMatch(BLOCK_CODE_END)

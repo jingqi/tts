@@ -1,32 +1,28 @@
 package tts.stream;
 
+import java.io.IOException;
+
 public interface IScanReader {
 
-	char read();
+	char read() throws IOException;
 
-	char[] read(int len);
+	char[] read(int len) throws IOException;
 
-	void read(char[] buf, int buf_begin, int len);
+	void read(char[] buf, int buf_begin, int len) throws IOException;
 
-	String readString(int len);
+	String readString(int len) throws IOException;
 
 	/**
 	 * 前向匹配，指针不动
 	 */
 	boolean preMatch(String s);
 
-	int available();
-
-	int tell();
-
-	void seek(int off);
-
-	void skip(int len);
+	void skip(int len) throws IOException;
 
 	boolean eof();
 
 	/**
 	 * 回退字符
 	 */
-	void backward(int len);
+	void backward(int len) throws IOException;
 }
