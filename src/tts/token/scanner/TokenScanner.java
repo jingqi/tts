@@ -515,10 +515,6 @@ public class TokenScanner {
 
 		// 单一字符串
 		while (true) {
-			if (reader.eof())
-				throw new ScannerException("end of string expected");
-
-			c = reader.read();
 			if (c == '\\') {
 				sb.append(convertChar());
 			} else if (c == '\n' || c == '\r') {
@@ -528,6 +524,10 @@ public class TokenScanner {
 			} else {
 				sb.append(c);
 			}
+
+			if (reader.eof())
+				throw new ScannerException("end of string expected");
+			c = reader.read();
 		}
 
 		String s = sb.toString();
