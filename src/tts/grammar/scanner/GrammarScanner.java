@@ -143,12 +143,12 @@ public class GrammarScanner {
 		return new AssignOp((String) tok.value, v);
 	}
 
-	// rvalue = part (rel-op part)*;
+	// rvalue = bin_switch | booleanOr;
 	private IOp rvalue() {
 		return binSwitch();
 	}
 
-	// bin_switch = or '?' or ':' or;
+	// bin_switch = or ('?' or ':' or)?;
 	private IOp binSwitch() {
 		int p = tokenStream.tell();
 		IOp cond = booleanOr();
@@ -156,8 +156,7 @@ public class GrammarScanner {
 			return null;
 
 		if (!tokenStream.match(TokenType.SEPARATOR, "?")) {
-			tokenStream.seek(p);
-			return null;
+			return cond;
 		}
 
 		IOp t = booleanOr();
