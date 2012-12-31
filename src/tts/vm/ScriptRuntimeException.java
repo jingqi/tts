@@ -7,6 +7,9 @@ public class ScriptRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
+	public ScriptRuntimeException() {
+	}
+
 	public ScriptRuntimeException(String description) {
 		super(description);
 	}

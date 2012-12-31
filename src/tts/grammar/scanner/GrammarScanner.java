@@ -2,6 +2,8 @@ package tts.grammar.scanner;
 
 import tts.eval.*;
 import tts.grammar.tree.*;
+import tts.grammar.tree.UnaryOp.OpType;
+import tts.grammar.tree.binaryop.*;
 import tts.token.scanner.*;
 import tts.token.scanner.Token.TokenType;
 import tts.vm.VarType;
@@ -20,9 +22,7 @@ public class GrammarScanner {
 		this.tokenStream = tokenStream;
 	}
 
-	/**
-	 * all = sentence*;
-	 */
+	// all = sentence*;
 	public IOp all() {
 		OpList ret = new OpList();
 		while (true) {
@@ -35,10 +35,8 @@ public class GrammarScanner {
 		return ret;
 	}
 
-	/**
-	 * sentence = ((expression | defination)? ';') | statement | text_template |
-	 * block;
-	 */
+	// sentence = ((expression | defination)? ';') | statement | text_template |
+	// block;
 	private IOp sentence() {
 		int p = tokenStream.tell();
 		IOp ret = expression();
@@ -62,9 +60,7 @@ public class GrammarScanner {
 		return ret;
 	}
 
-	/**
-	 * block = '{' sentence* '}'
-	 */
+	// block = '{' sentence* '}'
 	private IOp block() {
 		Token t = tokenStream.match(TokenType.SEPARATOR);
 		if (t == null)
@@ -86,7 +82,7 @@ public class GrammarScanner {
 		t = tokenStream.match(TokenType.SEPARATOR);
 		if (t == null || !t.value.equals("}"))
 			throw new GrammarException("");
-		return ret;
+		return new FrameScopOp(ret);
 	}
 
 	private IOp textTemplate() {
@@ -111,7 +107,10 @@ public class GrammarScanner {
 	}
 
 	/**
-	 * expression = assignment | rvalue;
+	 * expression = assignment | rvalue; <br/>
+	 * 
+	 * 各个操作符的优先级顺序，参看
+	 * http://www.cppblog.com/aqazero/archive/2012/06/02/8284.html
 	 */
 	private IOp expression() {
 		IOp ret = assignment();
@@ -125,16 +124,12 @@ public class GrammarScanner {
 	 * lvalue = varialbe;
 	 */
 	private IOp assignment() {
-		Token tok = tokenStream.nextToken();
-		assert tok != null;
-		if (tok.type != TokenType.IDENTIFIER) {
-			tokenStream.putBack();
+		Token tok = tokenStream.match(TokenType.IDENTIFIER);
+		if (tok == null)
 			return null;
-		}
 
-		Token t = tokenStream.nextToken();
-		if (t.type != TokenType.SEPARATOR || !t.value.equals("=")) {
-			tokenStream.putBack(2);
+		if (!tokenStream.match(TokenType.SEPARATOR, "=")) {
+			tokenStream.putBack();
 			return null;
 		}
 
@@ -145,70 +140,194 @@ public class GrammarScanner {
 			return null;
 		}
 
-		// TODO
-		// assign_var(tok, v);
+		return new AssignOp((String) tok.value, v);
+	}
+
+	// rvalue = part (rel-op part)*;
+	private IOp rvalue() {
+		return binSwitch();
+	}
+
+	// bin_switch = or '?' or ':' or;
+	private IOp binSwitch() {
+		int p = tokenStream.tell();
+		IOp cond = booleanOr();
+		if (cond == null)
+			return null;
+
+		if (!tokenStream.match(TokenType.SEPARATOR, "?")) {
+			tokenStream.seek(p);
+			return null;
+		}
+
+		IOp t = booleanOr();
+		if (t == null) {
+			tokenStream.seek(p);
+			return null;
+		}
+
+		if (!tokenStream.match(TokenType.SEPARATOR, ":")) {
+			tokenStream.seek(p);
+			return null;
+		}
+
+		IOp f = booleanOr();
+		if (f == null) {
+			tokenStream.seek(p);
+			return null;
+		}
+
+		return new BinSwitchOp(cond, t, f);
+	}
+
+	// or = and ('||' and)*;
+	private IOp booleanOr() {
+		IOp v = booleanAnd();
+		if (v == null)
+			return null;
+
+		while (tokenStream.match(TokenType.SEPARATOR, "||")) {
+			IOp vv = booleanAnd();
+			if (vv == null)
+				throw new GrammarException();
+			v = new BooleanOp(v, BooleanOp.OpType.OR, vv);
+		}
 		return v;
 	}
 
-	/**
-	 * rvalue = part (rel-op part)*;
-	 */
-	private IOp rvalue() {
+	// and = bit_or ('&&' bit_or)*;
+	private IOp booleanAnd() {
+		IOp v = bitOr();
+		if (v == null)
+			return null;
+
+		while (tokenStream.match(TokenType.SEPARATOR, "||")) {
+			IOp vv = bitOr();
+			if (vv == null)
+				throw new GrammarException();
+			v = new BooleanOp(v, BooleanOp.OpType.AND, vv);
+		}
+		return v;
+	}
+
+	// bit_or = bit_xor ('|' bit_or)*;
+	private IOp bitOr() {
+		IOp v = bitXor();
+		if (v == null)
+			return null;
+
+		while (tokenStream.match(TokenType.SEPARATOR, "|")) {
+			IOp vv = bitXor();
+			if (vv == null)
+				throw new GrammarException();
+			v = new BitOp(v, BitOp.OpType.BIT_OR, vv);
+		}
+		return v;
+	}
+
+	// bit_xor = bit_and ('^' bit_and)*;
+	private IOp bitXor() {
+		IOp v = bitAnd();
+		if (v == null)
+			return null;
+
+		while (tokenStream.match(TokenType.SEPARATOR, "^")) {
+			IOp vv = bitAnd();
+			if (vv == null)
+				throw new GrammarException();
+			v = new BitOp(v, BitOp.OpType.BIT_XOR, vv);
+		}
+		return v;
+	}
+
+	// bit_and = eq_cmp ('&' eq_cmp)*;
+	private IOp bitAnd() {
+		IOp v = eqCmp();
+		if (v == null)
+			return null;
+
+		while (tokenStream.match(TokenType.SEPARATOR, "&")) {
+			IOp vv = eqCmp();
+			if (vv == null)
+				throw new GrammarException();
+			v = new BitOp(v, BitOp.OpType.BIT_AND, vv);
+		}
+		return v;
+	}
+
+	// eq_cmp = less_cmp (('==' | '!=') less_cmp)*;
+	private IOp eqCmp() {
+		IOp v = lessCmp();
+		if (v == null)
+			return null;
+
+		while (true) {
+			CompareOp.OpType op;
+			if (tokenStream.match(TokenType.SEPARATOR, "=="))
+				op = CompareOp.OpType.EQ;
+			else if (tokenStream.match(TokenType.SEPARATOR, "!="))
+				op = CompareOp.OpType.NOT_EQ;
+			else
+				break;
+
+			IOp vv = lessCmp();
+			if (vv == null)
+				throw new GrammarException();
+			v = new CompareOp(v, op, vv);
+		}
+		return v;
+	}
+
+	// less_cmp = bit_shift (('<' | '>' | '<=' | '>=') bit_shift)?;
+	private IOp lessCmp() {
+		IOp v = bitShift();
+		if (v == null)
+			return null;
+
+		CompareOp.OpType op;
+		if (tokenStream.match(TokenType.SEPARATOR, "<"))
+			op = CompareOp.OpType.LESS;
+		else if (tokenStream.match(TokenType.SEPARATOR, ">"))
+			op = CompareOp.OpType.GREATER;
+		else if (tokenStream.match(TokenType.SEPARATOR, "<="))
+			op = CompareOp.OpType.LESS_EQ;
+		else if (tokenStream.match(TokenType.SEPARATOR, ">="))
+			op = CompareOp.OpType.GREATER_EQ;
+		else
+			return v;
+
+		IOp vv = bitShift();
+		if (vv == null)
+			throw new GrammarException();
+		return new CompareOp(v, op, vv);
+	}
+
+	// bit_shift = part (('<<' | '>>' | '>>>') part)*;
+	private IOp bitShift() {
 		IOp v = part();
 		if (v == null)
 			return null;
 
 		while (true) {
-			Token t = tokenStream.nextToken();
-			if (t.type != TokenType.SEPARATOR) {
-				tokenStream.putBack();
-				return v;
-			} else if (t.value.equals("==")) {
-				IOp vv = part();
-				if (vv == null)
-					throw new GrammarException("");
-				// TODO
-				return v;
-			} else if (t.value.equals("!=")) {
-				IOp vv = part();
-				if (vv == null)
-					throw new GrammarException("");
-				// TODO
-				return v;
-			} else if (t.value.equals(">=")) {
-				IOp vv = part();
-				if (vv == null)
-					throw new GrammarException("");
-				// TODO
-				return v;
-			} else if (t.value.equals("<=")) {
-				IOp vv = part();
-				if (vv == null)
-					throw new GrammarException("");
-				// TODO
-				return v;
-			} else if (t.value.equals(">")) {
-				IOp vv = part();
-				if (vv == null)
-					throw new GrammarException("");
-				// TODO
-				return v;
-			} else if (t.value.equals("<")) {
-				IOp vv = part();
-				if (vv == null)
-					throw new GrammarException("");
-				// TODO
-				return v;
-			} else {
-				tokenStream.putBack();
-				return v;
-			}
+			BitOp.OpType op;
+			if (tokenStream.match(TokenType.SEPARATOR, "<<"))
+				op = BitOp.OpType.SHIFT_LEFT;
+			else if (tokenStream.match(TokenType.SEPARATOR, ">>"))
+				op = BitOp.OpType.SHIFT_RIGHT;
+			else if (tokenStream.match(TokenType.SEPARATOR, ">>>"))
+				op = BitOp.OpType.CIRCLE_SHIFT_RIGHT;
+			else
+				break;
+
+			IOp vv = part();
+			if (vv == null)
+				throw new GrammarException();
+			v = new BitOp(v, op, vv);
 		}
+		return v;
 	}
 
-	/**
-	 * part = term ([\+\-] term)*;
-	 */
+	// part = term (('+' | '-') term)*;
 	private IOp part() {
 		IOp v = term();
 		if (v == null)
@@ -223,14 +342,12 @@ public class GrammarScanner {
 				IOp vv = term();
 				if (vv == null)
 					throw new GrammarException("");
-				// TODO
-				return v;
+				v = new MathOp(v, MathOp.OpType.ADD, vv);
 			} else if (t.value.equals("-")) {
 				IOp vv = term();
 				if (vv == null)
 					throw new GrammarException("");
-				// TODO
-				return v;
+				v = new MathOp(v, MathOp.OpType.SUB, vv);
 			} else {
 				tokenStream.putBack();
 				return v;
@@ -238,9 +355,7 @@ public class GrammarScanner {
 		}
 	}
 
-	/**
-	 * term = factor ([\*\/\%] factor)*;
-	 */
+	// term = factor (('*' | '/' | '%') factor)*;
 	private IOp term() {
 		IOp v = factor();
 		if (v == null)
@@ -255,20 +370,17 @@ public class GrammarScanner {
 				IOp vv = factor();
 				if (vv == null)
 					throw new GrammarException("");
-				// TODO
-				return v;
+				v = new MathOp(v, MathOp.OpType.MULTIPLY, vv);
 			} else if (t.value.equals("/")) {
 				IOp vv = factor();
 				if (vv == null)
 					throw new GrammarException("");
-				// TODO
-				return v;
+				v = new MathOp(v, MathOp.OpType.DIVID, vv);
 			} else if (t.value.equals("%")) {
 				IOp vv = factor();
 				if (vv == null)
 					throw new GrammarException("");
-				// TODO
-				return v;
+				v = new MathOp(v, MathOp.OpType.MOD, vv);
 			} else {
 				tokenStream.putBack();
 				return v;
@@ -276,58 +388,33 @@ public class GrammarScanner {
 		}
 	}
 
-	/**
-	 * factor = (('+' | '-' | '++' | '--')? atom) | (atom ('++' | '--'));
-	 */
+	// factor = (('+' | '-' | '++' | '--' | '!' | '~')? atom) | (atom ('++' |
+	// '--'));
 	private IOp factor() {
-		Token t = tokenStream.nextToken();
+		int p = tokenStream.tell();
 
-		int back = 0;
-		if (t.type != TokenType.SEPARATOR) {
-			tokenStream.putBack();
-			t = null;
-		} else if (t.value.equals("+")) {
-			++back;
-			// TODO
-		} else if (t.value.equals("-")) {
-			++back;
-			// TODO
-		} else if (t.value.equals("++")) {
-			++back;
-			// TODO
-		} else if (t.value.equals("--")) {
-			++back;
-			// TODO
-		} else {
-			tokenStream.putBack();
-			t = null;
+		UnaryOp.OpType op = null;
+		if (tokenStream.match(TokenType.SEPARATOR, "+")) {
+			op = OpType.POSITIVE;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "-")) {
+			op = OpType.NEGATIEVE;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "!")) {
+			op = OpType.NOT;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "~")) {
+			op = OpType.BIT_NOT;
 		}
 
 		IOp v = atom();
 		if (v == null) {
-			tokenStream.putBack(back);
+			tokenStream.seek(p);
 			return null;
 		}
-
-		if (t == null) {
-			t = tokenStream.nextToken();
-			if (t.type != TokenType.SEPARATOR) {
-				tokenStream.putBack();
-			} else if (t.value.equals("++")) {
-				// TODO
-			} else if (t.value.equals("--")) {
-				// TODO
-			} else {
-				tokenStream.putBack();
-			}
-		}
-
-		return v;
+		if (op == null)
+			return v;
+		return new UnaryOp(op, v);
 	}
 
-	/**
-	 * atom = variable | constant | function | ('(' expression ')');
-	 */
+	// atom = variable | constant | function | ('(' expression ')');
 	private IOp atom() {
 		Token t = tokenStream.nextToken();
 		switch (t.type) {
@@ -368,9 +455,7 @@ public class GrammarScanner {
 		}
 	}
 
-	/**
-	 * defination = type variable ('=' rvalue)? (',' varialbe ('=' rvalue)?)*;
-	 */
+	// defination = type variable ('=' rvalue)? (',' varialbe ('=' rvalue)?)*;
 	private IOp defination() {
 		VarType vt;
 		Token t = tokenStream.match(TokenType.KEY_WORD);
@@ -401,7 +486,7 @@ public class GrammarScanner {
 
 			String name = (String) t.value;
 			if (tokenStream.match(TokenType.SEPARATOR, "=")) {
-				IOp v = rvalue();
+				IOp v = expression();
 				if (v == null)
 					throw new GrammarException("");
 				l.add(new DefinationOp(vt, name, v));
@@ -412,10 +497,8 @@ public class GrammarScanner {
 		return l;
 	}
 
-	/**
-	 * for_loop = 'for' '(' expression? ';' rvalue? ';' expression? ')'
-	 * sentence;
-	 */
+	// for_loop = 'for' '(' expression? ';' rvalue? ';' expression? ')'
+	// sentence;
 	private IOp forLoop() {
 		if (!tokenStream.match(TokenType.KEY_WORD, "for"))
 			return null;
@@ -441,9 +524,7 @@ public class GrammarScanner {
 		return new ForLoopOp(init_exp, break_exp, fin_exp, body);
 	}
 
-	/**
-	 * do_while_loop = 'do' block 'while' '(' rvalue ')' ';';
-	 */
+	// do_while_loop = 'do' block 'while' '(' rvalue ')' ';';
 	private IOp doWhileLoop() {
 		if (!tokenStream.match(TokenType.KEY_WORD, "do"))
 			return null;
@@ -457,7 +538,7 @@ public class GrammarScanner {
 		if (!tokenStream.match(TokenType.SEPARATOR, "("))
 			throw new GrammarException("");
 
-		IOp brk_exp = rvalue();
+		IOp brk_exp = expression();
 		if (brk_exp == null)
 			throw new GrammarException("");
 
@@ -469,16 +550,14 @@ public class GrammarScanner {
 		return new DoWhileLoopOp(body, brk_exp);
 	}
 
-	/**
-	 * while_loop = 'while' '(' rvalue ')' sentence;
-	 */
+	// while_loop = 'while' '(' rvalue ')' sentence;
 	private IOp whileLoop() {
 		if (!tokenStream.match(TokenType.KEY_WORD, "while"))
 			return null;
 		if (!tokenStream.match(TokenType.IDENTIFIER, "("))
 			throw new GrammarException("");
 
-		IOp brk_exp = rvalue();
+		IOp brk_exp = expression();
 		if (brk_exp == null)
 			throw new GrammarException("");
 
@@ -492,16 +571,14 @@ public class GrammarScanner {
 		return new WhileLoop(brk_exp, body);
 	}
 
-	/**
-	 * if_else = 'if' '(' rvalue ')' sentence ('else' sentence)?;
-	 */
+	// if_else = 'if' '(' rvalue ')' sentence ('else' sentence)?;
 	private IOp ifElse() {
 		if (!tokenStream.match(TokenType.KEY_WORD, "if"))
 			return null;
 		if (!tokenStream.match(TokenType.IDENTIFIER, "("))
 			throw new GrammarException("");
 
-		IOp cond = rvalue();
+		IOp cond = expression();
 		if (cond == null)
 			throw new GrammarException("");
 

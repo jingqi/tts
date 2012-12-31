@@ -1,6 +1,7 @@
 package tts.grammar.tree;
 
 import tts.eval.*;
+import tts.eval.IValueEval.Type;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
@@ -9,14 +10,14 @@ import tts.vm.ScriptVM;
  */
 public class UnaryOp implements IOp {
 
-	public enum Op {
-		POSITIVE, NEGATIEVE,
+	public enum OpType {
+		POSITIVE, NEGATIEVE, BIT_NOT, NOT
 	}
 
-	private Op op;
+	private OpType op;
 	private IOp eval;
 
-	public UnaryOp(Op op, IOp e) {
+	public UnaryOp(OpType op, IOp e) {
 		this.op = op;
 		this.eval = e;
 	}
@@ -25,27 +26,48 @@ public class UnaryOp implements IOp {
 	public IValueEval eval(ScriptVM vm) {
 
 		IValueEval ve = eval.eval(vm);
-		if (op == Op.POSITIVE)
+		switch (op) {
+		case POSITIVE:
+			if (ve.getType() != IValueEval.Type.DOUBLE
+					&& ve.getType() != IValueEval.Type.FLOAT
+					&& ve.getType() != IValueEval.Type.LONG_INT
+					&& ve.getType() != IValueEval.Type.INTEGER)
+				throw new ScriptRuntimeException();
 			return ve;
 
-		switch (ve.getType()) {
-		case INTEGER:
-			IntegerEval ie = (IntegerEval) ve;
-			return new IntegerEval(-ie.getValue());
+		case NEGATIEVE:
+			switch (ve.getType()) {
+			case DOUBLE:
+				return new DoubleEval(-((DoubleEval) ve).getValue());
 
-		case LONG_INT:
-			LongIntEval lie = (LongIntEval) ve;
-			return new LongIntEval(-lie.getValue());
+			case FLOAT:
+				return new FloatEval(-((FloatEval) ve).getValue());
 
-		case FLOAT:
-			FloatEval fe = (FloatEval) ve;
-			return new FloatEval(-fe.getValue());
+			case LONG_INT:
+				return new LongIntEval(-((LongIntEval) ve).getValue());
 
-		case DOUBLE:
-			DoubleEval de = (DoubleEval) ve;
-			return new DoubleEval(-de.getValue());
+			case INTEGER:
+				return new IntegerEval(-((IntegerEval) ve).getValue());
+
+			default:
+				throw new ScriptRuntimeException();
+			}
+
+		case NOT:
+			if (ve.getType() != IValueEval.Type.BOOLEAN)
+				throw new ScriptRuntimeException();
+			return BooleanEval.valueOf(!((BooleanEval) ve).getValue());
+
+		case BIT_NOT:
+			if (ve.getType() == Type.LONG_INT)
+				return new LongIntEval(~((LongIntEval) ve).getValue());
+			else if (ve.getType() == Type.INTEGER)
+				return new IntegerEval(~((IntegerEval) ve).getValue());
+			else
+				throw new ScriptRuntimeException();
+
+		default:
+			throw new RuntimeException();
 		}
-
-		throw new ScriptRuntimeException("illegal operation");
 	}
 }
