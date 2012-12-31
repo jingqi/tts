@@ -533,7 +533,7 @@ public class TokenScanner {
 	}
 
 	private static boolean isIdentifierChar(char c) {
-		return c == '_' || ('a' <= c && c <= 'Z') || ('A' <= c && c <= 'Z')
+		return c == '_' || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
 				|| ('0' <= c && c <= '9');
 	}
 

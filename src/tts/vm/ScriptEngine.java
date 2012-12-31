@@ -10,7 +10,7 @@ import tts.token.stream.IScanReader;
 
 public class ScriptEngine {
 
-	ScriptVM vm;
+	ScriptVM vm = new ScriptVM();
 	GrammarScanner gs;
 	Writer textOutput;
 
