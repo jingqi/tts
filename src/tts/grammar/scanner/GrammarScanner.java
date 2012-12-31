@@ -562,14 +562,14 @@ public class GrammarScanner {
 	private IOp whileLoop() {
 		if (!tokenStream.match(TokenType.KEY_WORD, "while"))
 			return null;
-		if (!tokenStream.match(TokenType.IDENTIFIER, "("))
+		if (!tokenStream.match(TokenType.SEPARATOR, "("))
 			throw new GrammarException("");
 
 		IOp brk_exp = expression();
 		if (brk_exp == null)
 			throw new GrammarException("");
 
-		if (!tokenStream.match(TokenType.IDENTIFIER, ")"))
+		if (!tokenStream.match(TokenType.SEPARATOR, ")"))
 			throw new GrammarException("");
 
 		IOp body = sentence();
@@ -583,14 +583,14 @@ public class GrammarScanner {
 	private IOp ifElse() {
 		if (!tokenStream.match(TokenType.KEY_WORD, "if"))
 			return null;
-		if (!tokenStream.match(TokenType.IDENTIFIER, "("))
+		if (!tokenStream.match(TokenType.SEPARATOR, "("))
 			throw new GrammarException("");
 
 		IOp cond = expression();
 		if (cond == null)
 			throw new GrammarException("");
 
-		if (!tokenStream.match(TokenType.IDENTIFIER, ")"))
+		if (!tokenStream.match(TokenType.SEPARATOR, ")"))
 			throw new GrammarException("");
 
 		IOp body = sentence();
