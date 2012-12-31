@@ -138,6 +138,7 @@ public class TokenScanner {
 					return null;
 
 				if (reader.preMatch(BLOCK_CODE_END)) {
+					reader.skip(BLOCK_CODE_END.length());
 					inBlockCode = false; // 代码块结束
 					continue TEXT_CODE_LOOP;
 				}
@@ -577,7 +578,7 @@ public class TokenScanner {
 	private Token getTextTemplate() throws IOException {
 		StringBuilder sb = new StringBuilder();
 		while (true) {
-			if (reader.eof() || reader.preMatch(BLOCK_CODE_END)
+			if (reader.eof() || reader.preMatch(BLOCK_CODE_START)
 					|| reader.preMatch(LINE_CODE_START))
 				break;
 			sb.append(reader.read());
