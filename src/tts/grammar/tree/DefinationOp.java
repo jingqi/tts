@@ -1,7 +1,6 @@
 package tts.grammar.tree;
 
-import tts.eval.IValueEval;
-import tts.eval.VoidEval;
+import tts.eval.*;
 import tts.vm.*;
 
 public class DefinationOp implements IOp {
@@ -13,7 +12,38 @@ public class DefinationOp implements IOp {
 	public DefinationOp(VarType vt, String name, IOp value) {
 		this.type = vt;
 		this.name = name;
-		this.value = value;
+		if (value != null) {
+			this.value = value;
+		} else {
+			switch (vt) {
+			case BOOLEAN:
+				this.value = new Operand(BooleanEval.FALSE);
+				break;
+
+			case INTEGER:
+				this.value = new Operand(new IntegerEval(0));
+				break;
+
+			case LONG_INT:
+				this.value = new Operand(new LongIntEval(0));
+				break;
+
+			case FLOAT:
+				this.value = new Operand(new FloatEval(0));
+				break;
+
+			case DOUBLE:
+				this.value = new Operand(new DoubleEval(0));
+				break;
+
+			case STRING:
+				this.value = new Operand(new StringEval(""));
+				break;
+
+			default:
+				this.value = null;
+			}
+		}
 	}
 
 	@Override

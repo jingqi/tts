@@ -36,11 +36,14 @@ public class GrammarScanner {
 	}
 
 	/**
-	 * sentence = (expression? ';') | statement | text_template;
+	 * sentence = ((expression | defination)? ';') | statement | text_template |
+	 * block;
 	 */
 	private IOp sentence() {
 		int p = tokenStream.tell();
 		IOp ret = expression();
+		if (ret == null)
+			ret = defination();
 		Token t = tokenStream.nextToken();
 		if (t != null && t.type == TokenType.SEPARATOR && t.value.equals(";")) {
 			if (ret == null)
@@ -50,10 +53,40 @@ public class GrammarScanner {
 
 		tokenStream.seek(p);
 		ret = textTemplate();
-		if (ret != null)
-			return ret;
+		if (ret == null)
+			ret = defination();
+		if (ret == null)
+			ret = block();
+		if (ret == null)
+			ret = statement();
+		return ret;
+	}
 
-		return statement();
+	/**
+	 * block = '{' sentence* '}'
+	 */
+	private IOp block() {
+		Token t = tokenStream.match(TokenType.SEPARATOR);
+		if (t == null)
+			return null;
+		if (!t.value.equals("{")) {
+			tokenStream.putBack();
+			return null;
+		}
+
+		OpList ret = new OpList();
+		while (true) {
+			IOp op = sentence();
+			if (op == null)
+				break;
+			else
+				ret.add(op);
+		}
+
+		t = tokenStream.match(TokenType.SEPARATOR);
+		if (t == null || !t.value.equals("}"))
+			throw new GrammarException("");
+		return ret;
 	}
 
 	private IOp textTemplate() {
@@ -67,17 +100,21 @@ public class GrammarScanner {
 	 * statement = for_loop | do_while_loop | while_loop | if_else;
 	 */
 	private IOp statement() {
-		// TODO
-		return null;
+		IOp ret = forLoop();
+		if (ret == null)
+			ret = doWhileLoop();
+		if (ret == null)
+			ret = whileLoop();
+		if (ret == null)
+			ret = ifElse();
+		return ret;
 	}
 
 	/**
-	 * expression = defination | assignment | rvalue;
+	 * expression = assignment | rvalue;
 	 */
 	private IOp expression() {
-		IOp ret = defination();
-		if (ret == null)
-			ret = assignment();
+		IOp ret = assignment();
 		if (ret == null)
 			ret = rvalue();
 		return ret;
@@ -365,5 +402,115 @@ public class GrammarScanner {
 			}
 		} while (tokenStream.match(TokenType.SEPARATOR, ","));
 		return l;
+	}
+
+	/**
+	 * for_loop = 'for' '(' expression? ';' rvalue? ';' expression? ')'
+	 * sentence;
+	 */
+	private IOp forLoop() {
+		if (!tokenStream.match(TokenType.KEY_WORD, "for"))
+			return null;
+		if (!tokenStream.match(TokenType.SEPARATOR, "("))
+			throw new GrammarException("");
+
+		IOp init_exp = expression();
+		if (!tokenStream.match(TokenType.SEPARATOR, ";"))
+			throw new GrammarException("");
+
+		IOp break_exp = rvalue();
+		if (!tokenStream.match(TokenType.SEPARATOR, ";"))
+			throw new GrammarException("");
+
+		IOp fin_exp = expression();
+		if (!tokenStream.match(TokenType.SEPARATOR, ")"))
+			throw new GrammarException("");
+
+		IOp body = sentence();
+		if (body == null)
+			throw new GrammarException("");
+
+		return new ForLoopOp(init_exp, break_exp, fin_exp, body);
+	}
+
+	/**
+	 * do_while_loop = 'do' block 'while' '(' rvalue ')' ';';
+	 */
+	private IOp doWhileLoop() {
+		if (!tokenStream.match(TokenType.KEY_WORD, "do"))
+			return null;
+
+		IOp body = block();
+		if (body == null)
+			throw new GrammarException("");
+
+		if (!tokenStream.match(TokenType.KEY_WORD, "while"))
+			throw new GrammarException("");
+		if (!tokenStream.match(TokenType.SEPARATOR, "("))
+			throw new GrammarException("");
+
+		IOp brk_exp = rvalue();
+		if (brk_exp == null)
+			throw new GrammarException("");
+
+		if (!tokenStream.match(TokenType.SEPARATOR, ")"))
+			throw new GrammarException("");
+		if (!tokenStream.match(TokenType.SEPARATOR, ";"))
+			throw new GrammarException("");
+
+		return new DoWhileLoopOp(body, brk_exp);
+	}
+
+	/**
+	 * while_loop = 'while' '(' rvalue ')' sentence;
+	 */
+	private IOp whileLoop() {
+		if (!tokenStream.match(TokenType.KEY_WORD, "while"))
+			return null;
+		if (!tokenStream.match(TokenType.IDENTIFIER, "("))
+			throw new GrammarException("");
+
+		IOp brk_exp = rvalue();
+		if (brk_exp == null)
+			throw new GrammarException("");
+
+		if (!tokenStream.match(TokenType.IDENTIFIER, ")"))
+			throw new GrammarException("");
+
+		IOp body = sentence();
+		if (body == null)
+			throw new GrammarException("");
+
+		return new WhileLoop(brk_exp, body);
+	}
+
+	/**
+	 * if_else = 'if' '(' rvalue ')' sentence ('else' sentence)?;
+	 */
+	private IOp ifElse() {
+		if (!tokenStream.match(TokenType.KEY_WORD, "if"))
+			return null;
+		if (!tokenStream.match(TokenType.IDENTIFIER, "("))
+			throw new GrammarException("");
+
+		IOp cond = rvalue();
+		if (cond == null)
+			throw new GrammarException("");
+
+		if (!tokenStream.match(TokenType.IDENTIFIER, ")"))
+			throw new GrammarException("");
+
+		IOp body = sentence();
+		if (body == null)
+			throw new GrammarException("");
+
+		IOp else_body = null;
+		if (tokenStream.match(TokenType.KEY_WORD, "else")) {
+			else_body = sentence();
+			if (else_body == null)
+				throw new GrammarException("");
+		}
+
+		return new IfElseOp(cond, body, else_body);
 	}
 }
