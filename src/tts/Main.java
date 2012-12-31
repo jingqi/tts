@@ -2,19 +2,10 @@ package tts;
 
 import java.io.*;
 
-import tts.grammar.GrammarScanner;
-import tts.scanner.TokenScanner;
-import tts.scanner.TokenStream;
-import tts.stream.CharArrayScanReader;
+import tts.token.stream.CharArrayScanReader;
+import tts.vm.ScriptEngine;
 
 public class Main {
-
-	private static void run(CharArrayScanReader ss, Writer output) {
-		TokenScanner tsn = new TokenScanner(ss);
-		TokenStream ts = new TokenStream(tsn);
-		GrammarScanner gs = new GrammarScanner(ts);
-		gs.evalAll();
-	}
 
 	public static void main(String[] args) throws IOException {
 		// 处理参数
@@ -40,6 +31,7 @@ public class Main {
 		// debug
 		input = "e:\\test.txt";
 
+		// 输入端
 		if (input == null) {
 			System.out.println("no input file");
 			return;
@@ -58,12 +50,17 @@ public class Main {
 		fr.close();
 		ss.seek(0);
 
+		// 文本输出端
 		Writer writer = null;
 		if (output != null)
 			writer = new FileWriter(output);
 		else
 			writer = new OutputStreamWriter(System.out);
 
-		run(ss, writer);
+		// 启动脚本
+		ScriptEngine engine = new ScriptEngine();
+		engine.setScriptInput(ss);
+		engine.setTextOutput(writer);
+		engine.run();
 	}
 }

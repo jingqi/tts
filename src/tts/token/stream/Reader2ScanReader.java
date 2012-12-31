@@ -1,4 +1,4 @@
-package tts.stream;
+package tts.token.stream;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -110,5 +110,31 @@ public class Reader2ScanReader implements IScanReader {
 			throw new IOException();
 		for (int i = 0; i < len; ++i)
 			unreaded.push(readed.pop());
+	}
+
+	@Override
+	public int tell() {
+		return readed.size();
+	}
+
+	@Override
+	public void seek(int pos) throws IOException {
+		if (pos < 0)
+			throw new IOException();
+
+		if (pos < readed.size()) {
+			for (int i = readed.size(); i > pos; --i) {
+				unreaded.push(readed.pop());
+			}
+			return;
+		} else if (pos <= readed.size() + unreaded.size()) {
+			for (int i = readed.size(); i < pos; ++i) {
+				readed.push(unreaded.pop());
+			}
+			return;
+		}
+
+		throw new IOException();
+
 	}
 }

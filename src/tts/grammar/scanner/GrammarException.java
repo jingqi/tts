@@ -1,4 +1,4 @@
-package tts.grammar;
+package tts.grammar.scanner;
 
 public class GrammarException extends RuntimeException {
 

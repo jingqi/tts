@@ -1,4 +1,6 @@
-package tts.stream;
+package tts.token.stream;
+
+import java.io.IOException;
 
 public interface IBuferWriter {
 
@@ -28,9 +30,9 @@ public interface IBuferWriter {
 
 	int tell();
 
-	void seek(int off);
+	void seek(int off) throws IOException;
 
-	void skip(int len);
+	void skip(int len) throws IOException;
 
 	boolean eof();
 

@@ -1,11 +1,11 @@
-package tts.scanner;
+package tts.token.scanner;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import tts.scanner.Token.TokenType;
-import tts.stream.IScanReader;
+import tts.token.scanner.Token.TokenType;
+import tts.token.stream.IScanReader;
 
 /**
  * ragel 语法规则: <br/>
@@ -67,9 +67,14 @@ public class TokenScanner {
 
 	public Token nextToken() throws IOException {
 
+		int oldPos = -1;
 		TEXT_CODE_LOOP: while (true) {
 			if (reader.eof())
 				return null;
+
+			if (oldPos == reader.tell())
+				throw new ScannerException("");
+			oldPos = reader.tell();
 
 			if (!inLineCode && !inBlockCode) {
 				if (reader.preMatch(BLOCK_CODE_START)) {
@@ -138,6 +143,10 @@ public class TokenScanner {
 				assert false;
 			}
 		}
+	}
+
+	public boolean eof() {
+		return reader.eof();
 	}
 
 	private Token getToken() throws IOException {

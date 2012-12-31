@@ -1,4 +1,4 @@
-package tts.stream;
+package tts.token.stream;
 
 import java.io.IOException;
 
@@ -18,6 +18,10 @@ public interface IScanReader {
 	boolean preMatch(String s);
 
 	void skip(int len) throws IOException;
+
+	int tell();
+
+	void seek(int pos) throws IOException;
 
 	boolean eof();
 

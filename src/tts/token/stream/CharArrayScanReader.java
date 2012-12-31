@@ -1,4 +1,6 @@
-package tts.stream;
+package tts.token.stream;
+
+import java.io.IOException;
 
 public class CharArrayScanReader implements IScanReader, IBuferWriter {
 
@@ -160,19 +162,19 @@ public class CharArrayScanReader implements IScanReader, IBuferWriter {
 			index = len;
 	}
 
-	private void checkAvailable(int toRead) {
+	private void checkAvailable(int toRead) throws IOException {
 		if (index + toRead > size)
-			throw new IllegalStateException("no data available");
+			throw new IOException("no data available");
 	}
 
 	@Override
-	public char read() {
+	public char read() throws IOException {
 		checkAvailable(1);
 		return buffer[index++];
 	}
 
 	@Override
-	public char[] read(int len) {
+	public char[] read(int len) throws IOException {
 		if (len < 0)
 			throw new IllegalArgumentException();
 		checkAvailable(len);
@@ -184,7 +186,7 @@ public class CharArrayScanReader implements IScanReader, IBuferWriter {
 	}
 
 	@Override
-	public void read(char[] buf, int buf_begin, int len) {
+	public void read(char[] buf, int buf_begin, int len) throws IOException {
 		if (buf_begin < 0 || len < 0 || buf_begin + len > buf.length)
 			throw new IllegalArgumentException();
 		checkAvailable(len);
@@ -194,7 +196,7 @@ public class CharArrayScanReader implements IScanReader, IBuferWriter {
 	}
 
 	@Override
-	public String readString(int len) {
+	public String readString(int len) throws IOException {
 		return new String(read(len));
 	}
 
@@ -225,16 +227,16 @@ public class CharArrayScanReader implements IScanReader, IBuferWriter {
 	}
 
 	@Override
-	public void seek(int off) {
+	public void seek(int off) throws IOException {
 		if (off < 0 || off > size)
-			throw new IllegalArgumentException();
+			throw new IOException();
 		index = off;
 	}
 
 	@Override
-	public void skip(int len) {
+	public void skip(int len) throws IOException {
 		if (len < 0 || len > available())
-			throw new IllegalArgumentException();
+			throw new IOException();
 		index += len;
 	}
 
