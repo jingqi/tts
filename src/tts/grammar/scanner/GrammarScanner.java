@@ -151,122 +151,128 @@ public class GrammarScanner {
 	}
 
 	/**
-	 * rvalue = part (rel-op part)?;
+	 * rvalue = part (rel-op part)*;
 	 */
 	private IOp rvalue() {
 		IOp v = part();
 		if (v == null)
 			return null;
 
-		Token t = tokenStream.nextToken();
-		if (t.type != TokenType.SEPARATOR) {
-			tokenStream.putBack();
-			return v;
-		} else if (t.value.equals("==")) {
-			IOp vv = part();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else if (t.value.equals("!=")) {
-			IOp vv = part();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else if (t.value.equals(">=")) {
-			IOp vv = part();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else if (t.value.equals("<=")) {
-			IOp vv = part();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else if (t.value.equals(">")) {
-			IOp vv = part();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else if (t.value.equals("<")) {
-			IOp vv = part();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else {
-			tokenStream.putBack();
-			return v;
+		while (true) {
+			Token t = tokenStream.nextToken();
+			if (t.type != TokenType.SEPARATOR) {
+				tokenStream.putBack();
+				return v;
+			} else if (t.value.equals("==")) {
+				IOp vv = part();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else if (t.value.equals("!=")) {
+				IOp vv = part();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else if (t.value.equals(">=")) {
+				IOp vv = part();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else if (t.value.equals("<=")) {
+				IOp vv = part();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else if (t.value.equals(">")) {
+				IOp vv = part();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else if (t.value.equals("<")) {
+				IOp vv = part();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else {
+				tokenStream.putBack();
+				return v;
+			}
 		}
 	}
 
 	/**
-	 * part = term ([\+\-] term)?;
+	 * part = term ([\+\-] term)*;
 	 */
 	private IOp part() {
 		IOp v = term();
 		if (v == null)
 			return null;
 
-		Token t = tokenStream.nextToken();
-		if (t.type != TokenType.SEPARATOR) {
-			tokenStream.putBack();
-			return v;
-		} else if (t.value.equals("+")) {
-			IOp vv = term();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else if (t.value.equals("-")) {
-			IOp vv = term();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else {
-			tokenStream.putBack();
-			return v;
+		while (true) {
+			Token t = tokenStream.nextToken();
+			if (t.type != TokenType.SEPARATOR) {
+				tokenStream.putBack();
+				return v;
+			} else if (t.value.equals("+")) {
+				IOp vv = term();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else if (t.value.equals("-")) {
+				IOp vv = term();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else {
+				tokenStream.putBack();
+				return v;
+			}
 		}
 	}
 
 	/**
-	 * term = factor ([\*\/\%] factor)?;
+	 * term = factor ([\*\/\%] factor)*;
 	 */
 	private IOp term() {
 		IOp v = factor();
 		if (v == null)
 			return null;
 
-		Token t = tokenStream.nextToken();
-		if (t.type != TokenType.SEPARATOR) {
-			tokenStream.putBack();
-			return v;
-		} else if (t.value.equals("*")) {
-			IOp vv = factor();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else if (t.value.equals("/")) {
-			IOp vv = factor();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else if (t.value.equals("%")) {
-			IOp vv = factor();
-			if (vv == null)
-				throw new GrammarException("");
-			// TODO
-			return v;
-		} else {
-			tokenStream.putBack();
-			return v;
+		while (true) {
+			Token t = tokenStream.nextToken();
+			if (t.type != TokenType.SEPARATOR) {
+				tokenStream.putBack();
+				return v;
+			} else if (t.value.equals("*")) {
+				IOp vv = factor();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else if (t.value.equals("/")) {
+				IOp vv = factor();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else if (t.value.equals("%")) {
+				IOp vv = factor();
+				if (vv == null)
+					throw new GrammarException("");
+				// TODO
+				return v;
+			} else {
+				tokenStream.putBack();
+				return v;
+			}
 		}
 	}
 
@@ -351,13 +357,15 @@ public class GrammarScanner {
 				IOp v = expression();
 				if (v == null)
 					throw new GrammarException("");
-				t = tokenStream.nextToken();
-				if (t.type != TokenType.SEPARATOR || !t.value.equals(")"))
+				if (tokenStream.match(TokenType.SEPARATOR, ")"))
 					throw new GrammarException("");
 				return v;
 			}
+
+		default:
+			tokenStream.putBack();
+			return null;
 		}
-		throw new GrammarException("");
 	}
 
 	/**

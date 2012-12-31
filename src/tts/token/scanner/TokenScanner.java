@@ -48,18 +48,24 @@ public class TokenScanner {
 	// 关键字
 	static final Set<String> KEY_WORDS = new HashSet<String>();
 	static {
-		String[] keywords = { "if", "else", "for", "do", "while", "char",
-				"int", "long", "return", "switch", "case", "break", "void" };
+		String[] keywords = { "if", "else", "for", "do", "while", "break",
+				"continue", "char", "int", "long", "float", "double", "string",
+				"return", "switch", "case", "void" };
 		for (int i = 0, len = keywords.length; i < len; ++i)
 			KEY_WORDS.add(keywords[i]);
 	}
 
 	static final String[] SEPARATORS = {
-			// 字符从多到少排列
-			">>>", "<<<", "<<=", ">>=", "==", ">=", "<=", "!=", "+=", "-=",
-			"*=", "/=", "++", "--", "&=", "^=", "|=", ">>", "<<", "{", "}",
-			">", "<", "=", "+", "-", "*", "%", "!", "~", "^", "&", "|", "(",
-			")", ";", ";", ".", };
+			// 字符从多到少排列:
+			// 3个字符
+			">>>", "<<<", "<<=",
+			">>=",
+			// 2 个字符
+			"==", ">=", "<=", "!=", "+=", "-=", "*=", "/=", "++", "--", "&=",
+			"^=", "|=", ">>", "<<", "&&", "||",
+			// 1 个字符
+			"{", "}", ">", "<", "=", "+", "-", "*", "%", "!", "~", "^", "&",
+			"|", "(", ")", ";", ";", ".", ":", };
 
 	public TokenScanner(IScanReader reader) {
 		this.reader = reader;
