@@ -139,6 +139,10 @@ public class TokenScanner {
 
 				if (reader.preMatch(BLOCK_CODE_END)) {
 					reader.skip(BLOCK_CODE_END.length());
+					if (reader.preMatch("\r\n") || reader.preMatch("\n\r"))
+						reader.skip(2);
+					else if (reader.preMatch("\n") || reader.preMatch("\r"))
+						reader.skip(1);
 					inBlockCode = false; // 代码块结束
 					continue TEXT_CODE_LOOP;
 				}
@@ -579,9 +583,27 @@ public class TokenScanner {
 		StringBuilder sb = new StringBuilder();
 		while (true) {
 			if (reader.eof() || reader.preMatch(BLOCK_CODE_START)
-					|| reader.preMatch(LINE_CODE_START))
+					|| reader.preMatch(LINE_CODE_START)) {
 				break;
-			sb.append(reader.read());
+			}
+			char c = reader.read();
+			if (c == '\n') {
+				sb.append('\n');
+				if (reader.eof())
+					break;
+				char cc = reader.read();
+				if (cc != '\r')
+					sb.append(cc);
+			} else if (c == '\r') {
+				sb.append('\n');
+				if (reader.eof())
+					break;
+				char cc = reader.read();
+				if (cc != '\n')
+					sb.append(cc);
+			} else {
+				sb.append(c);
+			}
 		}
 
 		assert sb.length() > 0;
