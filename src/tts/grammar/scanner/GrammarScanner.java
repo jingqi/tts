@@ -334,7 +334,9 @@ public class GrammarScanner {
 
 		while (true) {
 			Token t = tokenStream.nextToken();
-			if (t.type != TokenType.SEPARATOR) {
+			if (t == null) {
+				return v;
+			} else if (t.type != TokenType.SEPARATOR) {
 				tokenStream.putBack();
 				return v;
 			} else if (t.value.equals("+")) {
@@ -362,7 +364,9 @@ public class GrammarScanner {
 
 		while (true) {
 			Token t = tokenStream.nextToken();
-			if (t.type != TokenType.SEPARATOR) {
+			if (t == null) {
+				return v;
+			} else if (t.type != TokenType.SEPARATOR) {
 				tokenStream.putBack();
 				return v;
 			} else if (t.value.equals("*")) {
@@ -415,7 +419,12 @@ public class GrammarScanner {
 
 	// atom = variable | constant | function | ('(' expression ')');
 	private IOp atom() {
+		if (tokenStream.eof())
+			return null;
+
 		Token t = tokenStream.nextToken();
+		if (t == null)
+			return null;
 		switch (t.type) {
 		case IDENTIFIER:
 			return new Operand(new VariableEval((String) t.value));

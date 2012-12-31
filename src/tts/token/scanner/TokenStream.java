@@ -38,10 +38,10 @@ public class TokenStream {
 		if (pos < 0)
 			throw new IndexOutOfBoundsException();
 		if (pos < readed.size()) {
-			for (int i = pos; i > pos; --i)
+			for (int i = readed.size(); i > pos; --i)
 				unreaded.push(readed.pop());
 			return;
-		} else if (pos < readed.size() + unreaded.size()) {
+		} else if (pos <= readed.size() + unreaded.size()) {
 			for (int i = readed.size(); i < pos; ++i)
 				readed.push(unreaded.pop());
 			return;
@@ -51,7 +51,10 @@ public class TokenStream {
 	}
 
 	public boolean eof() {
-		return scanner.eof();
+		if (nextToken() == null)
+			return true;
+		putBack();
+		return false;
 	}
 
 	public void putBack() {
