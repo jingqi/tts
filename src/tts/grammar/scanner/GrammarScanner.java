@@ -1,6 +1,7 @@
 package tts.grammar.scanner;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import tts.eval.*;
 import tts.grammar.tree.*;
@@ -8,6 +9,7 @@ import tts.grammar.tree.UnaryOp.OpType;
 import tts.grammar.tree.binaryop.*;
 import tts.token.scanner.*;
 import tts.token.scanner.Token.TokenType;
+import tts.vm.ScriptRuntimeException;
 import tts.vm.VarType;
 
 /**
@@ -34,6 +36,8 @@ public class GrammarScanner {
 			else
 				ret.add(op);
 		}
+		if (!tokenStream.eof())
+			throw new GrammarException();
 		return ret;
 	}
 
@@ -393,7 +397,8 @@ public class GrammarScanner {
 		}
 	}
 
-	// factor = (('+' | '-' | '++' | '--' | '!' | '~')? atom) | (atom ('++' |
+	// factor = (('+' | '-' | '++' | '--' | '!' | '~')? function) | (function
+	// ('++' |
 	// '--'));
 	private IOp factor() {
 		int p = tokenStream.tell();
@@ -409,7 +414,7 @@ public class GrammarScanner {
 			op = OpType.BIT_NOT;
 		}
 
-		IOp v = atom();
+		IOp v = function();
 		if (v == null) {
 			tokenStream.seek(p);
 			return null;
@@ -417,6 +422,62 @@ public class GrammarScanner {
 		if (op == null)
 			return v;
 		return new UnaryOp(op, v);
+	}
+
+	// function = index '(' (index (',' index)*)? ')';
+	private IOp function() {
+		IOp func = index();
+		if (func == null)
+			return null;
+		if (!tokenStream.match(TokenType.SEPARATOR, "("))
+			return func;
+
+		List<IOp> args = new ArrayList<IOp>();
+		while (true) {
+			IOp arg = index();
+			if (arg == null) {
+				if (args.size() == 0)
+					break;
+				else
+					throw new ScriptRuntimeException();
+			}
+			args.add(arg);
+
+			if (!tokenStream.match(TokenType.SEPARATOR, ","))
+				break;
+		}
+		if (!tokenStream.match(TokenType.SEPARATOR, ")"))
+			throw new ScriptRuntimeException();
+		return new FuncCallOp(func, args);
+	}
+
+	// index = member '[' member ']';
+	private IOp index() {
+		IOp body = member();
+		if (body == null)
+			return null;
+		if (!tokenStream.match(TokenType.SEPARATOR, "["))
+			return body;
+		IOp i = member();
+		if (i == null)
+			throw new GrammarException();
+		if (!tokenStream.match(TokenType.SEPARATOR, "]"))
+			throw new GrammarException();
+		return new IndexOp(body, i);
+	}
+
+	// member = atom '.' atom ;
+	private IOp member() {
+		IOp body = atom();
+		if (body == null)
+			return null;
+		if (!tokenStream.match(TokenType.SEPARATOR, "."))
+			return body;
+
+		Token t = tokenStream.match(TokenType.IDENTIFIER);
+		if (t == null)
+			throw new GrammarException();
+		return new MemberOp(body, (String) t.value);
 	}
 
 	// atom = variable | constant | function | ('(' expression ')') | array;

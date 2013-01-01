@@ -1,8 +1,9 @@
-package tts.grammar.tree;
+package tts.grammar.tree.binaryop;
 
 import javax.script.ScriptException;
 
 import tts.eval.*;
+import tts.grammar.tree.IOp;
 import tts.vm.*;
 
 /**

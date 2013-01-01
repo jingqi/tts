@@ -28,6 +28,9 @@ public class TextTemplateOp implements IOp {
 		case VOID:
 			return "";
 
+		case ARRAY:
+			return ve.toString();
+
 		default:
 			throw new RuntimeException();
 		}
