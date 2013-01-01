@@ -49,7 +49,7 @@ public class TokenScanner {
 	static final Set<String> KEY_WORDS = new HashSet<String>();
 	static {
 		String[] keywords = { "if", "else", "for", "do", "while", "break",
-				"continue", "char", "int", "double", "string", "return",
+				"continue", "bool", "int", "double", "string", "return",
 				"switch", "case", "void", "array", "include" };
 		for (int i = 0, len = keywords.length; i < len; ++i)
 			KEY_WORDS.add(keywords[i]);
