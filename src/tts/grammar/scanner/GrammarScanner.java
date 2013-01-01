@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import tts.eval.*;
 import tts.grammar.tree.*;
-import tts.grammar.tree.UnaryOp.OpType;
 import tts.grammar.tree.binaryop.*;
 import tts.token.scanner.*;
 import tts.token.scanner.Token.TokenType;
@@ -456,21 +455,32 @@ public class GrammarScanner {
 		int p = tokenStream.tell();
 
 		UnaryOp.OpType op = null;
-		if (tokenStream.match(TokenType.SEPARATOR, "+")) {
-			op = OpType.POSITIVE;
-		} else if (tokenStream.match(TokenType.SEPARATOR, "-")) {
-			op = OpType.NEGATIEVE;
-		} else if (tokenStream.match(TokenType.SEPARATOR, "!")) {
-			op = OpType.NOT;
-		} else if (tokenStream.match(TokenType.SEPARATOR, "~")) {
-			op = OpType.BIT_NOT;
-		}
+		if (tokenStream.match(TokenType.SEPARATOR, "+"))
+			op = UnaryOp.OpType.POSITIVE;
+		else if (tokenStream.match(TokenType.SEPARATOR, "-"))
+			op = UnaryOp.OpType.NEGATIEVE;
+		else if (tokenStream.match(TokenType.SEPARATOR, "!"))
+			op = UnaryOp.OpType.NOT;
+		else if (tokenStream.match(TokenType.SEPARATOR, "~"))
+			op = UnaryOp.OpType.BIT_NOT;
+		else if (tokenStream.match(TokenType.SEPARATOR, "++"))
+			op = UnaryOp.OpType.PRE_INCREMENT;
+		else if (tokenStream.match(TokenType.SEPARATOR, "--"))
+			op = UnaryOp.OpType.PRE_DECREMENT;
 
 		IOp v = function();
 		if (v == null) {
 			tokenStream.seek(p);
 			return null;
 		}
+
+		if (op == null) {
+			if (tokenStream.match(TokenType.SEPARATOR, "++"))
+				op = UnaryOp.OpType.POST_INCREMENT;
+			else if (tokenStream.match(TokenType.SEPARATOR, "--"))
+				op = UnaryOp.OpType.POST_DECREMENT;
+		}
+
 		if (op == null)
 			return v;
 		return new UnaryOp(op, v);

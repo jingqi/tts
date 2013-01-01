@@ -67,7 +67,7 @@ public class TextTemplateOp implements IOp {
 					name.append(c);
 					break;
 				}
-				if (sb.length() == 0) {
+				if (name.length() == 0) {
 					sb.append("${}");
 					state = 0;
 					break;
@@ -79,6 +79,7 @@ public class TextTemplateOp implements IOp {
 							+ " not found");
 				sb.append(resolveValue(v.getValue()));
 				state = 0;
+				name.setLength(0);
 				break;
 			}
 		}

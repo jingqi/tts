@@ -2,8 +2,9 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.grammar.tree.binaryop.AssignOp;
+import tts.grammar.tree.binaryop.MathOp;
+import tts.vm.*;
 
 /**
  * 一元操作符
@@ -11,7 +12,9 @@ import tts.vm.ScriptVM;
 public class UnaryOp implements IOp {
 
 	public enum OpType {
-		POSITIVE("-"), NEGATIEVE("+"), BIT_NOT("~"), NOT("!");
+		POSITIVE("-"), NEGATIEVE("+"), BIT_NOT("~"), NOT("!"), PRE_INCREMENT(
+				"++"), PRE_DECREMENT("--"), POST_INCREMENT("++"), POST_DECREMENT(
+				"--");
 
 		String op;
 
@@ -30,6 +33,51 @@ public class UnaryOp implements IOp {
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
+		if (op == OpType.PRE_INCREMENT || op == OpType.PRE_DECREMENT
+				|| op == OpType.POST_INCREMENT || op == OpType.POST_DECREMENT) {
+			if (!(eval instanceof Operand))
+				throw new ScriptRuntimeException();
+			IValueEval ve = ((Operand) eval).eval;
+			if (ve.getType() != IValueEval.EvalType.VARIABLE)
+				throw new ScriptRuntimeException();
+			String name = ((VariableEval) ve).getName();
+			Variable v = vm.getVariable(name);
+
+			switch (op) {
+			case PRE_INCREMENT: {
+				IValueEval rs = new MathOp(eval, MathOp.OpType.ADD,
+						new Operand(new IntegerEval(1))).eval(vm);
+				AssignOp.assign(v, rs);
+				return rs;
+			}
+
+			case PRE_DECREMENT: {
+				IValueEval rs = new MathOp(eval, MathOp.OpType.SUB,
+						new Operand(new IntegerEval(1))).eval(vm);
+				AssignOp.assign(v, rs);
+				return rs;
+			}
+
+			case POST_INCREMENT: {
+				IValueEval ret = v.getValue();
+				IValueEval rs = new MathOp(eval, MathOp.OpType.ADD,
+						new Operand(new IntegerEval(1))).eval(vm);
+				AssignOp.assign(v, rs);
+				return ret;
+			}
+
+			case POST_DECREMENT: {
+				IValueEval ret = v.getValue();
+				IValueEval rs = new MathOp(eval, MathOp.OpType.SUB,
+						new Operand(new IntegerEval(1))).eval(vm);
+				AssignOp.assign(v, rs);
+				return ret;
+			}
+
+			default:
+				throw new RuntimeException();
+			}
+		}
 
 		IValueEval ve = eval.eval(vm);
 		switch (op) {
