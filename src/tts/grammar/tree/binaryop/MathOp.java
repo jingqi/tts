@@ -24,18 +24,33 @@ public class MathOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval l = left.eval(vm), r = right.eval(vm);
-		if (op == OpType.ADD && l.getType() == EvalType.STRING
-				&& r.getType() == EvalType.STRING) {
-			return new StringEval(((StringEval) l).getValue()
-					+ ((StringEval) r).getValue());
-		} else if (op == OpType.MULTIPLY && l.getType() == EvalType.STRING
-				&& r.getType() == EvalType.INTEGER) {
-			String s = ((StringEval) l).getValue();
-			long v = ((IntegerEval) r).getValue();
-			StringBuilder sb = new StringBuilder((int) (s.length() * v));
-			for (int i = 0; i < v; ++i)
-				sb.append(s);
-			return new StringEval(sb.toString());
+		switch (op) {
+		case ADD:
+			if (l.getType() == EvalType.STRING
+					&& r.getType() == EvalType.STRING) {
+				return new StringEval(((StringEval) l).getValue()
+						+ ((StringEval) r).getValue());
+			} else if (l.getType() == EvalType.ARRAY
+					&& r.getType() == EvalType.ARRAY) {
+				ArrayEval ret = new ArrayEval();
+				ret.addAll((ArrayEval) l);
+				ret.addAll((ArrayEval) r);
+				return ret;
+			}
+			break;
+
+		case MULTIPLY:
+			if (l.getType() == EvalType.STRING
+					&& r.getType() == EvalType.INTEGER) {
+				String s = ((StringEval) l).getValue();
+				long v = ((IntegerEval) r).getValue();
+				StringBuilder sb = new StringBuilder((int) (s.length() * v));
+				for (int i = 0; i < v; ++i)
+					sb.append(s);
+				return new StringEval(sb.toString());
+			}
+			break;
+
 		}
 
 		double ld = 0;

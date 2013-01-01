@@ -23,6 +23,10 @@ public class ArrayEval implements IValueEval {
 		values.addAll(vs);
 	}
 
+	public void addAll(ArrayEval ae) {
+		values.addAll(ae.values);
+	}
+
 	@Override
 	public EvalType getType() {
 		return EvalType.ARRAY;
