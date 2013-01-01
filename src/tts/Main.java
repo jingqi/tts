@@ -28,7 +28,7 @@ public class Main {
 		}
 
 		// debug
-		input = "e:\\test.txt";
+		// input = "e:\\test.txt";
 
 		// 输入端
 		if (input == null) {

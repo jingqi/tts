@@ -370,6 +370,8 @@ public class GrammarScanner {
 				op = BitOp.OpType.SHIFT_LEFT;
 			else if (tokenStream.match(TokenType.SEPARATOR, ">>"))
 				op = BitOp.OpType.SHIFT_RIGHT;
+			else if (tokenStream.match(TokenType.SEPARATOR, "<<<"))
+				op = BitOp.OpType.CIRCLE_SHIFT_LEFT;
 			else if (tokenStream.match(TokenType.SEPARATOR, ">>>"))
 				op = BitOp.OpType.CIRCLE_SHIFT_RIGHT;
 			else
