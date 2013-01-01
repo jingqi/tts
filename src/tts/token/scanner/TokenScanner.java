@@ -11,10 +11,10 @@ import tts.token.stream.IScanReader;
  * ragel 语法规则: <br/>
  * 
  * Boolean = 'true' | 'false'; <br/>
- * Integer = [\+\-]? digit+ 'L'i?; <br/>
- * Hex = '0x' xdigit+ 'L'i?; <br/>
- * Float = [\+\-]? ((digit+ '.' digit*) | ('.' digit+)) 'F'i?; <br/>
- * Sentic = (Integer | Float) 'E'i [\+\-]? digit+ 'F'i?; <br/>
+ * Integer = [\+\-]? digit+; <br/>
+ * Hex = '0x' xdigit+; <br/>
+ * Double = [\+\-]? ((digit+ '.' digit*) | ('.' digit+)); <br/>
+ * Sentic = (Integer | Float) 'E'i [\+\-]? digit+; <br/>
  * 
  * String1 = ['] ([^\\\n\'] | ('\' any))* [']; <br/>
  * String2 = ["] ([^\\\n\"] | ('\' any))* ["]; <br/>
@@ -24,7 +24,7 @@ import tts.token.stream.IScanReader;
  * 
  * Keyword = 'if' | 'else' | 'while' ...; <br/>
  * Identifier = (('_' | alpha) ('_' | alnum)*) - Keyword; <br/>
- * Separator = '>>>' | '<<<' | '+=' | '>' ...; <br/>
+ * Separator = '>>>' | '+=' | '>' ...; <br/>
  * 
  * @author jingqi
  * 
@@ -49,8 +49,8 @@ public class TokenScanner {
 	static final Set<String> KEY_WORDS = new HashSet<String>();
 	static {
 		String[] keywords = { "if", "else", "for", "do", "while", "break",
-				"continue", "char", "int", "long", "float", "double", "string",
-				"return", "switch", "case", "void" };
+				"continue", "char", "int", "double", "string", "return",
+				"switch", "case", "void" };
 		for (int i = 0, len = keywords.length; i < len; ++i)
 			KEY_WORDS.add(keywords[i]);
 	}
@@ -331,32 +331,11 @@ public class TokenScanner {
 			}
 		}
 
-		boolean short_value = !float_value;
-		if (!reader.eof()) {
-			c = reader.read();
-			if (!float_value && (c == 'l' || c == 'L')) {
-				short_value = false;
-			} else if (float_value && (c == 'f' || c == 'F')) {
-				short_value = true;
-			} else {
-				reader.backward(1);
-			}
-		}
-
 		if (float_value) {
 			double v = (i + d) * Math.pow(10, e);
-			if (short_value)
-				return new Token(TokenType.FLOAT, Float.valueOf((float) v));
-			else
-				return new Token(TokenType.DOUBLE, Double.valueOf(v));
+			return new Token(TokenType.DOUBLE, Double.valueOf(v));
 		} else {
-			if (short_value) {
-				if (i != (int) i)
-					warning("integer value overflow");
-				return new Token(TokenType.INTEGER, Integer.valueOf((int) i));
-			} else {
-				return new Token(TokenType.LONG_INT, Long.valueOf(i));
-			}
+			return new Token(TokenType.INTEGER, Long.valueOf(i));
 		}
 	}
 
@@ -369,7 +348,7 @@ public class TokenScanner {
 			throw new ScannerException("hex number expected");
 
 		long v = 0;
-		boolean long_value = false, over_flow = false;
+		boolean over_flow = false;
 		while (true) {
 			if (reader.eof())
 				break;
@@ -382,9 +361,6 @@ public class TokenScanner {
 				x = c - 'a' + 10;
 			} else if ('A' <= c && c <= 'F') {
 				x = c - 'A' + 10;
-			} else if (c == 'l' || c == 'L') {
-				long_value = true;
-				break;
 			} else {
 				break;
 			}
@@ -392,15 +368,10 @@ public class TokenScanner {
 				over_flow = true;
 			v = (v << 4) + x;
 		}
-		if (!long_value && ((int) v) != v)
-			over_flow = true;
 		if (over_flow)
 			warning("const hex number overflow");
 
-		if (long_value)
-			return new Token(TokenType.LONG_INT, Long.valueOf(v));
-		else
-			return new Token(TokenType.INTEGER, Integer.valueOf((int) v));
+		return new Token(TokenType.INTEGER, Long.valueOf(v));
 	}
 
 	// 处理转义字符
@@ -610,4 +581,5 @@ public class TokenScanner {
 		String t = sb.toString();
 		return new Token(TokenType.TEXT_TEMPLATE, t);
 	}
+
 }

@@ -1,7 +1,6 @@
 package tts.grammar.tree;
 
-import tts.eval.IValueEval;
-import tts.eval.VoidEval;
+import tts.eval.*;
 import tts.vm.*;
 
 public class TextTemplateOp implements IOp {
@@ -10,6 +9,28 @@ public class TextTemplateOp implements IOp {
 
 	public TextTemplateOp(String t) {
 		template = t;
+	}
+
+	public static String resolveValue(IValueEval ve) {
+		switch (ve.getType()) {
+		case BOOLEAN:
+			return Boolean.toString(((BooleanEval) ve).getValue());
+
+		case INTEGER:
+			return Long.toString(((IntegerEval) ve).getValue());
+
+		case DOUBLE:
+			return Double.toString(((DoubleEval) ve).getValue());
+
+		case STRING:
+			return ((StringEval) ve).getValue();
+
+		case VOID:
+			return "";
+
+		default:
+			throw new RuntimeException();
+		}
 	}
 
 	@Override
@@ -51,8 +72,9 @@ public class TextTemplateOp implements IOp {
 
 				Variable v = vm.getVariable(name.toString());
 				if (v == null || v.getValue() == null)
-					throw new ScriptRuntimeException("");
-				sb.append(v.getValue().toString());
+					throw new ScriptRuntimeException("variable " + name
+							+ " not found");
+				sb.append(resolveValue(v.getValue()));
 				state = 0;
 				break;
 			}

@@ -29,8 +29,6 @@ public class UnaryOp implements IOp {
 		switch (op) {
 		case POSITIVE:
 			if (ve.getType() != IValueEval.Type.DOUBLE
-					&& ve.getType() != IValueEval.Type.FLOAT
-					&& ve.getType() != IValueEval.Type.LONG_INT
 					&& ve.getType() != IValueEval.Type.INTEGER)
 				throw new ScriptRuntimeException();
 			return ve;
@@ -39,12 +37,6 @@ public class UnaryOp implements IOp {
 			switch (ve.getType()) {
 			case DOUBLE:
 				return new DoubleEval(-((DoubleEval) ve).getValue());
-
-			case FLOAT:
-				return new FloatEval(-((FloatEval) ve).getValue());
-
-			case LONG_INT:
-				return new LongIntEval(-((LongIntEval) ve).getValue());
 
 			case INTEGER:
 				return new IntegerEval(-((IntegerEval) ve).getValue());
@@ -59,9 +51,7 @@ public class UnaryOp implements IOp {
 			return BooleanEval.valueOf(!((BooleanEval) ve).getValue());
 
 		case BIT_NOT:
-			if (ve.getType() == Type.LONG_INT)
-				return new LongIntEval(~((LongIntEval) ve).getValue());
-			else if (ve.getType() == Type.INTEGER)
+			if (ve.getType() == Type.INTEGER)
 				return new IntegerEval(~((IntegerEval) ve).getValue());
 			else
 				throw new ScriptRuntimeException();

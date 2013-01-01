@@ -3,7 +3,7 @@ package tts.token.scanner;
 public class Token {
 
 	public enum TokenType {
-		TEXT_TEMPLATE, BOOLEAN, INTEGER, LONG_INT, FLOAT, DOUBLE, STRING, SEPARATOR, IDENTIFIER, KEY_WORD
+		TEXT_TEMPLATE, BOOLEAN, INTEGER, DOUBLE, STRING, SEPARATOR, IDENTIFIER, KEY_WORD
 	}
 
 	public TokenType type;

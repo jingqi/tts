@@ -22,15 +22,16 @@ public class Operand implements IOp {
 		case VOID:
 		case BOOLEAN:
 		case INTEGER:
-		case LONG_INT:
-		case FLOAT:
 		case DOUBLE:
 		case STRING:
 			return eval;
 
 		case VARIABLE:
 			VariableEval ve = (VariableEval) eval;
-			return vm.getVariable(ve.getName()).getValue();
+			IValueEval ret = vm.getVariable(ve.getName()).getValue();
+			if (ret == null)
+				throw new ScriptRuntimeException("variable not initialized");
+			return ret;
 		}
 		throw new ScriptRuntimeException("wrong type of value");
 	}

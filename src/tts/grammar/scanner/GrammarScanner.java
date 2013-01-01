@@ -433,13 +433,7 @@ public class GrammarScanner {
 			return new Operand(BooleanEval.valueOf((Boolean) t.value));
 
 		case INTEGER:
-			return new Operand(new IntegerEval((Integer) t.value));
-
-		case LONG_INT:
-			return new Operand(new LongIntEval((Long) t.value));
-
-		case FLOAT:
-			return new Operand(new FloatEval((Float) t.value));
+			return new Operand(new IntegerEval((Long) t.value));
 
 		case DOUBLE:
 			return new Operand(new DoubleEval((Double) t.value));
@@ -473,10 +467,6 @@ public class GrammarScanner {
 			vt = VarType.BOOLEAN;
 		} else if (t.value.equals("int")) {
 			vt = VarType.INTEGER;
-		} else if (t.value.equals("long")) {
-			vt = VarType.LONG_INT;
-		} else if (t.value.equals("float")) {
-			vt = VarType.FLOAT;
 		} else if (t.value.equals("double")) {
 			vt = VarType.DOUBLE;
 		} else if (t.value.equals("string")) {

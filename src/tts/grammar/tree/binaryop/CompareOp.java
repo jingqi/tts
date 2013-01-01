@@ -22,6 +22,12 @@ public class CompareOp implements IOp {
 
 	static boolean eq(IValueEval l, IValueEval r) {
 		switch (l.getType()) {
+		case STRING:
+			if (r.getType() != IValueEval.Type.STRING)
+				throw new ScriptRuntimeException();
+			return ((StringEval) l).getValue().equals(
+					((StringEval) r).getValue());
+
 		case BOOLEAN:
 			if (r.getType() != IValueEval.Type.BOOLEAN)
 				throw new ScriptRuntimeException("");
@@ -33,59 +39,8 @@ public class CompareOp implements IOp {
 				return ((DoubleEval) l).getValue() == ((DoubleEval) r)
 						.getValue();
 
-			case FLOAT:
-				return ((DoubleEval) l).getValue() == ((FloatEval) r)
-						.getValue();
-
-			case LONG_INT:
-				return ((DoubleEval) l).getValue() == ((LongIntEval) r)
-						.getValue();
-
 			case INTEGER:
 				return ((DoubleEval) l).getValue() == ((IntegerEval) r)
-						.getValue();
-
-			default:
-				throw new ScriptRuntimeException("");
-			}
-
-		case FLOAT:
-			switch (r.getType()) {
-			case DOUBLE:
-				return ((FloatEval) l).getValue() == ((DoubleEval) r)
-						.getValue();
-
-			case FLOAT:
-				return ((FloatEval) l).getValue() == ((FloatEval) r).getValue();
-
-			case LONG_INT:
-				return ((FloatEval) l).getValue() == ((LongIntEval) r)
-						.getValue();
-
-			case INTEGER:
-				return ((FloatEval) l).getValue() == ((IntegerEval) r)
-						.getValue();
-
-			default:
-				throw new ScriptRuntimeException("");
-			}
-
-		case LONG_INT:
-			switch (r.getType()) {
-			case DOUBLE:
-				return ((LongIntEval) l).getValue() == ((DoubleEval) r)
-						.getValue();
-
-			case FLOAT:
-				return ((LongIntEval) l).getValue() == ((FloatEval) r)
-						.getValue();
-
-			case LONG_INT:
-				return ((LongIntEval) l).getValue() == ((LongIntEval) r)
-						.getValue();
-
-			case INTEGER:
-				return ((LongIntEval) l).getValue() == ((IntegerEval) r)
 						.getValue();
 
 			default:
@@ -96,14 +51,6 @@ public class CompareOp implements IOp {
 			switch (r.getType()) {
 			case DOUBLE:
 				return ((IntegerEval) l).getValue() == ((DoubleEval) r)
-						.getValue();
-
-			case FLOAT:
-				return ((IntegerEval) l).getValue() == ((FloatEval) r)
-						.getValue();
-
-			case LONG_INT:
-				return ((IntegerEval) l).getValue() == ((LongIntEval) r)
 						.getValue();
 
 			case INTEGER:
@@ -121,17 +68,16 @@ public class CompareOp implements IOp {
 
 	static boolean less(IValueEval l, IValueEval r) {
 		switch (l.getType()) {
+		case STRING:
+			if (r.getType() != IValueEval.Type.STRING)
+				throw new ScriptRuntimeException();
+			return ((StringEval) l).getValue().compareTo(
+					((StringEval) r).getValue()) < 0;
+
 		case DOUBLE:
 			switch (r.getType()) {
 			case DOUBLE:
 				return ((DoubleEval) l).getValue() < ((DoubleEval) r)
-						.getValue();
-
-			case FLOAT:
-				return ((DoubleEval) l).getValue() < ((FloatEval) r).getValue();
-
-			case LONG_INT:
-				return ((DoubleEval) l).getValue() < ((LongIntEval) r)
 						.getValue();
 
 			case INTEGER:
@@ -142,60 +88,10 @@ public class CompareOp implements IOp {
 				throw new ScriptRuntimeException("");
 			}
 
-		case FLOAT:
-			switch (r.getType()) {
-			case DOUBLE:
-				return ((FloatEval) l).getValue() < ((DoubleEval) r).getValue();
-
-			case FLOAT:
-				return ((FloatEval) l).getValue() < ((FloatEval) r).getValue();
-
-			case LONG_INT:
-				return ((FloatEval) l).getValue() < ((LongIntEval) r)
-						.getValue();
-
-			case INTEGER:
-				return ((FloatEval) l).getValue() < ((IntegerEval) r)
-						.getValue();
-
-			default:
-				throw new ScriptRuntimeException("");
-			}
-
-		case LONG_INT:
-			switch (r.getType()) {
-			case DOUBLE:
-				return ((LongIntEval) l).getValue() < ((DoubleEval) r)
-						.getValue();
-
-			case FLOAT:
-				return ((LongIntEval) l).getValue() < ((FloatEval) r)
-						.getValue();
-
-			case LONG_INT:
-				return ((LongIntEval) l).getValue() < ((LongIntEval) r)
-						.getValue();
-
-			case INTEGER:
-				return ((LongIntEval) l).getValue() < ((IntegerEval) r)
-						.getValue();
-
-			default:
-				throw new ScriptRuntimeException("");
-			}
-
 		case INTEGER:
 			switch (r.getType()) {
 			case DOUBLE:
 				return ((IntegerEval) l).getValue() < ((DoubleEval) r)
-						.getValue();
-
-			case FLOAT:
-				return ((IntegerEval) l).getValue() < ((FloatEval) r)
-						.getValue();
-
-			case LONG_INT:
-				return ((IntegerEval) l).getValue() < ((LongIntEval) r)
 						.getValue();
 
 			case INTEGER:

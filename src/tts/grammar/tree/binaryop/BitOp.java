@@ -1,7 +1,7 @@
 package tts.grammar.tree.binaryop;
 
-import tts.eval.*;
-import tts.eval.IValueEval.Type;
+import tts.eval.IValueEval;
+import tts.eval.IntegerEval;
 import tts.grammar.tree.IOp;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
@@ -9,7 +9,7 @@ import tts.vm.ScriptVM;
 public class BitOp implements IOp {
 
 	public enum OpType {
-		BIT_AND, BIT_OR, BIT_XOR, SHIFT_LEFT, SHIFT_RIGHT, CIRCLE_SHIFT_RIGHT,
+		BIT_AND, BIT_OR, BIT_XOR, SHIFT_LEFT, SHIFT_RIGHT, CIRCLE_SHIFT_LEFT, CIRCLE_SHIFT_RIGHT,
 	}
 
 	OpType op;
@@ -21,117 +21,40 @@ public class BitOp implements IOp {
 		this.right = right;
 	}
 
-	static IValueEval bitBooleanOp(IValueEval l, OpType op, IValueEval r) {
-		long ll = 0;
-		boolean toLong = false;
-		switch (l.getType()) {
-		case LONG_INT:
-			ll = ((LongIntEval) l).getValue();
-			toLong = true;
-			break;
-
-		case INTEGER:
-			ll = ((IntegerEval) l).getValue();
-			break;
-
-		default:
-			throw new ScriptRuntimeException();
-		}
-
-		long rr = 0;
-		switch (r.getType()) {
-		case LONG_INT:
-			ll = ((LongIntEval) r).getValue();
-			toLong = true;
-			break;
-
-		case INTEGER:
-			ll = ((IntegerEval) r).getValue();
-			break;
-
-		default:
-			throw new ScriptRuntimeException();
-		}
-
-		long rs = 0;
-		switch (op) {
-		case BIT_AND:
-			rs = ll & rr;
-			break;
-
-		case BIT_OR:
-			rs = ll | rr;
-			break;
-
-		case BIT_XOR:
-			rs = ll ^ rr;
-			break;
-
-		default:
-			throw new RuntimeException();
-		}
-
-		if (toLong)
-			return new LongIntEval(rs);
-		return new IntegerEval((int) rs);
-	}
-
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval l = left.eval(vm), r = right.eval(vm);
+		if (l.getType() != IValueEval.Type.INTEGER
+				|| r.getType() != IValueEval.Type.INTEGER)
+			throw new ScriptRuntimeException();
+
+		long ll = ((IntegerEval) l).getValue();
+		long rr = ((IntegerEval) r).getValue();
 
 		switch (op) {
 		case BIT_AND:
+			return new IntegerEval(ll & rr);
+
 		case BIT_OR:
+			return new IntegerEval(ll | rr);
+
 		case BIT_XOR:
-			return bitBooleanOp(l, op, r);
-		}
+			return new IntegerEval(ll ^ rr);
 
-		long rr = 0;
-		if (r.getType() == Type.LONG_INT)
-			rr = ((LongIntEval) r).getValue();
-		else if (r.getType() == Type.INTEGER)
-			rr = ((IntegerEval) r).getValue();
-
-		switch (op) {
 		case SHIFT_LEFT:
-			switch (l.getType()) {
-			case LONG_INT:
-				return new LongIntEval(((LongIntEval) l).getValue() << rr);
-
-			case INTEGER:
-				return new IntegerEval(((IntegerEval) l).getValue() << rr);
-
-			default:
-				throw new ScriptRuntimeException();
-			}
+			return new IntegerEval(ll << rr);
 
 		case SHIFT_RIGHT:
-			switch (l.getType()) {
-			case LONG_INT:
-				return new LongIntEval(((LongIntEval) l).getValue() >> rr);
+			return new IntegerEval(ll >> rr);
 
-			case INTEGER:
-				return new IntegerEval(((IntegerEval) l).getValue() >> rr);
-
-			default:
-				throw new ScriptRuntimeException();
-			}
+		case CIRCLE_SHIFT_LEFT:
+			return new IntegerEval(ll >>> (64 - (rr % 64)));
 
 		case CIRCLE_SHIFT_RIGHT:
-			switch (l.getType()) {
-			case LONG_INT:
-				return new LongIntEval(((LongIntEval) l).getValue() >>> rr);
-
-			case INTEGER:
-				return new IntegerEval(((IntegerEval) l).getValue() >>> rr);
-
-			default:
-				throw new ScriptRuntimeException();
-			}
+			return new IntegerEval(ll >>> rr);
 
 		default:
-			throw new RuntimeException();
+			throw new ScriptRuntimeException();
 		}
 	}
 }

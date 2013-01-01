@@ -24,14 +24,6 @@ public class DefinationOp implements IOp {
 				this.value = new Operand(new IntegerEval(0));
 				break;
 
-			case LONG_INT:
-				this.value = new Operand(new LongIntEval(0));
-				break;
-
-			case FLOAT:
-				this.value = new Operand(new FloatEval(0));
-				break;
-
 			case DOUBLE:
 				this.value = new Operand(new DoubleEval(0));
 				break;

@@ -2,19 +2,19 @@ package tts.eval;
 
 public class IntegerEval implements IValueEval {
 
-	private int value;
+	long value;
 
-	public IntegerEval(int v) {
+	public IntegerEval(long v) {
 		value = v;
 	}
 
-	public int getValue() {
+	public long getValue() {
 		return value;
 	}
 
 	@Override
 	public String toString() {
-		return Integer.toString(value);
+		return Long.toString(value);
 	}
 
 	@Override
