@@ -50,7 +50,7 @@ public class TokenScanner {
 	static {
 		String[] keywords = { "if", "else", "for", "do", "while", "break",
 				"continue", "char", "int", "double", "string", "return",
-				"switch", "case", "void", "array" };
+				"switch", "case", "void", "array", "include" };
 		for (int i = 0, len = keywords.length; i < len; ++i)
 			KEY_WORDS.add(keywords[i]);
 	}

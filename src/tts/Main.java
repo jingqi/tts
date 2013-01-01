@@ -2,8 +2,7 @@ package tts;
 
 import java.io.*;
 
-import tts.token.stream.CharArrayScanReader;
-import tts.vm.ScriptEngine;
+import tts.vm.ScriptVM;
 
 public class Main {
 
@@ -40,21 +39,10 @@ public class Main {
 			return;
 		}
 
-		FileReader fr = new FileReader(input);
-		CharArrayScanReader ss = new CharArrayScanReader();
-		char[] buf = new char[4096];
-		int readed = 0;
-		while ((readed = fr.read(buf)) > 0) {
-			ss.write(buf, 0, readed);
-		}
-		fr.close();
-		ss.seek(0);
-
 		// 启动脚本
-		ScriptEngine engine = new ScriptEngine();
-		engine.setScriptInput(ss);
+		ScriptVM vm = new ScriptVM();
 		if (output != null)
-			engine.setTextOutput(new FileWriter(output));
-		engine.run();
+			vm.setTextOutput(new FileWriter(output));
+		vm.run(new File(input));
 	}
 }

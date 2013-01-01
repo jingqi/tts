@@ -41,7 +41,7 @@ public class GrammarScanner {
 	}
 
 	// sentence = ((expression | defination)? ';') | statement | text_template |
-	// block;
+	// block | include;
 	private IOp sentence() {
 		int p = tokenStream.tell();
 		IOp ret = expression();
@@ -62,6 +62,8 @@ public class GrammarScanner {
 			ret = block();
 		if (ret == null)
 			ret = statement();
+		if (ret == null)
+			ret = include();
 		return ret;
 	}
 
@@ -684,5 +686,15 @@ public class GrammarScanner {
 		}
 
 		return new IfElseOp(cond, body, else_body);
+	}
+
+	// include = 'include' (('"' path '"') | ('<' path '>'));
+	private IOp include() {
+		if (!tokenStream.match(TokenType.KEY_WORD, "include"))
+			return null;
+		Token t = tokenStream.match(TokenType.STRING);
+		if (t == null)
+			throw new GrammarException();
+		return new IncludeOp((String) t.value);
 	}
 }
