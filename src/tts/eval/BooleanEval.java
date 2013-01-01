@@ -22,6 +22,11 @@ public class BooleanEval implements IValueEval {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+		return o == this;
+	}
+
+	@Override
 	public String toString() {
 		return Boolean.toString(value);
 	}

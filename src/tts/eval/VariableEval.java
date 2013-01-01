@@ -1,6 +1,5 @@
 package tts.eval;
 
-
 public class VariableEval implements IValueEval {
 
 	private String name;
@@ -21,5 +20,12 @@ public class VariableEval implements IValueEval {
 	@Override
 	public EvalType getType() {
 		return EvalType.VARIABLE;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof VariableEval))
+			return false;
+		return ((VariableEval) o).name.equals(name);
 	}
 }

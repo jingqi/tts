@@ -16,4 +16,9 @@ public class VoidEval implements IValueEval {
 	public EvalType getType() {
 		return EvalType.VOID;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o == this;
+	}
 }

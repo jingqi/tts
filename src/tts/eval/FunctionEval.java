@@ -10,4 +10,9 @@ public abstract class FunctionEval implements IValueEval {
 	public EvalType getType() {
 		return EvalType.FUNCTION;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o == this;
+	}
 }

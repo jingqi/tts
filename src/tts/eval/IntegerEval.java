@@ -21,4 +21,11 @@ public class IntegerEval implements IValueEval {
 	public EvalType getType() {
 		return EvalType.INTEGER;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof IntegerEval))
+			return false;
+		return ((IntegerEval) o).value == value;
+	}
 }

@@ -21,4 +21,11 @@ public class DoubleEval implements IValueEval {
 	public EvalType getType() {
 		return EvalType.DOUBLE;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof DoubleEval))
+			return false;
+		return ((DoubleEval) o).value == value;
+	}
 }

@@ -33,6 +33,30 @@ public class ArrayEval extends ObjectEval {
 		return EvalType.ARRAY;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof ArrayEval))
+			return false;
+		ArrayEval ae = (ArrayEval) o;
+		if (ae.size() != size())
+			return false;
+		for (int i = 0, size = size(); i < size; ++i)
+			if (!get(i).equals(ae.get(i)))
+				return false;
+		return true;
+	}
+
+	private class FuncSize extends FunctionEval {
+
+		@Override
+		public IValueEval call(List<IValueEval> args) {
+			if (args.size() != 0)
+				throw new ScriptRuntimeException("need 0 argument");
+
+			return new IntegerEval(size());
+		}
+	}
+
 	private class FuncGet extends FunctionEval {
 
 		@Override
@@ -43,7 +67,7 @@ public class ArrayEval extends ObjectEval {
 				throw new ScriptRuntimeException();
 
 			long i = ((IntegerEval) args.get(0)).getValue();
-			return ArrayEval.this.get((int) i);
+			return get((int) i);
 		}
 	}
 
@@ -57,14 +81,74 @@ public class ArrayEval extends ObjectEval {
 		}
 	}
 
+	private class FuncContains extends FunctionEval {
+
+		@Override
+		public IValueEval call(List<IValueEval> args) {
+			if (args.size() != 1)
+				throw new ScriptRuntimeException("need 1 argument");
+
+			IValueEval ve = args.get(0);
+			return BooleanEval.valueOf(values.contains(ve));
+		}
+	}
+
+	private class FuncRemove extends FunctionEval {
+
+		@Override
+		public IValueEval call(List<IValueEval> args) {
+			if (args.size() != 1)
+				throw new ScriptRuntimeException("need 1 argument");
+			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
+				throw new ScriptRuntimeException();
+
+			int i = (int) ((IntegerEval) args.get(0)).getValue();
+			values.remove(i);
+			return VoidEval.instance;
+		}
+	}
+
+	private class FuncSet extends FunctionEval {
+
+		@Override
+		public IValueEval call(List<IValueEval> args) {
+			if (args.size() != 2)
+				throw new ScriptRuntimeException("need 2 argument");
+			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
+				throw new ScriptRuntimeException();
+
+			long i = ((IntegerEval) args.get(0)).getValue();
+			return values.set((int) i, args.get(1));
+		}
+	}
+
+	private class FuncClear extends FunctionEval {
+
+		@Override
+		public IValueEval call(List<IValueEval> args) {
+			if (args.size() != 0)
+				throw new ScriptRuntimeException("need 0 argument");
+			values.clear();
+			return VoidEval.instance;
+		}
+	}
+
 	@Override
 	public IValueEval member(String name) {
 		if (name.equals("size"))
-			return new IntegerEval(size());
+			return new FuncSize();
 		else if (name.equals("get"))
 			return new FuncGet();
 		else if (name.equals("append"))
 			return new FuncAppend();
+		else if (name.equals("contains"))
+			return new FuncContains();
+		else if (name.equals("remove"))
+			return new FuncRemove();
+		else if (name.equals("set"))
+			return new FuncSet();
+		else if (name.equals("clear"))
+			return new FuncClear();
 		throw new ScriptRuntimeException("array no such member: " + name);
 	}
 

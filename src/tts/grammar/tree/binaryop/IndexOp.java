@@ -18,14 +18,19 @@ public class IndexOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval b = body.eval(vm);
-		if (b.getType() != EvalType.ARRAY)
-			throw new ScriptRuntimeException();
+		if (b.getType() == EvalType.ARRAY) {
+			IValueEval i = index.eval(vm);
+			if (i.getType() != EvalType.INTEGER)
+				throw new ScriptRuntimeException();
+			return ((ArrayEval) b).get((int) ((IntegerEval) i).getValue());
+		} else if (b.getType() == EvalType.STRING) {
+			IValueEval i = index.eval(vm);
+			if (i.getType() != EvalType.INTEGER)
+				throw new ScriptRuntimeException();
+			return ((StringEval) b).charAt((int) ((IntegerEval) i).getValue());
+		}
 
-		IValueEval i = index.eval(vm);
-		if (i.getType() != EvalType.INTEGER)
-			throw new ScriptRuntimeException();
-
-		return ((ArrayEval) b).get((int) ((IntegerEval) i).getValue());
+		throw new ScriptRuntimeException();
 	}
 
 	@Override

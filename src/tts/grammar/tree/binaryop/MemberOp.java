@@ -19,8 +19,7 @@ public class MemberOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval b = body.eval(vm);
-		if (b.getType() != IValueEval.EvalType.ARRAY
-				&& b.getType() != IValueEval.EvalType.OBJECT)
+		if (!(b instanceof ObjectEval))
 			throw new ScriptRuntimeException();
 
 		return ((ObjectEval) b).member(member);
