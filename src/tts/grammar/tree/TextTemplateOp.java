@@ -82,7 +82,7 @@ public class TextTemplateOp implements IOp {
 		if (state != 0)
 			throw new ScriptRuntimeException("");
 
-		System.out.print(sb.toString());
+		vm.writeText(sb.toString());
 		return VoidEval.instance;
 	}
 }

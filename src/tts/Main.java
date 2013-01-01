@@ -50,17 +50,11 @@ public class Main {
 		fr.close();
 		ss.seek(0);
 
-		// 文本输出端
-		Writer writer = null;
-		if (output != null)
-			writer = new FileWriter(output);
-		else
-			writer = new OutputStreamWriter(System.out);
-
 		// 启动脚本
 		ScriptEngine engine = new ScriptEngine();
 		engine.setScriptInput(ss);
-		engine.setTextOutput(writer);
+		if (output != null)
+			engine.setTextOutput(new FileWriter(output));
 		engine.run();
 	}
 }

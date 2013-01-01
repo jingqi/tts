@@ -1,5 +1,7 @@
 package tts.vm;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 
 /**
@@ -7,6 +9,7 @@ import java.util.*;
  */
 public class ScriptVM {
 
+	Writer textOutput;
 	Map<String, Variable> globalVars = new HashMap<String, Variable>();
 
 	static class Frame {
@@ -14,6 +17,10 @@ public class ScriptVM {
 	}
 
 	List<Frame> frames = new ArrayList<Frame>();
+
+	public ScriptVM(Writer textOutput) {
+		this.textOutput = textOutput;
+	}
 
 	// 进入帧
 	public void enterFrame() {
@@ -51,5 +58,19 @@ public class ScriptVM {
 			return globalVars.get(name);
 
 		throw new RuntimeException("variable " + name + " not found");
+	}
+
+	// 设置文本输出流
+	public void setTextOutput(Writer w) {
+		textOutput = w;
+	}
+
+	// 输出文本
+	public void writeText(String s) {
+		try {
+			textOutput.write(s);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
