@@ -16,10 +16,9 @@ public class ForLoopOp implements IOp {
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
+		vm.enterFrame();
 		if (init_exp != null)
 			init_exp.eval(vm);
-
-		vm.enterFrame();
 		while (true) {
 			if (break_exp != null) {
 				IValueEval ve = break_exp.eval(vm);
