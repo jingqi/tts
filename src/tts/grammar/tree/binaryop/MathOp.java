@@ -10,7 +10,13 @@ import tts.vm.ScriptVM;
 public class MathOp implements IOp {
 
 	public enum OpType {
-		ADD, SUB, MULTIPLY, DIVID, MOD
+		ADD("+"), SUB("-"), MULTIPLY("*"), DIVID("/"), MOD("%");
+
+		String op;
+
+		OpType(String op) {
+			this.op = op;
+		}
 	}
 
 	OpType op;
@@ -147,5 +153,12 @@ public class MathOp implements IOp {
 		}
 
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(left).append(" ").append(op.op).append(" ").append(right);
+		return sb.toString();
 	}
 }

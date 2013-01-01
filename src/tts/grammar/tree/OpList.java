@@ -40,7 +40,7 @@ public class OpList implements IOp {
 		for (int i = 0, size = list.size(); i < size; ++i) {
 			IOp e = list.get(i).optimize();
 			if (e != null)
-				nl.add(list.get(i));
+				nl.add(e);
 		}
 
 		if (nl.size() == 0)
@@ -51,4 +51,11 @@ public class OpList implements IOp {
 		return this;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < list.size(); ++i)
+			sb.append(list.get(i)).append(";\n");
+		return sb.toString();
+	}
 }

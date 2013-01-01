@@ -9,7 +9,14 @@ import tts.vm.ScriptVM;
 public class CompareOp implements IOp {
 
 	public enum OpType {
-		EQ, NOT_EQ, LESS, GREATER, LESS_EQ, GREATER_EQ
+		EQ("=="), NOT_EQ("!="), LESS("<"), GREATER(">"), LESS_EQ("<="), GREATER_EQ(
+				">=");
+
+		String op;
+
+		OpType(String op) {
+			this.op = op;
+		}
 	}
 
 	OpType op;
@@ -153,5 +160,12 @@ public class CompareOp implements IOp {
 		}
 
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(left).append(" ").append(op.op).append(" ").append(right);
+		return sb.toString();
 	}
 }

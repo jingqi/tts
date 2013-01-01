@@ -10,7 +10,13 @@ import tts.vm.ScriptVM;
 public class BooleanOp implements IOp {
 
 	public enum OpType {
-		AND, OR
+		AND("&&"), OR("||");
+
+		String op;
+
+		OpType(String op) {
+			this.op = op;
+		}
 	}
 
 	OpType op;
@@ -66,5 +72,12 @@ public class BooleanOp implements IOp {
 		}
 
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(left).append(" ").append(op.op).append(" ").append(right);
+		return sb.toString();
 	}
 }

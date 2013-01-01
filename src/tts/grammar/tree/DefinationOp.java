@@ -51,4 +51,13 @@ public class DefinationOp implements IOp {
 			value = value.optimize();
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(type.name).append(" ").append(name);
+		if (value != null)
+			sb.append("=").append(value);
+		return sb.toString();
+	}
 }

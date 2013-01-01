@@ -10,7 +10,14 @@ import tts.vm.ScriptVM;
 public class BitOp implements IOp {
 
 	public enum OpType {
-		BIT_AND, BIT_OR, BIT_XOR, SHIFT_LEFT, SHIFT_RIGHT, CIRCLE_SHIFT_LEFT, CIRCLE_SHIFT_RIGHT,
+		BIT_AND("&"), BIT_OR("|"), BIT_XOR("^"), SHIFT_LEFT("<<"), SHIFT_RIGHT(
+				">>"), CIRCLE_SHIFT_LEFT("<<<"), CIRCLE_SHIFT_RIGHT(">>>");
+
+		String op;
+
+		OpType(String op) {
+			this.op = op;
+		}
 	}
 
 	OpType op;
@@ -72,5 +79,12 @@ public class BitOp implements IOp {
 		}
 
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(left).append(" ").append(op.op).append(" ").append(right);
+		return sb.toString();
 	}
 }

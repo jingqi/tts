@@ -41,4 +41,12 @@ public class DoWhileLoopOp implements IOp {
 		brk_exp = brk_exp.optimize();
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("do").append(body).append("while(").append(brk_exp)
+				.append(");\n");
+		return sb.toString();
+	}
 }

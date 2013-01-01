@@ -52,4 +52,14 @@ public class IfElseOp implements IOp {
 		}
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("if(").append(cond).append(")\n").append(body);
+		if (else_body != null)
+			sb.append("else\n").append(else_body);
+		sb.append("\n");
+		return sb.toString();
+	}
 }

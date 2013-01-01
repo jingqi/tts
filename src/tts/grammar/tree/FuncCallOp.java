@@ -37,4 +37,17 @@ public class FuncCallOp implements IOp {
 			args.set(i, args.get(i).optimize());
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(func).append("(");
+		for (int i = 0; i < args.size(); ++i) {
+			if (i != 0)
+				sb.append(",");
+			sb.append(args.get(i));
+		}
+		sb.append(")");
+		return sb.toString();
+	}
 }

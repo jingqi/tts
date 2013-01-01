@@ -30,4 +30,14 @@ public class ArrayOp implements IOp {
 
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		for (int i = 0, size = elements.size(); i < size; ++i)
+			sb.append(elements.get(i)).append(", ");
+		sb.append("]");
+		return sb.toString();
+	}
 }

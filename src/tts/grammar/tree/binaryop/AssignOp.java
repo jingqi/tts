@@ -76,4 +76,11 @@ public class AssignOp implements IOp {
 			value = value.optimize();
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(varname).append(" = ").append(value);
+		return sb.toString();
+	}
 }

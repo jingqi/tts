@@ -11,7 +11,13 @@ import tts.vm.ScriptVM;
 public class UnaryOp implements IOp {
 
 	public enum OpType {
-		POSITIVE, NEGATIEVE, BIT_NOT, NOT
+		POSITIVE("-"), NEGATIEVE("+"), BIT_NOT("~"), NOT("!");
+
+		String op;
+
+		OpType(String op) {
+			this.op = op;
+		}
 	}
 
 	private OpType op;
@@ -73,5 +79,12 @@ public class UnaryOp implements IOp {
 		}
 
 		return this;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(op.op).append(eval);
+		return sb.toString();
 	}
 }

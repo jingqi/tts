@@ -59,4 +59,21 @@ public class ForLoopOp implements IOp {
 			body = body.optimize();
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("for(");
+		if (init_exp != null)
+			sb.append(init_exp);
+		sb.append(";");
+		if (break_exp != null)
+			sb.append(break_exp);
+		sb.append(";");
+		if (fin_exp != null)
+			sb.append(fin_exp);
+		sb.append(")\n").append(body);
+		sb.append("\n");
+		return sb.toString();
+	}
 }

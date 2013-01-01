@@ -57,4 +57,12 @@ public class WhileLoop implements IOp {
 
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("while(").append(brk_exp).append(")\n").append(body);
+		sb.append("\n");
+		return sb.toString();
+	}
 }

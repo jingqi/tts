@@ -31,4 +31,11 @@ public class MemberOp implements IOp {
 		body = body.optimize();
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(body).append(".").append(member);
+		return sb.toString();
+	}
 }

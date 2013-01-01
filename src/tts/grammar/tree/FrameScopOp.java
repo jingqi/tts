@@ -30,4 +30,11 @@ public class FrameScopOp implements IOp {
 			return null;
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\n").append(op).append("\n}\n");
+		return sb.toString();
+	}
 }

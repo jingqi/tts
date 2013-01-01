@@ -93,4 +93,9 @@ public class TextTemplateOp implements IOp {
 	public IOp optimize() {
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return template;
+	}
 }

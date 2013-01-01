@@ -35,4 +35,10 @@ public class IndexOp implements IOp {
 		return this;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(body).append("[").append(index).append("]");
+		return sb.toString();
+	}
 }

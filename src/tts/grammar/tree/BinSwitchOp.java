@@ -45,4 +45,12 @@ public class BinSwitchOp implements IOp {
 		}
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(cond).append(" ? ").append(true_value).append(" : ")
+				.append(false_value);
+		return sb.toString();
+	}
 }
