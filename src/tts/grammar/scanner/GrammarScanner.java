@@ -100,9 +100,20 @@ public class GrammarScanner {
 	}
 
 	/**
-	 * statement = for_loop | do_while_loop | while_loop | if_else;
+	 * statement = 'break;' | 'continue;' | for_loop | do_while_loop |
+	 * while_loop | if_else;
 	 */
 	private IOp statement() {
+		if (tokenStream.match(TokenType.KEY_WORD, "break")) {
+			if (!tokenStream.match(TokenType.SEPARATOR, ";"))
+				throw new GrammarException();
+			return new BreakOp();
+		} else if (tokenStream.match(TokenType.KEY_WORD, "continue")) {
+			if (!tokenStream.match(TokenType.SEPARATOR, ";"))
+				throw new GrammarException();
+			return new ContinueOp();
+		}
+
 		IOp ret = forLoop();
 		if (ret == null)
 			ret = doWhileLoop();
