@@ -1,7 +1,6 @@
 package tts.grammar.scanner;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import tts.eval.*;
 import tts.grammar.tree.*;
@@ -432,7 +431,7 @@ public class GrammarScanner {
 		if (!tokenStream.match(TokenType.SEPARATOR, "("))
 			return func;
 
-		List<IOp> args = new ArrayList<IOp>();
+		ArrayList<IOp> args = new ArrayList<IOp>();
 		while (true) {
 			IOp arg = index();
 			if (arg == null) {
@@ -509,7 +508,7 @@ public class GrammarScanner {
 				IOp v = expression();
 				if (v == null)
 					throw new GrammarException("");
-				if (tokenStream.match(TokenType.SEPARATOR, ")"))
+				if (!tokenStream.match(TokenType.SEPARATOR, ")"))
 					throw new GrammarException("");
 				return v;
 			} else if (t.value.equals("[")) {

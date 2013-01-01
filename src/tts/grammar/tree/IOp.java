@@ -6,4 +6,6 @@ import tts.vm.ScriptVM;
 public interface IOp {
 
 	IValueEval eval(ScriptVM vm);
+
+	IOp optimize();
 }

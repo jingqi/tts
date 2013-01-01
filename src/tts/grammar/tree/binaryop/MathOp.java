@@ -3,6 +3,7 @@ package tts.grammar.tree.binaryop;
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.IOp;
+import tts.grammar.tree.Operand;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
@@ -131,5 +132,20 @@ public class MathOp implements IOp {
 		default:
 			throw new RuntimeException();
 		}
+	}
+
+	@Override
+	public IOp optimize() {
+		left = left.optimize();
+		right = right.optimize();
+
+		// 优化常量
+		if (left instanceof Operand && right instanceof Operand) {
+			if (((Operand) left).isConst() && ((Operand) right).isConst()) {
+				return new Operand(eval(null));
+			}
+		}
+
+		return this;
 	}
 }

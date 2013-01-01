@@ -3,6 +3,7 @@ package tts.grammar.tree.binaryop;
 import tts.eval.BooleanEval;
 import tts.eval.IValueEval;
 import tts.grammar.tree.IOp;
+import tts.grammar.tree.Operand;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
@@ -50,5 +51,20 @@ public class BooleanOp implements IOp {
 		default:
 			throw new IllegalStateException();
 		}
+	}
+
+	@Override
+	public IOp optimize() {
+		left = left.optimize();
+		right = right.optimize();
+
+		// 优化常量运算
+		if (left instanceof Operand && right instanceof Operand) {
+			if (((Operand) left).isConst() && ((Operand) right).isConst()) {
+				return new Operand(eval(null));
+			}
+		}
+
+		return this;
 	}
 }

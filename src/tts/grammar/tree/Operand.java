@@ -16,6 +16,22 @@ public class Operand implements IOp {
 		this.eval = ve;
 	}
 
+	public IValueEval getOperand() {
+		return eval;
+	}
+
+	public boolean isConst() {
+		switch (eval.getType()) {
+		case VOID:
+		case BOOLEAN:
+		case INTEGER:
+		case DOUBLE:
+		case STRING:
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		switch (eval.getType()) {
@@ -34,5 +50,10 @@ public class Operand implements IOp {
 			return ret;
 		}
 		throw new ScriptRuntimeException("wrong type of value");
+	}
+
+	@Override
+	public IOp optimize() {
+		return this;
 	}
 }

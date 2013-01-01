@@ -1,7 +1,5 @@
 package tts.grammar.tree.binaryop;
 
-import javax.script.ScriptException;
-
 import tts.eval.*;
 import tts.grammar.tree.IOp;
 import tts.vm.*;
@@ -12,17 +10,14 @@ import tts.vm.*;
 public class AssignOp implements IOp {
 
 	String varname;
-	IOp eval;
+	IOp value;
 
 	public AssignOp(String name, IOp value) {
 		this.varname = name;
-		this.eval = value;
+		this.value = value;
 	}
 
-	@Override
-	public IValueEval eval(ScriptVM vm) {
-		Variable v = vm.getVariable(varname);
-		IValueEval vv = eval.eval(vm);
+	public static void assign(Variable v, IValueEval vv) {
 		switch (v.getType()) {
 		case BOOLEAN:
 			if (vv.getType() != IValueEval.EvalType.BOOLEAN)
@@ -65,6 +60,20 @@ public class AssignOp implements IOp {
 		default:
 			throw new ScriptRuntimeException();
 		}
+	}
+
+	@Override
+	public IValueEval eval(ScriptVM vm) {
+		Variable v = vm.getVariable(varname);
+		IValueEval vv = value.eval(vm);
+		assign(v, vv);
 		return v.getValue();
+	}
+
+	@Override
+	public IOp optimize() {
+		if (value != null)
+			value = value.optimize();
+		return this;
 	}
 }

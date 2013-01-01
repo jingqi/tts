@@ -60,4 +60,18 @@ public class UnaryOp implements IOp {
 			throw new RuntimeException();
 		}
 	}
+
+	@Override
+	public IOp optimize() {
+		eval = eval.optimize();
+
+		// 优化常量
+		if (eval instanceof Operand) {
+			if (((Operand) eval).isConst()) {
+				return new Operand(eval(null));
+			}
+		}
+
+		return this;
+	}
 }

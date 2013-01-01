@@ -16,7 +16,8 @@ public class DoWhileLoopOp implements IOp {
 	public IValueEval eval(ScriptVM vm) {
 		while (true) {
 			try {
-				body.eval(vm);
+				if (body != null)
+					body.eval(vm);
 			} catch (BreakLoopException e) {
 				break;
 			} catch (ContinueLoopException e) {
@@ -31,5 +32,13 @@ public class DoWhileLoopOp implements IOp {
 				break;
 		}
 		return VoidEval.instance;
+	}
+
+	@Override
+	public IOp optimize() {
+		if (body != null)
+			body = body.optimize();
+		brk_exp = brk_exp.optimize();
+		return this;
 	}
 }

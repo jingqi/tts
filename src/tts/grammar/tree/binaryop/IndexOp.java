@@ -28,4 +28,11 @@ public class IndexOp implements IOp {
 		return ((ArrayEval) b).get((int) ((IntegerEval) i).getValue());
 	}
 
+	@Override
+	public IOp optimize() {
+		body = body.optimize();
+		index = index.optimize();
+		return this;
+	}
+
 }

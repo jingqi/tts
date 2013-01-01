@@ -25,7 +25,8 @@ public class WhileLoop implements IOp {
 				break;
 
 			try {
-				body.eval(vm);
+				if (body != null)
+					body.eval(vm);
 			} catch (BreakLoopException e) {
 				break;
 			} catch (ContinueLoopException e) {
@@ -35,4 +36,25 @@ public class WhileLoop implements IOp {
 		return VoidEval.instance;
 	}
 
+	@Override
+	public IOp optimize() {
+		brk_exp = brk_exp.optimize();
+		if (body != null)
+			body = body.optimize();
+
+		// 优化常量
+		if (brk_exp instanceof Operand) {
+			if (((Operand) brk_exp).isConst()) {
+				IValueEval ve = brk_exp.eval(null);
+				if (ve.getType() != IValueEval.EvalType.BOOLEAN)
+					throw new ScriptRuntimeException("");
+				BooleanEval be = (BooleanEval) ve;
+
+				if (!be.getValue())
+					return null;
+			}
+		}
+
+		return this;
+	}
 }

@@ -1,6 +1,7 @@
 package tts.grammar.tree;
 
 import tts.eval.IValueEval;
+import tts.eval.VoidEval;
 import tts.vm.ScriptVM;
 
 public class FrameScopOp implements IOp {
@@ -14,8 +15,19 @@ public class FrameScopOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		vm.enterFrame();
-		IValueEval ret = op.eval(vm);
+		IValueEval ret = VoidEval.instance;
+		if (op != null)
+			ret = op.eval(vm);
 		vm.leaveFrame();
 		return ret;
+	}
+
+	@Override
+	public IOp optimize() {
+		if (op != null)
+			op = op.optimize();
+		if (op == null)
+			return null;
+		return this;
 	}
 }

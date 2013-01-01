@@ -25,4 +25,24 @@ public class BinSwitchOp implements IOp {
 			return true_value.eval(vm);
 		return false_value.eval(vm);
 	}
+
+	@Override
+	public IOp optimize() {
+		cond = cond.optimize();
+		true_value = true_value.optimize();
+		false_value = false_value.optimize();
+
+		if (cond instanceof Operand) {
+			if (((Operand) cond).isConst()) {
+				IValueEval c = cond.eval(null);
+				if (c.getType() != IValueEval.EvalType.BOOLEAN)
+					throw new ScriptRuntimeException("boolean value needed");
+
+				if (((BooleanEval) c).getValue())
+					return true_value;
+				return false_value;
+			}
+		}
+		return this;
+	}
 }

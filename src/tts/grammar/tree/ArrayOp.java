@@ -1,6 +1,6 @@
 package tts.grammar.tree;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import tts.eval.ArrayEval;
 import tts.eval.IValueEval;
@@ -8,9 +8,9 @@ import tts.vm.ScriptVM;
 
 public class ArrayOp implements IOp {
 
-	List<IOp> elements;
+	ArrayList<IOp> elements;
 
-	public ArrayOp(List<IOp> v) {
+	public ArrayOp(ArrayList<IOp> v) {
 		elements = v;
 	}
 
@@ -21,5 +21,13 @@ public class ArrayOp implements IOp {
 			ret.add(op.eval(vm));
 		}
 		return ret;
+	}
+
+	@Override
+	public IOp optimize() {
+		for (int i = 0, size = elements.size(); i < size; ++i)
+			elements.set(i, elements.get(i).optimize());
+
+		return this;
 	}
 }

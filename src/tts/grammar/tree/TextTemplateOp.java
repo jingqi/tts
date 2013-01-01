@@ -88,4 +88,9 @@ public class TextTemplateOp implements IOp {
 		vm.writeText(sb.toString());
 		return VoidEval.instance;
 	}
+
+	@Override
+	public IOp optimize() {
+		return this;
+	}
 }

@@ -20,10 +20,36 @@ public class IfElseOp implements IOp {
 			throw new ScriptRuntimeException("");
 
 		BooleanEval be = (BooleanEval) ve;
-		if (be.getValue())
-			body.eval(vm);
-		else if (else_body != null)
+		if (be.getValue()) {
+			if (body != null)
+				body.eval(vm);
+		} else if (else_body != null) {
 			else_body.eval(vm);
+		}
 		return VoidEval.instance;
+	}
+
+	@Override
+	public IOp optimize() {
+		cond = cond.optimize();
+		if (body != null)
+			body = body.optimize();
+		if (else_body != null)
+			else_body = else_body.optimize();
+
+		// 优化常量
+		if (cond instanceof Operand) {
+			if (((Operand) cond).isConst()) {
+				IValueEval ve = cond.eval(null);
+				if (ve.getType() != IValueEval.EvalType.BOOLEAN)
+					throw new ScriptRuntimeException();
+
+				BooleanEval be = (BooleanEval) ve;
+				if (be.getValue())
+					return body;
+				return else_body;
+			}
+		}
+		return this;
 	}
 }

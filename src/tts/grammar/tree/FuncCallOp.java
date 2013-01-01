@@ -1,7 +1,6 @@
 package tts.grammar.tree;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import tts.eval.FunctionEval;
 import tts.eval.IValueEval;
@@ -11,9 +10,9 @@ import tts.vm.ScriptVM;
 public class FuncCallOp implements IOp {
 
 	IOp func;
-	List<IOp> args;
+	ArrayList<IOp> args;
 
-	public FuncCallOp(IOp body, List<IOp> args) {
+	public FuncCallOp(IOp body, ArrayList<IOp> args) {
 		this.func = body;
 		this.args = args;
 	}
@@ -29,5 +28,13 @@ public class FuncCallOp implements IOp {
 			as.add(args.get(i).eval(vm));
 
 		return ((FunctionEval) b).call(as);
+	}
+
+	@Override
+	public IOp optimize() {
+		func = func.optimize();
+		for (int i = 0, size = args.size(); i < size; ++i)
+			args.set(i, args.get(i).optimize());
+		return this;
 	}
 }

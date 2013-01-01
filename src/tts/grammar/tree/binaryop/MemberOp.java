@@ -25,4 +25,10 @@ public class MemberOp implements IOp {
 
 		return ((ObjectEval) b).member(member);
 	}
+
+	@Override
+	public IOp optimize() {
+		body = body.optimize();
+		return this;
+	}
 }

@@ -31,7 +31,8 @@ public class ForLoopOp implements IOp {
 			}
 
 			try {
-				body.eval(vm);
+				if (body != null)
+					body.eval(vm);
 			} catch (BreakLoopException e) {
 				break;
 			} catch (ContinueLoopException e) {
@@ -44,5 +45,18 @@ public class ForLoopOp implements IOp {
 		vm.leaveFrame();
 
 		return VoidEval.instance;
+	}
+
+	@Override
+	public IOp optimize() {
+		if (init_exp != null)
+			init_exp = init_exp.optimize();
+		if (break_exp != null)
+			break_exp = break_exp.optimize();
+		if (fin_exp != null)
+			fin_exp = fin_exp.optimize();
+		if (body != null)
+			body = body.optimize();
+		return this;
 	}
 }

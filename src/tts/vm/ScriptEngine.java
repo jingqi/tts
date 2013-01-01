@@ -25,7 +25,14 @@ public class ScriptEngine {
 	}
 
 	public void run() {
+		// 词法分析，语法分析，构建语法树
 		IOp op = gs.all();
-		op.eval(vm);
+
+		// 优化语法树
+		op = op.optimize();
+
+		// 求值
+		if (op != null)
+			op.eval(vm);
 	}
 }
