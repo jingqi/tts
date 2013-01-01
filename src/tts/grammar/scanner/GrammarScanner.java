@@ -595,6 +595,8 @@ public class GrammarScanner {
 			throw new GrammarException("");
 
 		IOp init_exp = expression();
+		if (init_exp == null)
+			init_exp = defination();
 		if (!tokenStream.match(TokenType.SEPARATOR, ";"))
 			throw new GrammarException("");
 
