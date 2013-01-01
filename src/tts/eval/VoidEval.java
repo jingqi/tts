@@ -13,7 +13,7 @@ public class VoidEval implements IValueEval {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.VOID;
+	public EvalType getType() {
+		return EvalType.VOID;
 	}
 }

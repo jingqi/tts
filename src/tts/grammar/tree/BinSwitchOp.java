@@ -18,7 +18,7 @@ public class BinSwitchOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval c = cond.eval(vm);
-		if (c.getType() != IValueEval.Type.BOOLEAN)
+		if (c.getType() != IValueEval.EvalType.BOOLEAN)
 			throw new ScriptRuntimeException("boolean value needed");
 
 		if (((BooleanEval) c).getValue())

@@ -1,6 +1,5 @@
 package tts.vm;
 
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import tts.grammar.scanner.GrammarScanner;
@@ -12,7 +11,7 @@ import tts.util.PrintStreamWriter;
 
 public class ScriptEngine {
 
-	ScriptVM vm = new ScriptVM(new OutputStreamWriter(System.err));
+	ScriptVM vm = new ScriptVM(new PrintStreamWriter(System.out));
 	GrammarScanner gs = null;
 
 	public void setScriptInput(IScanReader r) {
@@ -26,9 +25,7 @@ public class ScriptEngine {
 	}
 
 	public void run() {
-		vm.setTextOutput(new PrintStreamWriter(System.out));
 		IOp op = gs.all();
 		op.eval(vm);
-		System.out.flush();
 	}
 }

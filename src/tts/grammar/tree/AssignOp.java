@@ -1,5 +1,7 @@
 package tts.grammar.tree;
 
+import javax.script.ScriptException;
+
 import tts.eval.*;
 import tts.vm.*;
 
@@ -22,31 +24,38 @@ public class AssignOp implements IOp {
 		IValueEval vv = eval.eval(vm);
 		switch (v.getType()) {
 		case BOOLEAN:
-			if (vv.getType() != IValueEval.Type.BOOLEAN)
+			if (vv.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException();
 			v.setValue(vv);
 			break;
 
 		case DOUBLE:
-			if (vv.getType() == IValueEval.Type.DOUBLE)
+			if (vv.getType() == IValueEval.EvalType.DOUBLE)
 				v.setValue(vv);
-			else if (vv.getType() == IValueEval.Type.INTEGER)
+			else if (vv.getType() == IValueEval.EvalType.INTEGER)
 				v.setValue(new DoubleEval(((IntegerEval) vv).getValue()));
 			else
 				throw new ScriptRuntimeException();
 			break;
 
 		case INTEGER:
-			if (vv.getType() == IValueEval.Type.INTEGER)
+			if (vv.getType() == IValueEval.EvalType.INTEGER)
 				v.setValue(vv);
-			else if (vv.getType() == IValueEval.Type.DOUBLE)
+			else if (vv.getType() == IValueEval.EvalType.DOUBLE)
 				v.setValue(new IntegerEval((long) ((DoubleEval) vv).getValue()));
 			else
 				throw new ScriptRuntimeException();
 			break;
 
 		case STRING:
-			if (vv.getType() == IValueEval.Type.STRING)
+			if (vv.getType() == IValueEval.EvalType.STRING)
+				v.setValue(vv);
+			else
+				throw new ScriptRuntimeException();
+			break;
+
+		case ARRAY:
+			if (vv.getType() == IValueEval.EvalType.ARRAY)
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException();

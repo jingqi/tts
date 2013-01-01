@@ -23,13 +23,13 @@ public class CompareOp implements IOp {
 	static boolean eq(IValueEval l, IValueEval r) {
 		switch (l.getType()) {
 		case STRING:
-			if (r.getType() != IValueEval.Type.STRING)
+			if (r.getType() != IValueEval.EvalType.STRING)
 				throw new ScriptRuntimeException();
 			return ((StringEval) l).getValue().equals(
 					((StringEval) r).getValue());
 
 		case BOOLEAN:
-			if (r.getType() != IValueEval.Type.BOOLEAN)
+			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException("");
 			return l == r;
 
@@ -69,7 +69,7 @@ public class CompareOp implements IOp {
 	static boolean less(IValueEval l, IValueEval r) {
 		switch (l.getType()) {
 		case STRING:
-			if (r.getType() != IValueEval.Type.STRING)
+			if (r.getType() != IValueEval.EvalType.STRING)
 				throw new ScriptRuntimeException();
 			return ((StringEval) l).getValue().compareTo(
 					((StringEval) r).getValue()) < 0;

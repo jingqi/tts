@@ -24,7 +24,7 @@ public class DoWhileLoopOp implements IOp {
 			}
 
 			IValueEval ve = brk_exp.eval(vm);
-			if (ve.getType() != IValueEval.Type.BOOLEAN)
+			if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException("");
 			BooleanEval be = (BooleanEval) ve;
 			if (!be.getValue())

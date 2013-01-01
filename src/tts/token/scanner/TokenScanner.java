@@ -50,7 +50,7 @@ public class TokenScanner {
 	static {
 		String[] keywords = { "if", "else", "for", "do", "while", "break",
 				"continue", "char", "int", "double", "string", "return",
-				"switch", "case", "void" };
+				"switch", "case", "void", "array" };
 		for (int i = 0, len = keywords.length; i < len; ++i)
 			KEY_WORDS.add(keywords[i]);
 	}
@@ -65,7 +65,7 @@ public class TokenScanner {
 			"^=", "|=", ">>", "<<", "&&", "||",
 			// 1 个字符
 			"{", "}", ">", "<", "=", "+", "-", "*", "%", "!", "~", "^", "&",
-			"|", "(", ")", ";", ";", ".", ":", };
+			"|", "(", ")", ";", ";", ".", ":", "[", "]", "," };
 
 	public TokenScanner(IScanReader reader) {
 		this.reader = reader;

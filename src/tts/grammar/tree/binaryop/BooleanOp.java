@@ -24,7 +24,7 @@ public class BooleanOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval _l = left.eval(vm);
-		if (_l.getType() != IValueEval.Type.BOOLEAN)
+		if (_l.getType() != IValueEval.EvalType.BOOLEAN)
 			throw new ScriptRuntimeException();
 		BooleanEval l = (BooleanEval) _l;
 
@@ -33,7 +33,7 @@ public class BooleanOp implements IOp {
 			if (!l.getValue())
 				return BooleanEval.FALSE;
 			IValueEval r = right.eval(vm);
-			if (r.getType() != IValueEval.Type.BOOLEAN)
+			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException();
 			return r;
 		}
@@ -42,7 +42,7 @@ public class BooleanOp implements IOp {
 			if (l.getValue())
 				return BooleanEval.TRUE;
 			IValueEval r = right.eval(vm);
-			if (r.getType() != IValueEval.Type.BOOLEAN)
+			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException();
 			return r;
 		}

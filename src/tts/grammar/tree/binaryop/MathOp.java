@@ -1,7 +1,7 @@
 package tts.grammar.tree.binaryop;
 
 import tts.eval.*;
-import tts.eval.IValueEval.Type;
+import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.IOp;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
@@ -24,12 +24,12 @@ public class MathOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval l = left.eval(vm), r = right.eval(vm);
-		if (op == OpType.ADD && l.getType() == Type.STRING
-				&& r.getType() == Type.STRING) {
+		if (op == OpType.ADD && l.getType() == EvalType.STRING
+				&& r.getType() == EvalType.STRING) {
 			return new StringEval(((StringEval) l).getValue()
 					+ ((StringEval) r).getValue());
-		} else if (op == OpType.MULTIPLY && l.getType() == Type.STRING
-				&& r.getType() == Type.INTEGER) {
+		} else if (op == OpType.MULTIPLY && l.getType() == EvalType.STRING
+				&& r.getType() == EvalType.INTEGER) {
 			String s = ((StringEval) l).getValue();
 			long v = ((IntegerEval) r).getValue();
 			StringBuilder sb = new StringBuilder((int) (s.length() * v));
@@ -109,7 +109,7 @@ public class MathOp implements IOp {
 			return new DoubleEval(rsd);
 
 		case INTEGER:
-			if (r.getType() == Type.INTEGER)
+			if (r.getType() == EvalType.INTEGER)
 				return new IntegerEval(rsl);
 			return new DoubleEval(rsd);
 

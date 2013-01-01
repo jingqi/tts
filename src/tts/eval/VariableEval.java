@@ -19,7 +19,7 @@ public class VariableEval implements IValueEval {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.VARIABLE;
+	public EvalType getType() {
+		return EvalType.VARIABLE;
 	}
 }

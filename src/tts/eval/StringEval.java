@@ -18,7 +18,7 @@ public class StringEval implements IValueEval {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.STRING;
+	public EvalType getType() {
+		return EvalType.STRING;
 	}
 }

@@ -18,7 +18,7 @@ public class DoubleEval implements IValueEval {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.DOUBLE;
+	public EvalType getType() {
+		return EvalType.DOUBLE;
 	}
 }

@@ -1,5 +1,7 @@
 package tts.grammar.scanner;
 
+import java.util.ArrayList;
+
 import tts.eval.*;
 import tts.grammar.tree.*;
 import tts.grammar.tree.UnaryOp.OpType;
@@ -417,7 +419,7 @@ public class GrammarScanner {
 		return new UnaryOp(op, v);
 	}
 
-	// atom = variable | constant | function | ('(' expression ')');
+	// atom = variable | constant | function | ('(' expression ')') | array;
 	private IOp atom() {
 		if (tokenStream.eof())
 			return null;
@@ -449,12 +451,37 @@ public class GrammarScanner {
 				if (tokenStream.match(TokenType.SEPARATOR, ")"))
 					throw new GrammarException("");
 				return v;
+			} else if (t.value.equals("[")) {
+				tokenStream.putBack();
+				IOp v = array();
+				return v;
 			}
 
 		default:
 			tokenStream.putBack();
 			return null;
 		}
+	}
+
+	// array = '[' ((expression ',')* expression ','?)? ']';
+	private ArrayOp array() {
+		if (!tokenStream.match(TokenType.SEPARATOR, "["))
+			return null;
+
+		ArrayList<IOp> l = new ArrayList<IOp>();
+		while (true) {
+			IOp v = expression();
+			if (v == null)
+				break;
+
+			l.add(v);
+			if (!tokenStream.match(TokenType.SEPARATOR, ","))
+				break;
+		}
+		if (!tokenStream.match(TokenType.SEPARATOR, "]"))
+			throw new GrammarException();
+
+		return new ArrayOp(l);
 	}
 
 	// defination = type variable ('=' rvalue)? (',' varialbe ('=' rvalue)?)*;
@@ -471,6 +498,8 @@ public class GrammarScanner {
 			vt = VarType.DOUBLE;
 		} else if (t.value.equals("string")) {
 			vt = VarType.STRING;
+		} else if (t.value.equals("array")) {
+			vt = VarType.ARRAY;
 		} else {
 			tokenStream.putBack();
 			return null;

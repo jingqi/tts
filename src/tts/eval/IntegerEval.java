@@ -18,7 +18,7 @@ public class IntegerEval implements IValueEval {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.INTEGER;
+	public EvalType getType() {
+		return EvalType.INTEGER;
 	}
 }

@@ -1,7 +1,7 @@
 package tts.grammar.tree;
 
 import tts.eval.*;
-import tts.eval.IValueEval.Type;
+import tts.eval.IValueEval.EvalType;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
@@ -28,8 +28,8 @@ public class UnaryOp implements IOp {
 		IValueEval ve = eval.eval(vm);
 		switch (op) {
 		case POSITIVE:
-			if (ve.getType() != IValueEval.Type.DOUBLE
-					&& ve.getType() != IValueEval.Type.INTEGER)
+			if (ve.getType() != IValueEval.EvalType.DOUBLE
+					&& ve.getType() != IValueEval.EvalType.INTEGER)
 				throw new ScriptRuntimeException();
 			return ve;
 
@@ -46,12 +46,12 @@ public class UnaryOp implements IOp {
 			}
 
 		case NOT:
-			if (ve.getType() != IValueEval.Type.BOOLEAN)
+			if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException();
 			return BooleanEval.valueOf(!((BooleanEval) ve).getValue());
 
 		case BIT_NOT:
-			if (ve.getType() == Type.INTEGER)
+			if (ve.getType() == EvalType.INTEGER)
 				return new IntegerEval(~((IntegerEval) ve).getValue());
 			else
 				throw new ScriptRuntimeException();

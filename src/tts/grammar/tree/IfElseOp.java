@@ -16,7 +16,7 @@ public class IfElseOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval ve = cond.eval(vm);
-		if (ve.getType() != IValueEval.Type.BOOLEAN)
+		if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 			throw new ScriptRuntimeException("");
 
 		BooleanEval be = (BooleanEval) ve;

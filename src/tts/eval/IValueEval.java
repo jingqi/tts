@@ -2,9 +2,9 @@ package tts.eval;
 
 public interface IValueEval {
 
-	public enum Type {
-		VOID, BOOLEAN, INTEGER, DOUBLE, STRING, VARIABLE,
+	public enum EvalType {
+		VOID, BOOLEAN, INTEGER, DOUBLE, STRING, VARIABLE, ARRAY,
 	}
 
-	Type getType();
+	EvalType getType();
 }

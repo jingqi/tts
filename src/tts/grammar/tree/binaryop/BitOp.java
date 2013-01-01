@@ -24,8 +24,8 @@ public class BitOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval l = left.eval(vm), r = right.eval(vm);
-		if (l.getType() != IValueEval.Type.INTEGER
-				|| r.getType() != IValueEval.Type.INTEGER)
+		if (l.getType() != IValueEval.EvalType.INTEGER
+				|| r.getType() != IValueEval.EvalType.INTEGER)
 			throw new ScriptRuntimeException();
 
 		long ll = ((IntegerEval) l).getValue();

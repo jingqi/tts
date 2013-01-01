@@ -27,7 +27,7 @@ public class BooleanEval implements IValueEval {
 	}
 
 	@Override
-	public Type getType() {
-		return Type.BOOLEAN;
+	public EvalType getType() {
+		return EvalType.BOOLEAN;
 	}
 }
