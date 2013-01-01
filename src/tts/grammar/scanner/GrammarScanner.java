@@ -146,7 +146,34 @@ public class GrammarScanner {
 		if (tok == null)
 			return null;
 
-		if (!tokenStream.match(TokenType.SEPARATOR, "=")) {
+		Object op = null;
+		if (tokenStream.match(TokenType.SEPARATOR, "=")) {
+			op = null;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "+=")) {
+			op = MathOp.OpType.ADD;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "-=")) {
+			op = MathOp.OpType.SUB;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "*=")) {
+			op = MathOp.OpType.MULTIPLY;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "/=")) {
+			op = MathOp.OpType.DIVID;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "%=")) {
+			op = MathOp.OpType.MOD;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "&=")) {
+			op = BitOp.OpType.BIT_AND;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "|=")) {
+			op = BitOp.OpType.BIT_OR;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "^=")) {
+			op = BitOp.OpType.BIT_XOR;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "<<=")) {
+			op = BitOp.OpType.SHIFT_LEFT;
+		} else if (tokenStream.match(TokenType.SEPARATOR, ">>=")) {
+			op = BitOp.OpType.SHIFT_RIGHT;
+		} else if (tokenStream.match(TokenType.SEPARATOR, "<<<=")) {
+			op = BitOp.OpType.CIRCLE_SHIFT_LEFT;
+		} else if (tokenStream.match(TokenType.SEPARATOR, ">>>=")) {
+			op = BitOp.OpType.CIRCLE_SHIFT_RIGHT;
+		} else {
 			tokenStream.putBack();
 			return null;
 		}
@@ -158,7 +185,20 @@ public class GrammarScanner {
 			return null;
 		}
 
-		return new AssignOp((String) tok.value, v);
+		String name = (String) tok.value;
+		if (op == null) {
+			return new AssignOp((String) tok.value, v);
+		} else if (op instanceof MathOp.OpType) {
+			MathOp.OpType mop = (MathOp.OpType) op;
+			return new AssignOp(name, new MathOp(new Operand(new VariableEval(
+					name)), mop, v));
+		} else if (op instanceof BitOp.OpType) {
+			BitOp.OpType bop = (BitOp.OpType) op;
+			return new AssignOp(name, new BitOp(new Operand(new VariableEval(
+					name)), bop, v));
+		} else {
+			throw new RuntimeException();
+		}
 	}
 
 	// rvalue = bin_switch | booleanOr;
