@@ -3,13 +3,17 @@ package tts.grammar.tree;
 import tts.eval.*;
 import tts.vm.*;
 
-public class WhileLoop implements IOp {
+public final class WhileLoop implements IOp {
 
+	String file;
+	int line;
 	IOp brk_exp, body;
 
-	public WhileLoop(IOp brk, IOp body) {
+	public WhileLoop(IOp brk, IOp body, String file, int line) {
 		this.brk_exp = brk;
 		this.body = body;
+		this.file = file;
+		this.line = line;
 	}
 
 	@Override
@@ -19,7 +23,8 @@ public class WhileLoop implements IOp {
 
 			IValueEval ve = brk_exp.eval(vm);
 			if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-				throw new ScriptRuntimeException("");
+				throw new ScriptRuntimeException("boolean value needed",
+						brk_exp);
 			BooleanEval be = (BooleanEval) ve;
 			if (!be.getValue())
 				break;
@@ -47,7 +52,8 @@ public class WhileLoop implements IOp {
 			if (((Operand) brk_exp).isConst()) {
 				IValueEval ve = brk_exp.eval(null);
 				if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-					throw new ScriptRuntimeException("");
+					throw new ScriptRuntimeException("boolean value needed",
+							brk_exp);
 				BooleanEval be = (BooleanEval) ve;
 
 				if (!be.getValue())
@@ -64,5 +70,15 @@ public class WhileLoop implements IOp {
 		sb.append("while(").append(brk_exp).append(")\n").append(body);
 		sb.append("\n");
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

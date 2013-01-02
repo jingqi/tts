@@ -4,11 +4,19 @@ import tts.eval.IValueEval;
 import tts.vm.ContinueLoopException;
 import tts.vm.ScriptVM;
 
-public class ContinueOp implements IOp {
+public final class ContinueOp implements IOp {
+
+	String file;
+	int line;
+
+	public ContinueOp(String file, int line) {
+		this.file = file;
+		this.line = line;
+	}
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
-		throw new ContinueLoopException();
+		throw new ContinueLoopException(file, line);
 	}
 
 	@Override
@@ -19,5 +27,15 @@ public class ContinueOp implements IOp {
 	@Override
 	public String toString() {
 		return "continue;";
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

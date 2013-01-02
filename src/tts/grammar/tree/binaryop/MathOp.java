@@ -7,7 +7,7 @@ import tts.grammar.tree.Operand;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
-public class MathOp implements IOp {
+public final class MathOp implements IOp {
 
 	public enum OpType {
 		ADD("+"), SUB("-"), MULTIPLY("*"), DIVID("/"), MOD("%");
@@ -74,7 +74,8 @@ public class MathOp implements IOp {
 			break;
 
 		default:
-			throw new ScriptRuntimeException();
+			throw new ScriptRuntimeException("type mismatch in math operation",
+					this);
 		}
 
 		double rd = 0;
@@ -91,7 +92,8 @@ public class MathOp implements IOp {
 			break;
 
 		default:
-			throw new ScriptRuntimeException();
+			throw new ScriptRuntimeException("type mismatch in math operation",
+					this);
 		}
 
 		double rsd = 0;
@@ -148,7 +150,7 @@ public class MathOp implements IOp {
 		// 优化常量
 		if (left instanceof Operand && right instanceof Operand) {
 			if (((Operand) left).isConst() && ((Operand) right).isConst()) {
-				return new Operand(eval(null));
+				return new Operand(eval(null), getFile(), getLine());
 			}
 		}
 
@@ -160,5 +162,15 @@ public class MathOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(left).append(" ").append(op.op).append(" ").append(right);
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return left.getFile();
+	}
+
+	@Override
+	public int getLine() {
+		return left.getLine();
 	}
 }

@@ -6,7 +6,7 @@ import tts.grammar.tree.IOp;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
-public class IndexOp implements IOp {
+public final class IndexOp implements IOp {
 
 	IOp body, index;
 
@@ -21,16 +21,16 @@ public class IndexOp implements IOp {
 		if (b.getType() == EvalType.ARRAY) {
 			IValueEval i = index.eval(vm);
 			if (i.getType() != EvalType.INTEGER)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("integer needed", index);
 			return ((ArrayEval) b).get((int) ((IntegerEval) i).getValue());
 		} else if (b.getType() == EvalType.STRING) {
 			IValueEval i = index.eval(vm);
 			if (i.getType() != EvalType.INTEGER)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("integer needed", index);
 			return ((StringEval) b).charAt((int) ((IntegerEval) i).getValue());
 		}
 
-		throw new ScriptRuntimeException();
+		throw new ScriptRuntimeException("value can not be indexed", body);
 	}
 
 	@Override
@@ -45,5 +45,15 @@ public class IndexOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(body).append("[").append(index).append("]");
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return body.getFile();
+	}
+
+	@Override
+	public int getLine() {
+		return body.getLine();
 	}
 }

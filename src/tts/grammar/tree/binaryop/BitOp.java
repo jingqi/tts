@@ -7,7 +7,7 @@ import tts.grammar.tree.Operand;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
-public class BitOp implements IOp {
+public final class BitOp implements IOp {
 
 	public enum OpType {
 		BIT_AND("&"), BIT_OR("|"), BIT_XOR("^"), SHIFT_LEFT("<<"), SHIFT_RIGHT(
@@ -34,7 +34,8 @@ public class BitOp implements IOp {
 		IValueEval l = left.eval(vm), r = right.eval(vm);
 		if (l.getType() != IValueEval.EvalType.INTEGER
 				|| r.getType() != IValueEval.EvalType.INTEGER)
-			throw new ScriptRuntimeException();
+			throw new ScriptRuntimeException("type not match in bit operation",
+					this);
 
 		long ll = ((IntegerEval) l).getValue();
 		long rr = ((IntegerEval) r).getValue();
@@ -62,7 +63,7 @@ public class BitOp implements IOp {
 			return new IntegerEval(ll >>> rr);
 
 		default:
-			throw new ScriptRuntimeException();
+			throw new RuntimeException();
 		}
 	}
 
@@ -74,7 +75,7 @@ public class BitOp implements IOp {
 		// 优化常量运算
 		if (left instanceof Operand && right instanceof Operand) {
 			if (((Operand) left).isConst() && ((Operand) right).isConst()) {
-				return new Operand(eval(null));
+				return new Operand(eval(null), getFile(), getLine());
 			}
 		}
 
@@ -86,5 +87,15 @@ public class BitOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(left).append(" ").append(op.op).append(" ").append(right);
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return left.getFile();
+	}
+
+	@Override
+	public int getLine() {
+		return left.getLine();
 	}
 }

@@ -51,7 +51,8 @@ public class ArrayEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument");
+				throw new ScriptRuntimeException("need 0 argument",
+						NATIVE_FILE, NATIVE_LINE);
 
 			return new IntegerEval(size());
 		}
@@ -62,9 +63,11 @@ public class ArrayEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument");
+				throw new ScriptRuntimeException("need 1 argument",
+						NATIVE_FILE, NATIVE_LINE);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("need integer", NATIVE_FILE,
+						NATIVE_LINE);
 
 			long i = ((IntegerEval) args.get(0)).getValue();
 			return get((int) i);
@@ -86,7 +89,8 @@ public class ArrayEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument");
+				throw new ScriptRuntimeException("need 1 argument",
+						NATIVE_FILE, NATIVE_LINE);
 
 			IValueEval ve = args.get(0);
 			return BooleanEval.valueOf(values.contains(ve));
@@ -98,9 +102,11 @@ public class ArrayEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument");
+				throw new ScriptRuntimeException("need 1 argument",
+						NATIVE_FILE, NATIVE_LINE);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("integer needed", NATIVE_FILE,
+						NATIVE_LINE);
 
 			int i = (int) ((IntegerEval) args.get(0)).getValue();
 			values.remove(i);
@@ -113,9 +119,11 @@ public class ArrayEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 2)
-				throw new ScriptRuntimeException("need 2 argument");
+				throw new ScriptRuntimeException("need 2 argument",
+						NATIVE_FILE, NATIVE_LINE);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("integer needed", NATIVE_FILE,
+						NATIVE_LINE);
 
 			long i = ((IntegerEval) args.get(0)).getValue();
 			return values.set((int) i, args.get(1));
@@ -127,7 +135,8 @@ public class ArrayEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument");
+				throw new ScriptRuntimeException("need 0 argument",
+						NATIVE_FILE, NATIVE_LINE);
 			values.clear();
 			return VoidEval.instance;
 		}
@@ -149,7 +158,8 @@ public class ArrayEval extends ObjectEval {
 			return new FuncSet();
 		else if (name.equals("clear"))
 			return new FuncClear();
-		throw new ScriptRuntimeException("array no such member: " + name);
+		throw new ScriptRuntimeException("array no such member: " + name,
+				FunctionEval.NATIVE_FILE, FunctionEval.NATIVE_LINE);
 	}
 
 	@Override

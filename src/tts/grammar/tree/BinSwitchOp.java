@@ -5,21 +5,25 @@ import tts.eval.IValueEval;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
-public class BinSwitchOp implements IOp {
+public final class BinSwitchOp implements IOp {
 
+	String file;
+	int line;
 	IOp cond, true_value, false_value;
 
 	public BinSwitchOp(IOp c, IOp t, IOp f) {
 		this.cond = c;
 		this.true_value = t;
 		this.false_value = f;
+		this.file = c.getFile();
+		this.line = c.getLine();
 	}
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval c = cond.eval(vm);
 		if (c.getType() != IValueEval.EvalType.BOOLEAN)
-			throw new ScriptRuntimeException("boolean value needed");
+			throw new ScriptRuntimeException("boolean value needed", cond);
 
 		if (((BooleanEval) c).getValue())
 			return true_value.eval(vm);
@@ -36,7 +40,8 @@ public class BinSwitchOp implements IOp {
 			if (((Operand) cond).isConst()) {
 				IValueEval c = cond.eval(null);
 				if (c.getType() != IValueEval.EvalType.BOOLEAN)
-					throw new ScriptRuntimeException("boolean value needed");
+					throw new ScriptRuntimeException("boolean value needed",
+							cond);
 
 				if (((BooleanEval) c).getValue())
 					return true_value;
@@ -52,5 +57,15 @@ public class BinSwitchOp implements IOp {
 		sb.append(cond).append(" ? ").append(true_value).append(" : ")
 				.append(false_value);
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

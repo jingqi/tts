@@ -3,12 +3,16 @@ package tts.grammar.tree;
 import tts.eval.*;
 import tts.vm.*;
 
-public class TextTemplateOp implements IOp {
+public final class TextTemplateOp implements IOp {
 
+	String file;
+	int line;
 	String template;
 
-	public TextTemplateOp(String t) {
+	public TextTemplateOp(String t, String file, int line) {
 		template = t;
+		this.file = file;
+		this.line = line;
 	}
 
 	public static String resolveValue(IValueEval ve) {
@@ -76,7 +80,7 @@ public class TextTemplateOp implements IOp {
 				Variable v = vm.getVariable(name.toString());
 				if (v == null || v.getValue() == null)
 					throw new ScriptRuntimeException("variable " + name
-							+ " not found");
+							+ " not found", this);
 				sb.append(resolveValue(v.getValue()));
 				state = 0;
 				name.setLength(0);
@@ -84,7 +88,8 @@ public class TextTemplateOp implements IOp {
 			}
 		}
 		if (state != 0)
-			throw new ScriptRuntimeException("");
+			throw new ScriptRuntimeException("text template has wrong format",
+					this);
 
 		vm.writeText(sb.toString());
 		return VoidEval.instance;
@@ -98,5 +103,15 @@ public class TextTemplateOp implements IOp {
 	@Override
 	public String toString() {
 		return template;
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

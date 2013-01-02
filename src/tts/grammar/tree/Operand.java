@@ -8,12 +8,16 @@ import tts.vm.ScriptVM;
 /**
  * 操作数
  */
-public class Operand implements IOp {
+public final class Operand implements IOp {
 
+	String file;
+	int line;
 	IValueEval eval;
 
-	public Operand(IValueEval ve) {
+	public Operand(IValueEval ve, String file, int line) {
 		this.eval = ve;
+		this.file = file;
+		this.line = line;
 	}
 
 	public IValueEval getOperand() {
@@ -46,10 +50,11 @@ public class Operand implements IOp {
 			VariableEval ve = (VariableEval) eval;
 			IValueEval ret = vm.getVariable(ve.getName()).getValue();
 			if (ret == null)
-				throw new ScriptRuntimeException("variable not initialized");
+				throw new ScriptRuntimeException("variable not initialized",
+						this);
 			return ret;
 		}
-		throw new ScriptRuntimeException("wrong type of value");
+		throw new ScriptRuntimeException("wrong type of value", this);
 	}
 
 	@Override
@@ -60,5 +65,15 @@ public class Operand implements IOp {
 	@Override
 	public String toString() {
 		return eval.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

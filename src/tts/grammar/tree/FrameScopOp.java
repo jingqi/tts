@@ -4,12 +4,16 @@ import tts.eval.IValueEval;
 import tts.eval.VoidEval;
 import tts.vm.ScriptVM;
 
-public class FrameScopOp implements IOp {
+public final class FrameScopOp implements IOp {
 
+	String file;
+	int line;
 	IOp op;
 
 	public FrameScopOp(IOp op) {
 		this.op = op;
+		this.file = op.getFile();
+		this.line = op.getLine();
 	}
 
 	@Override
@@ -36,5 +40,15 @@ public class FrameScopOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n").append(op).append("\n}\n");
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

@@ -3,11 +3,13 @@ package tts.vm;
 import java.io.*;
 import java.util.*;
 
+import tts.eval.FunctionEval;
+import tts.eval.IValueEval;
+import tts.grammar.scanner.GrammarException;
 import tts.grammar.scanner.GrammarScanner;
 import tts.grammar.tree.IOp;
 import tts.grammar.tree.OpList;
-import tts.token.scanner.TokenScanner;
-import tts.token.scanner.TokenStream;
+import tts.token.scanner.*;
 import tts.token.stream.CharArrayScanReader;
 import tts.token.stream.IScanReader;
 import tts.util.PrintStreamWriter;
@@ -18,28 +20,43 @@ import tts.util.PrintStreamWriter;
 public class ScriptVM {
 
 	// 文本输出
-	Writer textOutput;
+	private Writer textOutput;
 
 	// 全局变量
-	Map<String, Variable> globalVars = new HashMap<String, Variable>();
+	private final Map<String, Variable> globalVars = new HashMap<String, Variable>();
 
 	// 帧
-	static class Frame {
+	private static class Frame {
 		Map<String, Variable> localValues = new HashMap<String, Variable>();
 	}
 
 	// 帧栈
-	List<Frame> frames = new ArrayList<Frame>();
-
-	// 当前路径
-	File currentPath;
+	private final List<Frame> frames = new ArrayList<Frame>();
 
 	// 当前脚本路径
-	File currentScriptPath;
-	Stack<File> scriptPathStack = new Stack<File>();
+	private File currentScriptPath;
+	private final Stack<File> scriptPathStack = new Stack<File>();
 
 	// 已经加载的脚本文件
-	Map<String, IOp> loadedFiles = new HashMap<String, IOp>();
+	private final Map<String, IOp> loadedFiles = new HashMap<String, IOp>();
+
+	// 调用栈
+	private static class CallFrame {
+		String file;
+		int line;
+		String module;
+
+		public CallFrame(String file, int line, String module) {
+			this.file = file;
+			this.line = line;
+			this.module = module;
+		}
+	}
+
+	private final Stack<CallFrame> callFrames = new Stack<CallFrame>();
+
+	// 当前模块
+	private String currentModule;
 
 	public ScriptVM() {
 		this(new PrintStreamWriter(System.out));
@@ -112,6 +129,18 @@ public class ScriptVM {
 		currentScriptPath = scriptPathStack.pop();
 	}
 
+	// 调用栈压栈
+	public void pushCallFrame(String file, int line, String nextModule) {
+		callFrames.push(new CallFrame(file, line, currentModule));
+		currentModule = nextModule;
+	}
+
+	// 调用栈弹出
+	public void popCallFrame() {
+		CallFrame cf = callFrames.pop();
+		currentModule = cf.module;
+	}
+
 	// 当前脚本路径
 	public File getCurrentScriptPath() {
 		return currentScriptPath;
@@ -127,7 +156,8 @@ public class ScriptVM {
 		// 读取文件内容
 		if (!dst.exists())
 			throw new ScriptRuntimeException("file not exists: "
-					+ dst.getName());
+					+ dst.getName(), FunctionEval.NATIVE_FILE,
+					FunctionEval.NATIVE_LINE);
 		FileReader fr = new FileReader(dst);
 		CharArrayScanReader ss = new CharArrayScanReader();
 		char[] buf = new char[4096];
@@ -149,34 +179,107 @@ public class ScriptVM {
 		// 优化语法树
 		ret = ret.optimize();
 		if (ret == null)
-			ret = new OpList(); // 空操作
+			ret = new OpList("<native>", -1); // 空操作
 		loadedFiles.put(dst.getAbsolutePath(), ret);
 		return ret;
 	}
 
+	// 退出程序
+	private static class FuncExit extends FunctionEval {
+
+		@Override
+		public IValueEval call(List<IValueEval> args) {
+			throw new ExitException();
+		}
+	}
+
+	// 初始化执行环境
+	private void initExecEnv() {
+		globalVars.clear();
+		frames.clear();
+		currentScriptPath = null;
+		scriptPathStack.clear();
+		loadedFiles.clear();
+		callFrames.clear();
+		currentModule = "<module>";
+
+		// 默认全局变量
+		addVariable("exit", new Variable("exit", VarType.FUNCTION,
+				new FuncExit()));
+	}
+
+	// 调用栈
+	private String callingStack() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = callFrames.size() - 1; i >= 0; --i) {
+			CallFrame cf = callFrames.get(i);
+			sb.append("\t").append("at ").append(cf.module).append("(")
+					.append(cf.file).append(":").append(cf.line).append(")\n");
+		}
+		return sb.toString();
+	}
+
 	// 脚本入口
 	public void run(File script) {
+		initExecEnv();
 		currentScriptPath = script;
-		scriptPathStack.clear();
-		IOp op;
+
 		try {
-			op = loadScript(script);
+			IOp op = loadScript(script);
+			op.eval(this);
 		} catch (IOException e) {
-			throw new ScriptRuntimeException();
+			throw new RuntimeException(e);
+		} catch (BreakLoopException e) {
+			System.err.println("Break without loop:");
+			System.err.println(e.toString());
+		} catch (ContinueLoopException e) {
+			System.err.println("Continue without loop:");
+			System.err.println(e.toString());
+		} catch (ExitException e) {
+			return;
+		} catch (ScannerException e) {
+			System.err.println("Scanner exception:");
+			System.err.println(e.toString());
+		} catch (GrammarException e) {
+			System.err.println("Grammar exception:");
+			System.err.println(e.toString());
+		} catch (ScriptRuntimeException e) {
+			System.err.println("Script runtime exception:");
+			System.err.println(e.toString(currentModule));
+			System.err.println(callingStack());
 		}
-		op.eval(this);
 	}
 
 	// 内存代码入口
 	public void run(IScanReader r) {
-		currentPath = null;
-		scriptPathStack.clear();
-		TokenScanner tsn = new TokenScanner(r, "<memory>");
-		TokenStream ts = new TokenStream(tsn);
-		GrammarScanner gs = new GrammarScanner(ts);
-		IOp op = gs.all();
-		op = op.optimize();
-		if (op != null)
-			op.eval(this);
+		initExecEnv();
+
+		try {
+			TokenScanner tsn = new TokenScanner(r, "<memory>");
+			TokenStream ts = new TokenStream(tsn);
+			GrammarScanner gs = new GrammarScanner(ts);
+			IOp op = gs.all();
+			op = op.optimize();
+			if (op != null)
+				op.eval(this);
+		} catch (BreakLoopException e) {
+			System.err.println("Break without loop:");
+			System.err.println(e.toString());
+		} catch (ContinueLoopException e) {
+			System.err.println("Continue without loop:");
+			System.err.println(e.toString());
+		} catch (ExitException e) {
+			return;
+		} catch (ScannerException e) {
+			System.err.println("Scanner exception:");
+			System.err.println(e.toString());
+		} catch (GrammarException e) {
+			System.err.println("Grammar exception:");
+			System.err.println(e.toString());
+		} catch (ScriptRuntimeException e) {
+			System.err.println("Script runtime exception:");
+			System.err.println(e.toString(currentModule));
+			System.err.println(callingStack());
+		}
 	}
 }

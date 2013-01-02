@@ -8,4 +8,8 @@ public interface IOp {
 	IValueEval eval(ScriptVM vm);
 
 	IOp optimize();
+
+	String getFile();
+
+	int getLine();
 }

@@ -4,20 +4,25 @@ import tts.eval.*;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
-public class IfElseOp implements IOp {
+public final class IfElseOp implements IOp {
+
+	String file;
+	int line;
 	IOp cond, body, else_body;
 
-	public IfElseOp(IOp cond, IOp body, IOp else_body) {
+	public IfElseOp(IOp cond, IOp body, IOp else_body, String file, int line) {
 		this.cond = cond;
 		this.body = body;
 		this.else_body = else_body;
+		this.file = file;
+		this.line = line;
 	}
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval ve = cond.eval(vm);
 		if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-			throw new ScriptRuntimeException("");
+			throw new ScriptRuntimeException("boolean value needed", cond);
 
 		BooleanEval be = (BooleanEval) ve;
 		if (be.getValue()) {
@@ -42,7 +47,8 @@ public class IfElseOp implements IOp {
 			if (((Operand) cond).isConst()) {
 				IValueEval ve = cond.eval(null);
 				if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-					throw new ScriptRuntimeException();
+					throw new ScriptRuntimeException("boolean value needed",
+							cond);
 
 				BooleanEval be = (BooleanEval) ve;
 				if (be.getValue())
@@ -61,5 +67,15 @@ public class IfElseOp implements IOp {
 			sb.append("else\n").append(else_body);
 		sb.append("\n");
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

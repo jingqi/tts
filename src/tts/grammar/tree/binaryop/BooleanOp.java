@@ -7,7 +7,7 @@ import tts.grammar.tree.Operand;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
-public class BooleanOp implements IOp {
+public final class BooleanOp implements IOp {
 
 	public enum OpType {
 		AND("&&"), OR("||");
@@ -32,7 +32,8 @@ public class BooleanOp implements IOp {
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval _l = left.eval(vm);
 		if (_l.getType() != IValueEval.EvalType.BOOLEAN)
-			throw new ScriptRuntimeException();
+			throw new ScriptRuntimeException(
+					"type mismatch for boolean operation", this);
 		BooleanEval l = (BooleanEval) _l;
 
 		switch (op) {
@@ -41,7 +42,8 @@ public class BooleanOp implements IOp {
 				return BooleanEval.FALSE;
 			IValueEval r = right.eval(vm);
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException(
+						"type mismatch for boolean operation", this);
 			return r;
 		}
 
@@ -50,7 +52,8 @@ public class BooleanOp implements IOp {
 				return BooleanEval.TRUE;
 			IValueEval r = right.eval(vm);
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException(
+						"type mismatch for boolean operation", this);
 			return r;
 		}
 
@@ -67,7 +70,7 @@ public class BooleanOp implements IOp {
 		// 优化常量运算
 		if (left instanceof Operand && right instanceof Operand) {
 			if (((Operand) left).isConst() && ((Operand) right).isConst()) {
-				return new Operand(eval(null));
+				return new Operand(eval(null), getFile(), getLine());
 			}
 		}
 
@@ -79,5 +82,15 @@ public class BooleanOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(left).append(" ").append(op.op).append(" ").append(right);
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return left.getFile();
+	}
+
+	@Override
+	public int getLine() {
+		return left.getLine();
 	}
 }

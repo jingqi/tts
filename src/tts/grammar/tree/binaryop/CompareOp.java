@@ -6,7 +6,7 @@ import tts.grammar.tree.Operand;
 import tts.vm.ScriptRuntimeException;
 import tts.vm.ScriptVM;
 
-public class CompareOp implements IOp {
+public final class CompareOp implements IOp {
 
 	public enum OpType {
 		EQ("=="), NOT_EQ("!="), LESS("<"), GREATER(">"), LESS_EQ("<="), GREATER_EQ(
@@ -28,17 +28,19 @@ public class CompareOp implements IOp {
 		this.right = right;
 	}
 
-	static boolean eq(IValueEval l, IValueEval r) {
+	static boolean eq(IValueEval l, IValueEval r, String file, int line) {
 		switch (l.getType()) {
 		case STRING:
 			if (r.getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("type mismatch in comparison",
+						file, line);
 			return ((StringEval) l).getValue().equals(
 					((StringEval) r).getValue());
 
 		case BOOLEAN:
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
-				throw new ScriptRuntimeException("");
+				throw new ScriptRuntimeException("type mismatch in comparison",
+						file, line);
 			return l == r;
 
 		case DOUBLE:
@@ -52,7 +54,8 @@ public class CompareOp implements IOp {
 						.getValue();
 
 			default:
-				throw new ScriptRuntimeException("");
+				throw new ScriptRuntimeException("type mismatch in comparison",
+						file, line);
 			}
 
 		case INTEGER:
@@ -66,19 +69,22 @@ public class CompareOp implements IOp {
 						.getValue();
 
 			default:
-				throw new ScriptRuntimeException("");
+				throw new ScriptRuntimeException("type mismatch in comparison",
+						file, line);
 			}
 
 		default:
-			throw new ScriptRuntimeException("");
+			throw new ScriptRuntimeException("type mismatch in comparison",
+					file, line);
 		}
 	}
 
-	static boolean less(IValueEval l, IValueEval r) {
+	static boolean less(IValueEval l, IValueEval r, String file, int line) {
 		switch (l.getType()) {
 		case STRING:
 			if (r.getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("type mismatch in comparison",
+						file, line);
 			return ((StringEval) l).getValue().compareTo(
 					((StringEval) r).getValue()) < 0;
 
@@ -93,7 +99,8 @@ public class CompareOp implements IOp {
 						.getValue();
 
 			default:
-				throw new ScriptRuntimeException("");
+				throw new ScriptRuntimeException("type mismatch in comparison",
+						file, line);
 			}
 
 		case INTEGER:
@@ -107,11 +114,13 @@ public class CompareOp implements IOp {
 						.getValue();
 
 			default:
-				throw new ScriptRuntimeException("");
+				throw new ScriptRuntimeException("type mismatch in comparison",
+						file, line);
 			}
 
 		default:
-			throw new ScriptRuntimeException("");
+			throw new ScriptRuntimeException("type mismatch in comparison",
+					file, line);
 		}
 	}
 
@@ -122,27 +131,27 @@ public class CompareOp implements IOp {
 		boolean rs = false;
 		switch (op) {
 		case EQ:
-			rs = eq(l, r);
+			rs = eq(l, r, getFile(), getLine());
 			break;
 
 		case NOT_EQ:
-			rs = !eq(l, r);
+			rs = !eq(l, r, getFile(), getLine());
 			break;
 
 		case LESS:
-			rs = less(l, r);
+			rs = less(l, r, getFile(), getLine());
 			break;
 
 		case GREATER:
-			rs = less(r, l);
+			rs = less(r, l, getFile(), getLine());
 			break;
 
 		case LESS_EQ:
-			rs = !less(r, l);
+			rs = !less(r, l, getFile(), getLine());
 			break;
 
 		case GREATER_EQ:
-			rs = !less(l, r);
+			rs = !less(l, r, getFile(), getLine());
 		}
 		return BooleanEval.valueOf(rs);
 	}
@@ -155,7 +164,7 @@ public class CompareOp implements IOp {
 		// 优化常量运算
 		if (left instanceof Operand && right instanceof Operand) {
 			if (((Operand) left).isConst() && ((Operand) right).isConst()) {
-				return new Operand(eval(null));
+				return new Operand(eval(null), getFile(), getLine());
 			}
 		}
 
@@ -167,5 +176,15 @@ public class CompareOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(left).append(" ").append(op.op).append(" ").append(right);
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return left.getFile();
+	}
+
+	@Override
+	public int getLine() {
+		return left.getLine();
 	}
 }

@@ -4,32 +4,38 @@ import tts.eval.*;
 import tts.grammar.tree.binaryop.AssignOp;
 import tts.vm.*;
 
-public class DefinationOp implements IOp {
+public final class DefinationOp implements IOp {
+
+	String file;
+	int line;
 
 	VarType type;
 	String name;
 	IOp value;
 
-	public DefinationOp(VarType vt, String name, IOp value) {
+	public DefinationOp(VarType vt, String name, IOp value, String file,
+			int line) {
 		this.type = vt;
 		this.name = name;
+		this.file = file;
+		this.line = line;
 
 		if (value == null) {
 			switch (vt) {
 			case BOOLEAN:
-				value = new Operand(BooleanEval.FALSE);
+				value = new Operand(BooleanEval.FALSE, file, line);
 				break;
 
 			case INTEGER:
-				value = new Operand(new IntegerEval(0));
+				value = new Operand(new IntegerEval(0), file, line);
 				break;
 
 			case DOUBLE:
-				value = new Operand(new DoubleEval(0));
+				value = new Operand(new DoubleEval(0), file, line);
 				break;
 
 			case STRING:
-				value = new Operand(new StringEval(""));
+				value = new Operand(new StringEval(""), file, line);
 				break;
 			}
 		}
@@ -40,7 +46,7 @@ public class DefinationOp implements IOp {
 	public IValueEval eval(ScriptVM vm) {
 		Variable v = new Variable(name, type, null);
 		if (value != null)
-			AssignOp.assign(v, value.eval(vm));
+			AssignOp.assign(v, value.eval(vm), file, line);
 		vm.addVariable(name, v);
 		return VoidEval.instance;
 	}
@@ -59,5 +65,15 @@ public class DefinationOp implements IOp {
 		if (value != null)
 			sb.append("=").append(value);
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

@@ -3,15 +3,19 @@ package tts.grammar.tree;
 import tts.eval.*;
 import tts.vm.*;
 
-public class ForLoopOp implements IOp {
+public final class ForLoopOp implements IOp {
 
+	String file;
+	int line;
 	IOp init_exp, break_exp, fin_exp, body;
 
-	public ForLoopOp(IOp init, IOp brk, IOp fin, IOp body) {
+	public ForLoopOp(IOp init, IOp brk, IOp fin, IOp body, String file, int line) {
 		this.init_exp = init;
 		this.break_exp = brk;
 		this.fin_exp = fin;
 		this.body = body;
+		this.file = file;
+		this.line = line;
 	}
 
 	@Override
@@ -23,7 +27,8 @@ public class ForLoopOp implements IOp {
 			if (break_exp != null) {
 				IValueEval ve = break_exp.eval(vm);
 				if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-					throw new ScriptRuntimeException("");
+					throw new ScriptRuntimeException("boolean value needed",
+							break_exp);
 				BooleanEval be = (BooleanEval) ve;
 				if (!be.getValue())
 					break;
@@ -74,5 +79,15 @@ public class ForLoopOp implements IOp {
 		sb.append(")\n").append(body);
 		sb.append("\n");
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

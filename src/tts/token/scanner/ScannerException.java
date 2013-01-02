@@ -16,7 +16,6 @@ public class ScannerException extends RuntimeException {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("\n");
 		sb.append("File \"").append(file).append("\", line ").append(line)
 				.append(": ").append(getMessage());
 		sb.append("\n");

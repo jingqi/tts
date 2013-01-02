@@ -42,7 +42,8 @@ public class StringEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument");
+				throw new ScriptRuntimeException("need 0 argument",
+						NATIVE_FILE, NATIVE_LINE);
 
 			return new IntegerEval(value.length());
 		}
@@ -53,9 +54,11 @@ public class StringEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument");
+				throw new ScriptRuntimeException("need 1 argument",
+						NATIVE_FILE, NATIVE_LINE);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("integer needed", NATIVE_FILE,
+						NATIVE_LINE);
 
 			long i = ((IntegerEval) args.get(0)).getValue();
 			return charAt((int) i);
@@ -67,9 +70,11 @@ public class StringEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument");
+				throw new ScriptRuntimeException("need 1 argument",
+						NATIVE_FILE, NATIVE_LINE);
 			if (args.get(0).getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("string needed", NATIVE_FILE,
+						NATIVE_LINE);
 
 			String s = ((StringEval) args.get(0)).getValue();
 			return BooleanEval.valueOf(value.startsWith(s));
@@ -81,9 +86,11 @@ public class StringEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument");
+				throw new ScriptRuntimeException("need 1 argument",
+						NATIVE_FILE, NATIVE_LINE);
 			if (args.get(0).getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("string needed", NATIVE_FILE,
+						NATIVE_LINE);
 
 			String s = ((StringEval) args.get(0)).getValue();
 			return BooleanEval.valueOf(value.endsWith(s));
@@ -95,10 +102,12 @@ public class StringEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 2)
-				throw new ScriptRuntimeException("need 2 argument");
+				throw new ScriptRuntimeException("need 2 argument",
+						NATIVE_FILE, NATIVE_LINE);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER
 					|| args.get(1).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("integer needed", NATIVE_FILE,
+						NATIVE_LINE);
 
 			int begin = (int) ((IntegerEval) args.get(0)).getValue();
 			int end = (int) ((IntegerEval) args.get(1)).getValue();
@@ -111,7 +120,8 @@ public class StringEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument");
+				throw new ScriptRuntimeException("need 0 argument",
+						NATIVE_FILE, NATIVE_LINE);
 
 			return new StringEval(value.toLowerCase());
 		}
@@ -122,7 +132,8 @@ public class StringEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument");
+				throw new ScriptRuntimeException("need 0 argument",
+						NATIVE_FILE, NATIVE_LINE);
 
 			return new StringEval(value.toUpperCase());
 		}
@@ -133,16 +144,19 @@ public class StringEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 1 && args.size() != 2)
-				throw new ScriptRuntimeException("need 1 or 2 argument");
+				throw new ScriptRuntimeException("need 1 or 2 argument",
+						NATIVE_FILE, NATIVE_LINE);
 
 			if (args.get(0).getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("string needed", NATIVE_FILE,
+						NATIVE_LINE);
 			String s = ((StringEval) args.get(0)).getValue();
 
 			int start = 0;
 			if (args.size() == 2) {
 				if (args.get(1).getType() != IValueEval.EvalType.INTEGER)
-					throw new ScriptRuntimeException();
+					throw new ScriptRuntimeException("integer needed",
+							NATIVE_FILE, NATIVE_LINE);
 				start = (int) ((IntegerEval) args.get(1)).getValue();
 			}
 
@@ -155,16 +169,19 @@ public class StringEval extends ObjectEval {
 		@Override
 		public IValueEval call(List<IValueEval> args) {
 			if (args.size() != 1 && args.size() != 2)
-				throw new ScriptRuntimeException("need 1 or 2 argument");
+				throw new ScriptRuntimeException("need 1 or 2 argument",
+						NATIVE_FILE, NATIVE_LINE);
 
 			if (args.get(0).getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException();
+				throw new ScriptRuntimeException("string needed", NATIVE_FILE,
+						NATIVE_LINE);
 			String s = ((StringEval) args.get(0)).getValue();
 
 			int start = value.length();
 			if (args.size() == 2) {
 				if (args.get(1).getType() != IValueEval.EvalType.INTEGER)
-					throw new ScriptRuntimeException();
+					throw new ScriptRuntimeException("integer needed",
+							NATIVE_FILE, NATIVE_LINE);
 				start = (int) ((IntegerEval) args.get(1)).getValue();
 			}
 
@@ -192,6 +209,7 @@ public class StringEval extends ObjectEval {
 			return new FuncIndexOf();
 		else if (name.equals("lastIndexOf"))
 			return new FuncLastIndexOf();
-		throw new ScriptRuntimeException("string no such member: " + name);
+		throw new ScriptRuntimeException("string no such member: " + name,
+				FunctionEval.NATIVE_FILE, FunctionEval.NATIVE_LINE);
 	}
 }

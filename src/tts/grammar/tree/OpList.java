@@ -9,9 +9,16 @@ import tts.vm.ScriptVM;
 /**
  * 操作列表
  */
-public class OpList implements IOp {
+public final class OpList implements IOp {
 
+	String file;
+	int line;
 	ArrayList<IOp> list = new ArrayList<IOp>();
+
+	public OpList(String file, int line) {
+		this.file = file;
+		this.line = line;
+	}
 
 	public void add(IOp op) {
 		list.add(op);
@@ -57,5 +64,15 @@ public class OpList implements IOp {
 		for (int i = 0; i < list.size(); ++i)
 			sb.append(list.get(i)).append(";\n");
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

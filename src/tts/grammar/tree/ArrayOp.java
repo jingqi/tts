@@ -6,12 +6,16 @@ import tts.eval.ArrayEval;
 import tts.eval.IValueEval;
 import tts.vm.ScriptVM;
 
-public class ArrayOp implements IOp {
+public final class ArrayOp implements IOp {
 
+	String file;
+	int line;
 	ArrayList<IOp> elements;
 
-	public ArrayOp(ArrayList<IOp> v) {
+	public ArrayOp(ArrayList<IOp> v, String file, int line) {
 		elements = v;
+		this.file = file;
+		this.line = line;
 	}
 
 	@Override
@@ -39,5 +43,15 @@ public class ArrayOp implements IOp {
 			sb.append(elements.get(i)).append(", ");
 		sb.append("]");
 		return sb.toString();
+	}
+
+	@Override
+	public String getFile() {
+		return file;
+	}
+
+	@Override
+	public int getLine() {
+		return line;
 	}
 }

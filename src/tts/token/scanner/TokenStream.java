@@ -96,15 +96,15 @@ public class TokenStream {
 		return t;
 	}
 
-	public boolean match(TokenType type, Object value) {
+	public Token match(TokenType type, Object value) {
 		Token t = nextToken();
 		if (t == null)
-			return false;
+			return null;
 
 		if (t.type != type || !t.value.equals(value)) {
 			putBack();
-			return false;
+			return null;
 		}
-		return true;
+		return t;
 	}
 }
