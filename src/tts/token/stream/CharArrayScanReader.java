@@ -224,12 +224,12 @@ public class CharArrayScanReader implements IScanReader, IBuferWriter {
 	}
 
 	@Override
-	public void putback() {
-		putback(1);
+	public void putBack() {
+		putBack(1);
 	}
 
 	@Override
-	public void putback(int len) {
+	public void putBack(int len) {
 		if (len < 0 || len > index)
 			throw new IllegalArgumentException();
 		index -= len;

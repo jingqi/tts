@@ -30,6 +30,22 @@ public class TokenStream {
 		return ret;
 	}
 
+	public String getFile() {
+		Token t = nextToken();
+		if (t == null)
+			return scanner.getFile();
+		putBack();
+		return t.file;
+	}
+
+	public int getLine() {
+		Token t = nextToken();
+		if (t == null)
+			return scanner.getLine();
+		putBack();
+		return t.line;
+	}
+
 	public int tell() {
 		return readed.size();
 	}

@@ -6,12 +6,16 @@ public class Token {
 		TEXT_TEMPLATE, BOOLEAN, INTEGER, DOUBLE, STRING, SEPARATOR, IDENTIFIER, KEY_WORD
 	}
 
-	public TokenType type;
-	public Object value;
+	public final TokenType type;
+	public final Object value;
+	public final String file;
+	public final int line;
 
-	public Token(TokenType t, Object value) {
+	public Token(TokenType t, Object value, String file, int line) {
 		this.type = t;
 		this.value = value;
+		this.file = file;
+		this.line = line;
 	}
 
 	@Override

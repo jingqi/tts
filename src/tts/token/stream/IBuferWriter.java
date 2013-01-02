@@ -36,7 +36,7 @@ public interface IBuferWriter {
 
 	boolean eof();
 
-	void putback(int len);
+	void putBack(int len);
 
 	void setLength(int len);
 }

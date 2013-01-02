@@ -80,6 +80,14 @@ public class TokenScanner {
 		this.line = 1;
 	}
 
+	public String getFile() {
+		return file;
+	}
+
+	public int getLine() {
+		return line;
+	}
+
 	public Token nextToken() throws IOException {
 
 		int oldPos = -1;
@@ -179,27 +187,27 @@ public class TokenScanner {
 
 		// 字符串
 		if (c == '\"' || c == '\'') {
-			reader.putback();
+			reader.putBack();
 			return getString();
 		}
 
 		// 关键字，标识符
 		if (c == '_' || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')) {
-			reader.putback(1);
+			reader.putBack(1);
 			return getIdentifierOrKeyword();
 		}
 
 		// 数字
 		if ('0' <= c && c <= '9') {
-			reader.putback();
+			reader.putBack();
 			return getNumber();
 		} else if (c == '.' && !reader.eof()) {
 			c = reader.read();
 			if ('0' <= c && c <= '9') {
-				reader.putback(2);
+				reader.putBack(2);
 				return getNumber();
 			} else {
-				reader.putback(1);
+				reader.putBack(1);
 			}
 		}
 
@@ -207,16 +215,16 @@ public class TokenScanner {
 		if (c == '/' && !reader.eof()) {
 			c = reader.read();
 			if (c == '/' || c == '*') {
-				reader.putback(2);
+				reader.putBack(2);
 				skipComment();
 				return null;
 			} else {
-				reader.putback();
+				reader.putBack();
 			}
 		}
 
 		// 分隔符：标点、运算符
-		reader.putback();
+		reader.putBack();
 		return getSeparator();
 	}
 
@@ -228,13 +236,8 @@ public class TokenScanner {
 	private Token getSeparator() {
 		assert !reader.eof();
 		for (int i = 0, len = SEPARATORS.length; i < len; ++i) {
-			if (reader.preMatch(SEPARATORS[i])) {
-				try {
-					reader.skip(SEPARATORS[i].length());
-				} catch (IOException e) {
-					throw new RuntimeException("不可能发生");
-				}
-				return new Token(TokenType.SEPARATOR, SEPARATORS[i]);
+			if (reader.match(SEPARATORS[i])) {
+				return new Token(TokenType.SEPARATOR, SEPARATORS[i], file, line);
 			}
 		}
 		return null;
@@ -247,12 +250,12 @@ public class TokenScanner {
 				char c = reader.read();
 				if (c == '\n') {
 					if (!reader.eof() && reader.read() != '\r')
-						reader.putback(1);
+						reader.putBack(1);
 					++line;
 					return;
 				} else if (c == '\r') {
 					if (!reader.eof() && reader.read() != '\n')
-						reader.putback(1);
+						reader.putBack(1);
 					++line;
 					return;
 				}
@@ -282,7 +285,7 @@ public class TokenScanner {
 			if ('0' <= c && c <= '9') {
 				v = v * 10 + (c - '0');
 			} else {
-				reader.putback(1);
+				reader.putBack(1);
 				break;
 			}
 		}
@@ -299,7 +302,7 @@ public class TokenScanner {
 			if ('0' <= c && c <= '9') {
 				v += (c - '0') / Math.pow(10, w);
 			} else {
-				reader.putback(1);
+				reader.putBack(1);
 				break;
 			}
 		}
@@ -324,12 +327,12 @@ public class TokenScanner {
 			d = getDecimal();
 			float_value = true;
 		} else {
-			reader.putback(1);
+			reader.putBack(1);
 			i = getInteger();
 			if (!reader.eof()) {
 				c = reader.read();
 				if (c != '.') {
-					reader.putback(1);
+					reader.putBack(1);
 				} else {
 					d = getDecimal();
 					float_value = true;
@@ -340,7 +343,7 @@ public class TokenScanner {
 		if (!reader.eof()) {
 			c = reader.read();
 			if (c != 'e' && c != 'E') {
-				reader.putback(1);
+				reader.putBack(1);
 			} else {
 				e = getInteger();
 				float_value = true;
@@ -349,9 +352,9 @@ public class TokenScanner {
 
 		if (float_value) {
 			double v = (i + d) * Math.pow(10, e);
-			return new Token(TokenType.DOUBLE, Double.valueOf(v));
+			return new Token(TokenType.DOUBLE, Double.valueOf(v), file, line);
 		} else {
-			return new Token(TokenType.INTEGER, Long.valueOf(i));
+			return new Token(TokenType.INTEGER, Long.valueOf(i), file, line);
 		}
 	}
 
@@ -387,7 +390,7 @@ public class TokenScanner {
 		if (over_flow)
 			warning("const hex number overflow");
 
-		return new Token(TokenType.INTEGER, Long.valueOf(v));
+		return new Token(TokenType.INTEGER, Long.valueOf(v), file, line);
 	}
 
 	// 处理转义字符
@@ -432,7 +435,7 @@ public class TokenScanner {
 				} else if ('A' <= cc && cc <= 'F') {
 					c = (char) (c * 16 + cc - 'A' + 10);
 				} else {
-					reader.putback(1);
+					reader.putBack(1);
 					break;
 				}
 			}
@@ -452,7 +455,7 @@ public class TokenScanner {
 				if ('0' <= cc && cc <= '7') {
 					c = (char) (c * 8 + cc - '0');
 				} else {
-					reader.putback(1);
+					reader.putBack(1);
 					break;
 				}
 			}
@@ -467,6 +470,7 @@ public class TokenScanner {
 	// 处理字符串
 	private Token getString() throws IOException {
 		assert !reader.eof();
+		final int start_line = line;
 		char c = reader.read();
 		assert c == '\"' || c == '\'';
 
@@ -495,12 +499,12 @@ public class TokenScanner {
 				c = reader.read();
 				if (c == '\n') {
 					if (!reader.eof() && reader.read() != '\r')
-						reader.putback(1);
+						reader.putBack(1);
 					sb.append('\n');
 					++line;
 				} else if (c == '\r') {
 					if (!reader.eof() && reader.read() != '\n')
-						reader.putback(1);
+						reader.putBack(1);
 					sb.append('\n');
 					++line;
 				} else {
@@ -508,7 +512,7 @@ public class TokenScanner {
 				}
 			}
 			String s = sb.toString();
-			return new Token(TokenType.STRING, s);
+			return new Token(TokenType.STRING, s, file, start_line);
 		}
 
 		// 单一字符串
@@ -530,7 +534,7 @@ public class TokenScanner {
 		}
 
 		String s = sb.toString();
-		return new Token(TokenType.STRING, s);
+		return new Token(TokenType.STRING, s, file, start_line);
 	}
 
 	private static boolean isFirstIdentifierChar(char c) {
@@ -557,23 +561,24 @@ public class TokenScanner {
 			if (isIdentifierChar(c)) {
 				sb.append(c);
 			} else {
-				reader.putback(1);
+				reader.putBack(1);
 				break;
 			}
 		}
 
 		String i = sb.toString();
 		if (i.equals("true"))
-			return new Token(TokenType.BOOLEAN, Boolean.TRUE);
+			return new Token(TokenType.BOOLEAN, Boolean.TRUE, file, line);
 		else if (i.equals("false"))
-			return new Token(TokenType.BOOLEAN, Boolean.FALSE);
+			return new Token(TokenType.BOOLEAN, Boolean.FALSE, file, line);
 		else if (KEY_WORDS.contains(i))
-			return new Token(TokenType.KEY_WORD, i);
-		return new Token(TokenType.IDENTIFIER, i);
+			return new Token(TokenType.KEY_WORD, i, file, line);
+		return new Token(TokenType.IDENTIFIER, i, file, line);
 	}
 
 	// 处理文本模板
 	private Token getTextTemplate() throws IOException {
+		final int start_line = line;
 		StringBuilder sb = new StringBuilder();
 		while (true) {
 			if (reader.eof() || reader.preMatch(BLOCK_CODE_START)
@@ -604,7 +609,7 @@ public class TokenScanner {
 
 		assert sb.length() > 0;
 		String t = sb.toString();
-		return new Token(TokenType.TEXT_TEMPLATE, t);
+		return new Token(TokenType.TEXT_TEMPLATE, t, file, start_line);
 	}
 
 }

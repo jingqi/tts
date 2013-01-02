@@ -30,7 +30,7 @@ public interface IScanReader {
 	/**
 	 * 回退字符
 	 */
-	void putback() throws IOException;
+	void putBack() throws IOException;
 
-	void putback(int len) throws IOException;
+	void putBack(int len) throws IOException;
 }

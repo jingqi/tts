@@ -58,7 +58,7 @@ public class Reader2ScanReader implements IScanReader {
 			return false;
 
 		try {
-			putback(s.length());
+			putBack(s.length());
 		} catch (IOException e) {
 			throw new RuntimeException("不可能发生");
 		}
@@ -73,7 +73,7 @@ public class Reader2ScanReader implements IScanReader {
 				c = read();
 			} catch (IOException e) {
 				try {
-					putback(i);
+					putBack(i);
 				} catch (IOException e1) {
 					throw new IllegalStateException("不可能发生");
 				}
@@ -82,7 +82,7 @@ public class Reader2ScanReader implements IScanReader {
 
 			if (c != s.charAt(i)) {
 				try {
-					putback(i + 1);
+					putBack(i + 1);
 				} catch (IOException e) {
 					throw new IllegalStateException("不可能发生");
 				}
@@ -118,12 +118,12 @@ public class Reader2ScanReader implements IScanReader {
 	}
 
 	@Override
-	public void putback() throws IOException {
-		putback(1);
+	public void putBack() throws IOException {
+		putBack(1);
 	}
 
 	@Override
-	public void putback(int len) throws IOException {
+	public void putBack(int len) throws IOException {
 		if (len > readed.size())
 			throw new IOException();
 		for (int i = 0; i < len; ++i)
