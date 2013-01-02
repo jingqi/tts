@@ -188,7 +188,7 @@ public class ScriptVM {
 	private static class FuncExit extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			throw new ExitException();
 		}
 	}
@@ -235,6 +235,9 @@ public class ScriptVM {
 		} catch (ContinueLoopException e) {
 			System.err.println("Continue without loop:");
 			System.err.println(e.toString());
+		} catch (ReturnFuncException e) {
+			System.err.println("Return statement without function:");
+			System.err.println(e.toString());
 		} catch (ExitException e) {
 			return;
 		} catch (ScannerException e) {
@@ -267,6 +270,9 @@ public class ScriptVM {
 			System.err.println(e.toString());
 		} catch (ContinueLoopException e) {
 			System.err.println("Continue without loop:");
+			System.err.println(e.toString());
+		} catch (ReturnFuncException e) {
+			System.err.println("Return statement without function:");
 			System.err.println(e.toString());
 		} catch (ExitException e) {
 			return;

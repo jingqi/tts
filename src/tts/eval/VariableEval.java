@@ -1,6 +1,6 @@
 package tts.eval;
 
-public class VariableEval implements IValueEval {
+public final class VariableEval implements IValueEval {
 
 	private String name;
 

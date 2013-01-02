@@ -3,8 +3,9 @@ package tts.eval;
 import java.util.List;
 
 import tts.vm.ScriptRuntimeException;
+import tts.vm.ScriptVM;
 
-public class StringEval extends ObjectEval {
+public final class StringEval extends ObjectEval {
 
 	private String value;
 
@@ -40,7 +41,7 @@ public class StringEval extends ObjectEval {
 	private class FuncLen extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -52,7 +53,7 @@ public class StringEval extends ObjectEval {
 	private class FuncCharAt extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -68,7 +69,7 @@ public class StringEval extends ObjectEval {
 	private class FuncStartsWith extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -84,7 +85,7 @@ public class StringEval extends ObjectEval {
 	private class FuncEndsWith extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -100,7 +101,7 @@ public class StringEval extends ObjectEval {
 	private class FuncSubstr extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 2)
 				throw new ScriptRuntimeException("need 2 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -118,7 +119,7 @@ public class StringEval extends ObjectEval {
 	private class FuncToLowerCase extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -130,7 +131,7 @@ public class StringEval extends ObjectEval {
 	private class FuncToUpperCase extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -142,7 +143,7 @@ public class StringEval extends ObjectEval {
 	private class FuncIndexOf extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 1 && args.size() != 2)
 				throw new ScriptRuntimeException("need 1 or 2 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -167,7 +168,7 @@ public class StringEval extends ObjectEval {
 	private class FuncLastIndexOf extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 1 && args.size() != 2)
 				throw new ScriptRuntimeException("need 1 or 2 argument",
 						NATIVE_FILE, NATIVE_LINE);

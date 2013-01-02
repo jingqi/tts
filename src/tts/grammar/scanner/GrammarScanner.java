@@ -3,6 +3,7 @@ package tts.grammar.scanner;
 import java.util.ArrayList;
 
 import tts.eval.*;
+import tts.eval.UserFunctionEval.ParamInfo;
 import tts.grammar.tree.*;
 import tts.grammar.tree.binaryop.*;
 import tts.token.scanner.*;
@@ -112,6 +113,15 @@ public class GrammarScanner {
 					throw new GrammarException("token ';' expected",
 							tokenStream.getFile(), tokenStream.getLine());
 				return new ContinueOp(t.file, t.line);
+			} else if (t.value.equals("return")) {
+				IOp r = expression();
+				if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
+					throw new GrammarException("token ';' expected",
+							tokenStream.getFile(), tokenStream.getLine());
+
+				if (r == null)
+					return new ReturnFuncOp(new OpList(t.file, t.line));
+				return new ReturnFuncOp(r);
 			} else {
 				tokenStream.putBack();
 			}
@@ -124,6 +134,8 @@ public class GrammarScanner {
 			ret = whileLoop();
 		if (ret == null)
 			ret = ifElse();
+		if (ret == null)
+			ret = functionDefination();
 		return ret;
 	}
 
@@ -487,7 +499,7 @@ public class GrammarScanner {
 		else if (tokenStream.match(TokenType.SEPARATOR, "--") != null)
 			op = UnaryOp.OpType.PRE_DECREMENT;
 
-		IOp v = function();
+		IOp v = functionCall();
 		if (v == null) {
 			tokenStream.seek(p);
 			return null;
@@ -506,7 +518,7 @@ public class GrammarScanner {
 	}
 
 	// function = index '(' (index (',' index)*)? ')';
-	private IOp function() {
+	private IOp functionCall() {
 		IOp func = index();
 		if (func == null)
 			return null;
@@ -570,6 +582,10 @@ public class GrammarScanner {
 	private IOp atom() {
 		if (tokenStream.eof())
 			return null;
+
+		IOp op = lambda();
+		if (op != null)
+			return op;
 
 		Token t = tokenStream.nextToken();
 		if (t == null)
@@ -653,6 +669,19 @@ public class GrammarScanner {
 			vt = VarType.STRING;
 		} else if (t.value.equals("array")) {
 			vt = VarType.ARRAY;
+		} else if (t.value.equals("function")) {
+			vt = VarType.FUNCTION;
+			if (tokenStream.match(TokenType.IDENTIFIER) == null) {
+				tokenStream.putBack();
+				return null;
+			}
+			if (tokenStream.match(TokenType.SEPARATOR, "=") == null
+					&& tokenStream.match(TokenType.SEPARATOR, ",") == null
+					&& tokenStream.match(TokenType.SEPARATOR, ";") == null) {
+				tokenStream.putBack(2);
+				return null;
+			}
+			tokenStream.putBack(2);
 		} else {
 			tokenStream.putBack();
 			return null;
@@ -817,5 +846,132 @@ public class GrammarScanner {
 			throw new GrammarException("file path expected",
 					tokenStream.getFile(), tokenStream.getLine());
 		return new IncludeOp((String) f.value, t.file, t.line);
+	}
+
+	// function = 'function' name '(' (type param(',' type param)*)? ')'
+	// block
+	private IOp functionDefination() {
+		Token t = tokenStream.match(TokenType.KEY_WORD, "function");
+		if (t == null)
+			return null;
+
+		// 函数名
+		Token n = tokenStream.match(TokenType.IDENTIFIER);
+		if (n == null) {
+			tokenStream.putBack();
+			return null;
+		}
+		String name = (String) n.value;
+
+		if (tokenStream.match(TokenType.SEPARATOR, "(") == null) {
+			tokenStream.putBack(2);
+			return null;
+		}
+
+		// 形参列表
+		ArrayList<ParamInfo> params = new ArrayList<ParamInfo>();
+		while (true) {
+			VarType vt;
+			Token tt = tokenStream.match(TokenType.KEY_WORD);
+			if (tt == null) {
+				break;
+			} else if (tt.value.equals("bool")) {
+				vt = VarType.BOOLEAN;
+			} else if (tt.value.equals("int")) {
+				vt = VarType.INTEGER;
+			} else if (tt.value.equals("double")) {
+				vt = VarType.DOUBLE;
+			} else if (tt.value.equals("string")) {
+				vt = VarType.STRING;
+			} else if (tt.value.equals("array")) {
+				vt = VarType.ARRAY;
+			} else {
+				tokenStream.putBack();
+				return null;
+			}
+
+			tt = tokenStream.match(TokenType.IDENTIFIER);
+			if (tt == null)
+				throw new GrammarException("identifier token expected",
+						tokenStream.getFile(), tokenStream.getLine());
+
+			String pname = (String) tt.value;
+			params.add(new ParamInfo(pname, vt));
+			if (tokenStream.match(TokenType.SEPARATOR, ",") == null)
+				break;
+		}
+
+		if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
+			throw new GrammarException("token ')' expected",
+					tokenStream.getFile(), tokenStream.getLine());
+
+		// 函数体
+		IOp ops = block();
+		if (ops == null)
+			throw new GrammarException("function body expected",
+					tokenStream.getFile(), tokenStream.getLine());
+
+		UserFunctionEval ufe = new UserFunctionEval(name, ops, params);
+		IOp fop = new Operand(ufe, t.file, t.line);
+		return new DefinationOp(VarType.FUNCTION, name, fop, t.file, t.line);
+	}
+
+	// lambda = 'function' '(' (type param(',' type param)*)? ')'
+	// block
+	private IOp lambda() {
+		Token t = tokenStream.match(TokenType.KEY_WORD, "function");
+		if (t == null)
+			return null;
+
+		if (tokenStream.match(TokenType.SEPARATOR, "(") == null) {
+			tokenStream.putBack();
+			return null;
+		}
+
+		// 形参列表
+		ArrayList<ParamInfo> params = new ArrayList<ParamInfo>();
+		while (true) {
+			VarType vt;
+			Token tt = tokenStream.match(TokenType.KEY_WORD);
+			if (tt == null) {
+				break;
+			} else if (tt.value.equals("bool")) {
+				vt = VarType.BOOLEAN;
+			} else if (tt.value.equals("int")) {
+				vt = VarType.INTEGER;
+			} else if (tt.value.equals("double")) {
+				vt = VarType.DOUBLE;
+			} else if (tt.value.equals("string")) {
+				vt = VarType.STRING;
+			} else if (tt.value.equals("array")) {
+				vt = VarType.ARRAY;
+			} else {
+				tokenStream.putBack();
+				return null;
+			}
+
+			tt = tokenStream.match(TokenType.IDENTIFIER);
+			if (tt == null)
+				throw new GrammarException("identifier token expected",
+						tokenStream.getFile(), tokenStream.getLine());
+
+			String pname = (String) tt.value;
+			params.add(new ParamInfo(pname, vt));
+			if (tokenStream.match(TokenType.SEPARATOR, ",") == null)
+				break;
+		}
+
+		if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
+			throw new GrammarException("token ')' expected",
+					tokenStream.getFile(), tokenStream.getLine());
+
+		// 函数体
+		IOp ops = block();
+		if (ops == null)
+			throw new GrammarException("function body expected",
+					tokenStream.getFile(), tokenStream.getLine());
+
+		UserFunctionEval ufe = new UserFunctionEval("<lambda>", ops, params);
+		return new Operand(ufe, t.file, t.line);
 	}
 }

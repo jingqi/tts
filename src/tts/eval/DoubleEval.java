@@ -1,6 +1,6 @@
 package tts.eval;
 
-public class DoubleEval implements IValueEval {
+public final class DoubleEval implements IValueEval {
 
 	private double value;
 

@@ -44,6 +44,7 @@ public final class Operand implements IOp {
 		case INTEGER:
 		case DOUBLE:
 		case STRING:
+		case FUNCTION:
 			return eval;
 
 		case VARIABLE:

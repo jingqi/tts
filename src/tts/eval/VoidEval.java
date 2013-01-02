@@ -1,6 +1,6 @@
 package tts.eval;
 
-public class VoidEval implements IValueEval {
+public final class VoidEval implements IValueEval {
 
 	private VoidEval() {
 	}

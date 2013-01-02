@@ -2,7 +2,7 @@ package tts;
 
 import java.io.*;
 
-import tts.vm.ScriptVM;
+import tts.vm.ScriptEngine;
 
 public class Main {
 
@@ -26,11 +26,6 @@ public class Main {
 				input = args[i];
 			}
 		}
-
-		// debug
-		// input = "e:\\test.txt";
-
-		// 输入端
 		if (input == null) {
 			System.out.println("no input file");
 			return;
@@ -40,9 +35,9 @@ public class Main {
 		}
 
 		// 启动脚本
-		ScriptVM vm = new ScriptVM();
+		ScriptEngine en = new ScriptEngine();
 		if (output != null)
-			vm.setTextOutput(new FileWriter(output));
-		vm.run(new File(input));
+			en.setTextOutput(new FileWriter(output));
+		en.run(new File(input));
 	}
 }

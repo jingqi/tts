@@ -1,6 +1,6 @@
 package tts.eval;
 
-public class IntegerEval implements IValueEval {
+public final class IntegerEval implements IValueEval {
 
 	long value;
 

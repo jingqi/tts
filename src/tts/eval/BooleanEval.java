@@ -1,6 +1,6 @@
 package tts.eval;
 
-public class BooleanEval implements IValueEval {
+public final class BooleanEval implements IValueEval {
 
 	private boolean value;
 

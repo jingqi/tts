@@ -3,8 +3,9 @@ package tts.eval;
 import java.util.*;
 
 import tts.vm.ScriptRuntimeException;
+import tts.vm.ScriptVM;
 
-public class ArrayEval extends ObjectEval {
+public final class ArrayEval extends ObjectEval {
 
 	ArrayList<IValueEval> values = new ArrayList<IValueEval>();
 
@@ -49,7 +50,7 @@ public class ArrayEval extends ObjectEval {
 	private class FuncSize extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -61,7 +62,7 @@ public class ArrayEval extends ObjectEval {
 	private class FuncGet extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -77,7 +78,7 @@ public class ArrayEval extends ObjectEval {
 	private class FuncAppend extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			for (int i = 0, size = args.size(); i < size; ++i)
 				ArrayEval.this.add(args.get(i));
 			return VoidEval.instance;
@@ -87,7 +88,7 @@ public class ArrayEval extends ObjectEval {
 	private class FuncContains extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -100,7 +101,7 @@ public class ArrayEval extends ObjectEval {
 	private class FuncRemove extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -117,7 +118,7 @@ public class ArrayEval extends ObjectEval {
 	private class FuncSet extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 2)
 				throw new ScriptRuntimeException("need 2 argument",
 						NATIVE_FILE, NATIVE_LINE);
@@ -133,7 +134,7 @@ public class ArrayEval extends ObjectEval {
 	private class FuncClear extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument",
 						NATIVE_FILE, NATIVE_LINE);

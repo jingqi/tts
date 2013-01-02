@@ -29,7 +29,7 @@ public final class FuncCallOp implements IOp {
 
 		FunctionEval fe = (FunctionEval) b;
 		vm.pushCallFrame(func.getFile(), func.getLine(), fe.getModuleName());
-		IValueEval ret = fe.call(as);
+		IValueEval ret = fe.call(as, vm);
 		vm.popCallFrame();
 		return ret;
 	}

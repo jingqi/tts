@@ -67,6 +67,14 @@ public final class AssignOp implements IOp {
 						"type not match in assignment", file, line);
 			break;
 
+		case FUNCTION:
+			if (vv.getType() == IValueEval.EvalType.FUNCTION)
+				v.setValue(vv);
+			else
+				throw new ScriptRuntimeException(
+						"type not match in assignment", file, line);
+			break;
+
 		default:
 			throw new ScriptRuntimeException(
 					"assignment not supported for type " + v.getType().name,
