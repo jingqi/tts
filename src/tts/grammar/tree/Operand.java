@@ -2,22 +2,23 @@ package tts.grammar.tree;
 
 import tts.eval.IValueEval;
 import tts.eval.VariableEval;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 /**
  * 操作数
  */
 public final class Operand implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	IValueEval eval;
 
-	public Operand(IValueEval ve, String file, int line) {
+	public Operand(IValueEval ve, SourceLocation sl) {
+		this.sl = sl;
 		this.eval = ve;
-		this.file = file;
-		this.line = line;
+	}
+
+	public Operand(IValueEval ve, String file, int line) {
+		this(ve, new SourceLocation(file, line));
 	}
 
 	public IValueEval getOperand() {
@@ -49,7 +50,7 @@ public final class Operand implements IOp {
 
 		case VARIABLE:
 			VariableEval ve = (VariableEval) eval;
-			IValueEval ret = vm.getVariable(ve.getName()).getValue();
+			IValueEval ret = vm.getVariable(ve.getName(), sl).getValue();
 			if (ret == null)
 				throw new ScriptRuntimeException("variable not initialized",
 						this);
@@ -69,12 +70,7 @@ public final class Operand implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

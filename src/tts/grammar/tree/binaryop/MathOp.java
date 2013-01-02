@@ -4,8 +4,7 @@ import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.IOp;
 import tts.grammar.tree.Operand;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class MathOp implements IOp {
 
@@ -150,7 +149,7 @@ public final class MathOp implements IOp {
 		// 优化常量
 		if (left instanceof Operand && right instanceof Operand) {
 			if (((Operand) left).isConst() && ((Operand) right).isConst()) {
-				return new Operand(eval(null), getFile(), getLine());
+				return new Operand(eval(null), getSourceLocation());
 			}
 		}
 
@@ -165,12 +164,7 @@ public final class MathOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return left.getFile();
-	}
-
-	@Override
-	public int getLine() {
-		return left.getLine();
+	public SourceLocation getSourceLocation() {
+		return left.getSourceLocation();
 	}
 }

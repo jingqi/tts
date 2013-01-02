@@ -9,20 +9,21 @@ import tts.vm.*;
  */
 public final class AssignOp implements IOp {
 
-	String file;
-	int line;
-
+	SourceLocation sl;
 	String varname;
 	IOp value;
 
-	public AssignOp(String name, IOp value, String file, int line) {
+	public AssignOp(String name, IOp value, SourceLocation sl) {
+		this.sl = sl;
 		this.varname = name;
 		this.value = value;
-		this.file = file;
-		this.line = line;
 	}
 
-	public static void assign(Variable v, IValueEval vv, String file, int line) {
+	public AssignOp(String name, IOp value, String file, int line) {
+		this(name, value, new SourceLocation(file, line));
+	}
+
+	public static void assign(Variable v, IValueEval vv, SourceLocation sl) {
 		switch (v.getType()) {
 		case VAR:
 			v.setValue(vv);
@@ -31,7 +32,7 @@ public final class AssignOp implements IOp {
 		case BOOLEAN:
 			if (vv.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException(
-						"type not match in assignment", file, line);
+						"type not match in assignment", sl);
 			v.setValue(vv);
 			break;
 
@@ -42,7 +43,7 @@ public final class AssignOp implements IOp {
 				v.setValue(new DoubleEval(((IntegerEval) vv).getValue()));
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", file, line);
+						"type not match in assignment", sl);
 			break;
 
 		case INTEGER:
@@ -52,7 +53,7 @@ public final class AssignOp implements IOp {
 				v.setValue(new IntegerEval((long) ((DoubleEval) vv).getValue()));
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", file, line);
+						"type not match in assignment", sl);
 			break;
 
 		case STRING:
@@ -60,7 +61,7 @@ public final class AssignOp implements IOp {
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", file, line);
+						"type not match in assignment", sl);
 			break;
 
 		case ARRAY:
@@ -68,7 +69,7 @@ public final class AssignOp implements IOp {
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", file, line);
+						"type not match in assignment", sl);
 			break;
 
 		case MAP:
@@ -76,7 +77,7 @@ public final class AssignOp implements IOp {
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", file, line);
+						"type not match in assignment", sl);
 			break;
 
 		case FUNCTION:
@@ -84,21 +85,22 @@ public final class AssignOp implements IOp {
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", file, line);
+						"type not match in assignment", sl);
 			break;
 
 		default:
 			throw new ScriptRuntimeException(
-					"assignment not supported for type " + v.getType().name,
-					file, line);
+					"assignment not supported for type " + v.getType().name, sl);
 		}
 	}
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
-		Variable v = vm.getVariable(varname);
+		Variable v = vm.getVariable(varname, this.getSourceLocation());
 		IValueEval vv = value.eval(vm);
-		assign(v, vv, file, line);
+		vm.pushCallFrame(getSourceLocation(), SourceLocation.NATIVE_MODULE);
+		assign(v, vv, getSourceLocation());
+		vm.popCallFrame();
 		return v.getValue();
 	}
 
@@ -117,12 +119,8 @@ public final class AssignOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 
-	@Override
-	public int getLine() {
-		return line;
-	}
 }

@@ -30,11 +30,10 @@ public class UserFunctionEval extends FunctionEval {
 	}
 
 	@Override
-	public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+	public IValueEval call(List<IValueEval> args, ScriptVM vm, SourceLocation sl) {
 		if (args.size() != params.size())
 			throw new ScriptRuntimeException(
-					"count of argument not match in calling function",
-					NATIVE_FILE, NATIVE_LINE);
+					"count of argument not match in calling function", sl);
 
 		IValueEval ret = VoidEval.instance;
 		vm.enterFrame();
@@ -43,18 +42,16 @@ public class UserFunctionEval extends FunctionEval {
 			for (int i = 0, size = params.size(); i < size; ++i) {
 				ParamInfo p = params.get(i);
 				Variable v = new Variable(p.name, p.type, null);
-				AssignOp.assign(v, args.get(i), NATIVE_FILE, NATIVE_LINE);
-				vm.addVariable(p.name, v);
+				AssignOp.assign(v, args.get(i), sl);
+				vm.addVariable(p.name, v, sl);
 			}
 
 			// 调用函数
 			ops.eval(vm);
 		} catch (BreakLoopException e) {
-			throw new ScriptRuntimeException("Break without loop", e.file,
-					e.line);
+			throw new ScriptRuntimeException("Break without loop", e.sl);
 		} catch (ContinueLoopException e) {
-			throw new ScriptRuntimeException("Continue without loop", e.file,
-					e.line);
+			throw new ScriptRuntimeException("Continue without loop", e.sl);
 		} catch (ReturnFuncException e) {
 			ret = e.value;
 		} finally {

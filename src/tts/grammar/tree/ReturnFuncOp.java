@@ -1,10 +1,10 @@
 package tts.grammar.tree;
 
 import tts.eval.IValueEval;
-import tts.vm.ReturnFuncException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public class ReturnFuncOp implements IOp {
+
 	IOp value;
 
 	public ReturnFuncOp(IOp v) {
@@ -14,7 +14,8 @@ public class ReturnFuncOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval v = value.eval(vm);
-		throw new ReturnFuncException(v, getFile(), getLine());
+		throw new ReturnFuncException(v, getSourceLocation().file,
+				getSourceLocation().line);
 	}
 
 	@Override
@@ -24,17 +25,12 @@ public class ReturnFuncOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return value.getFile();
-	}
-
-	@Override
-	public int getLine() {
-		return value.getLine();
-	}
-
-	@Override
 	public String toString() {
 		return "return " + value.toString();
+	}
+
+	@Override
+	public SourceLocation getSourceLocation() {
+		return value.getSourceLocation();
 	}
 }

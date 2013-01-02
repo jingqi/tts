@@ -3,8 +3,7 @@ package tts.grammar.tree.binaryop;
 import tts.eval.*;
 import tts.grammar.tree.IOp;
 import tts.grammar.tree.Operand;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class CompareOp implements IOp {
 
@@ -28,19 +27,19 @@ public final class CompareOp implements IOp {
 		this.right = right;
 	}
 
-	static boolean eq(IValueEval l, IValueEval r, String file, int line) {
+	static boolean eq(IValueEval l, IValueEval r, IOp op) {
 		switch (l.getType()) {
 		case STRING:
 			if (r.getType() != IValueEval.EvalType.STRING)
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						file, line);
+						op);
 			return ((StringEval) l).getValue().equals(
 					((StringEval) r).getValue());
 
 		case BOOLEAN:
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						file, line);
+						op);
 			return l == r;
 
 		case DOUBLE:
@@ -55,7 +54,7 @@ public final class CompareOp implements IOp {
 
 			default:
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						file, line);
+						op);
 			}
 
 		case INTEGER:
@@ -70,21 +69,20 @@ public final class CompareOp implements IOp {
 
 			default:
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						file, line);
+						op);
 			}
 
 		default:
-			throw new ScriptRuntimeException("type mismatch in comparison",
-					file, line);
+			throw new ScriptRuntimeException("type mismatch in comparison", op);
 		}
 	}
 
-	static boolean less(IValueEval l, IValueEval r, String file, int line) {
+	static boolean less(IValueEval l, IValueEval r, IOp op) {
 		switch (l.getType()) {
 		case STRING:
 			if (r.getType() != IValueEval.EvalType.STRING)
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						file, line);
+						op);
 			return ((StringEval) l).getValue().compareTo(
 					((StringEval) r).getValue()) < 0;
 
@@ -100,7 +98,7 @@ public final class CompareOp implements IOp {
 
 			default:
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						file, line);
+						op);
 			}
 
 		case INTEGER:
@@ -115,12 +113,11 @@ public final class CompareOp implements IOp {
 
 			default:
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						file, line);
+						op);
 			}
 
 		default:
-			throw new ScriptRuntimeException("type mismatch in comparison",
-					file, line);
+			throw new ScriptRuntimeException("type mismatch in comparison", op);
 		}
 	}
 
@@ -131,27 +128,27 @@ public final class CompareOp implements IOp {
 		boolean rs = false;
 		switch (op) {
 		case EQ:
-			rs = eq(l, r, getFile(), getLine());
+			rs = eq(l, r, this);
 			break;
 
 		case NOT_EQ:
-			rs = !eq(l, r, getFile(), getLine());
+			rs = !eq(l, r, this);
 			break;
 
 		case LESS:
-			rs = less(l, r, getFile(), getLine());
+			rs = less(l, r, this);
 			break;
 
 		case GREATER:
-			rs = less(r, l, getFile(), getLine());
+			rs = less(r, l, this);
 			break;
 
 		case LESS_EQ:
-			rs = !less(r, l, getFile(), getLine());
+			rs = !less(r, l, this);
 			break;
 
 		case GREATER_EQ:
-			rs = !less(l, r, getFile(), getLine());
+			rs = !less(l, r, this);
 		}
 		return BooleanEval.valueOf(rs);
 	}
@@ -164,7 +161,7 @@ public final class CompareOp implements IOp {
 		// 优化常量运算
 		if (left instanceof Operand && right instanceof Operand) {
 			if (((Operand) left).isConst() && ((Operand) right).isConst()) {
-				return new Operand(eval(null), getFile(), getLine());
+				return new Operand(eval(null), getSourceLocation());
 			}
 		}
 
@@ -179,12 +176,7 @@ public final class CompareOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return left.getFile();
-	}
-
-	@Override
-	public int getLine() {
-		return left.getLine();
+	public SourceLocation getSourceLocation() {
+		return left.getSourceLocation();
 	}
 }

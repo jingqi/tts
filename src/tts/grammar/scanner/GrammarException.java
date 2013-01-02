@@ -1,24 +1,28 @@
 package tts.grammar.scanner;
 
+import tts.vm.SourceLocation;
+
 public class GrammarException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	private String file;
-	private int line;
+	private SourceLocation sl;
 
 	public GrammarException(String description, String file, int line) {
 		super(description);
-		this.file = file;
-		this.line = line;
+		sl = new SourceLocation(file, line);
+	}
+
+	public GrammarException(String description, SourceLocation sl) {
+		super(description);
+		this.sl = sl;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("File \"").append(file).append("\", line ").append(line)
-				.append(": ").append(getMessage());
-		sb.append("\n");
+		sb.append("File \"").append(sl.file).append("\", line ")
+				.append(sl.line).append(": ").append(getMessage());
 		return sb.toString();
 	}
 }

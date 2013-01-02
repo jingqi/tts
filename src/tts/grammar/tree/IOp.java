@@ -2,6 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.IValueEval;
 import tts.vm.ScriptVM;
+import tts.vm.SourceLocation;
 
 public interface IOp {
 
@@ -9,7 +10,5 @@ public interface IOp {
 
 	IOp optimize();
 
-	String getFile();
-
-	int getLine();
+	SourceLocation getSourceLocation();
 }

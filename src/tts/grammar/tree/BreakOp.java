@@ -1,22 +1,19 @@
 package tts.grammar.tree;
 
 import tts.eval.IValueEval;
-import tts.vm.BreakLoopException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class BreakOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 
 	public BreakOp(String file, int line) {
-		this.file = file;
-		this.line = line;
+		this.sl = new SourceLocation(file, line);
 	}
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
-		throw new BreakLoopException(file, line);
+		throw new BreakLoopException(sl);
 	}
 
 	@Override
@@ -30,12 +27,7 @@ public final class BreakOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

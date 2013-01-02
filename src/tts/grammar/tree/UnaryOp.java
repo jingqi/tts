@@ -23,16 +23,14 @@ public final class UnaryOp implements IOp {
 		}
 	}
 
-	private String file;
-	private int line;
+	private SourceLocation sl;
 	private OpType op;
 	private IOp eval;
 
-	public UnaryOp(OpType op, IOp e, String file, int line) {
+	public UnaryOp(OpType op, IOp e, SourceLocation sl) {
+		this.sl = sl;
 		this.op = op;
 		this.eval = e;
-		this.file = file;
-		this.line = line;
 	}
 
 	@Override
@@ -47,36 +45,36 @@ public final class UnaryOp implements IOp {
 				throw new ScriptRuntimeException("operand can not be assigned",
 						eval);
 			String name = ((VariableEval) ve).getName();
-			Variable v = vm.getVariable(name);
+			Variable v = vm.getVariable(name, sl);
 
 			switch (op) {
 			case PRE_INCREMENT: {
 				IValueEval rs = new MathOp(eval, MathOp.OpType.ADD,
-						new Operand(new IntegerEval(1), file, line)).eval(vm);
-				AssignOp.assign(v, rs, file, line);
+						new Operand(new IntegerEval(1), sl)).eval(vm);
+				AssignOp.assign(v, rs, sl);
 				return rs;
 			}
 
 			case PRE_DECREMENT: {
 				IValueEval rs = new MathOp(eval, MathOp.OpType.SUB,
-						new Operand(new IntegerEval(1), file, line)).eval(vm);
-				AssignOp.assign(v, rs, file, line);
+						new Operand(new IntegerEval(1), sl)).eval(vm);
+				AssignOp.assign(v, rs, sl);
 				return rs;
 			}
 
 			case POST_INCREMENT: {
 				IValueEval ret = v.getValue();
 				IValueEval rs = new MathOp(eval, MathOp.OpType.ADD,
-						new Operand(new IntegerEval(1), file, line)).eval(vm);
-				AssignOp.assign(v, rs, file, line);
+						new Operand(new IntegerEval(1), sl)).eval(vm);
+				AssignOp.assign(v, rs, sl);
 				return ret;
 			}
 
 			case POST_DECREMENT: {
 				IValueEval ret = v.getValue();
 				IValueEval rs = new MathOp(eval, MathOp.OpType.SUB,
-						new Operand(new IntegerEval(1), file, line)).eval(vm);
-				AssignOp.assign(v, rs, file, line);
+						new Operand(new IntegerEval(1), sl)).eval(vm);
+				AssignOp.assign(v, rs, sl);
 				return ret;
 			}
 
@@ -132,7 +130,7 @@ public final class UnaryOp implements IOp {
 		// 优化常量
 		if (eval instanceof Operand) {
 			if (((Operand) eval).isConst()) {
-				return new Operand(eval(null), file, line);
+				return new Operand(eval(null), sl);
 			}
 		}
 
@@ -147,12 +145,8 @@ public final class UnaryOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 
-	@Override
-	public int getLine() {
-		return line;
-	}
 }

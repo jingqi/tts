@@ -42,13 +42,11 @@ public class ScriptVM {
 
 	// 调用栈
 	private static class CallFrame {
-		String file;
-		int line;
+		SourceLocation sl;
 		String module;
 
-		public CallFrame(String file, int line, String module) {
-			this.file = file;
-			this.line = line;
+		public CallFrame(SourceLocation sl, String module) {
+			this.sl = sl;
 			this.module = module;
 		}
 	}
@@ -77,7 +75,7 @@ public class ScriptVM {
 	}
 
 	// 添加变量定义
-	public void addVariable(String name, Variable var) {
+	public void addVariable(String name, Variable var, SourceLocation sl) {
 		Map<String, Variable> pool;
 		if (frames.size() == 0)
 			pool = globalVars;
@@ -85,13 +83,14 @@ public class ScriptVM {
 			pool = frames.get(frames.size() - 1).localValues;
 
 		if (pool.containsKey(name))
-			throw new RuntimeException("variable + " + name + " redefined");
+			throw new ScriptRuntimeException("variable " + name + " redefined",
+					sl);
 
 		pool.put(name, var);
 	}
 
 	// 获取变量的值
-	public Variable getVariable(String name) {
+	public Variable getVariable(String name, SourceLocation sl) {
 		for (int i = frames.size() - 1; i >= 0; --i) {
 			Map<String, Variable> pool = frames.get(i).localValues;
 			if (pool.containsKey(name))
@@ -101,7 +100,7 @@ public class ScriptVM {
 		if (globalVars.containsKey(name))
 			return globalVars.get(name);
 
-		throw new RuntimeException("variable " + name + " not found");
+		throw new ScriptRuntimeException("variable " + name + " not found", sl);
 	}
 
 	// 设置文本输出流
@@ -130,8 +129,8 @@ public class ScriptVM {
 	}
 
 	// 调用栈压栈
-	public void pushCallFrame(String file, int line, String nextModule) {
-		callFrames.push(new CallFrame(file, line, currentModule));
+	public void pushCallFrame(SourceLocation sl, String nextModule) {
+		callFrames.push(new CallFrame(sl, currentModule));
 		currentModule = nextModule;
 	}
 
@@ -147,7 +146,7 @@ public class ScriptVM {
 	}
 
 	// 加载脚本
-	public IOp loadScript(File dst) throws IOException {
+	public IOp loadScript(File dst, SourceLocation sl) throws IOException {
 		// 从缓存加载
 		IOp ret = loadedFiles.get(dst.getAbsolutePath());
 		if (ret != null)
@@ -156,8 +155,7 @@ public class ScriptVM {
 		// 读取文件内容
 		if (!dst.exists())
 			throw new ScriptRuntimeException("file not exists: "
-					+ dst.getName(), FunctionEval.NATIVE_FILE,
-					FunctionEval.NATIVE_LINE);
+					+ dst.getName(), sl);
 		FileReader fr = new FileReader(dst);
 		CharArrayScanReader ss = new CharArrayScanReader();
 		char[] buf = new char[4096];
@@ -179,7 +177,7 @@ public class ScriptVM {
 		// 优化语法树
 		ret = ret.optimize();
 		if (ret == null)
-			ret = new OpList("<native>", -1); // 空操作
+			ret = OpList.VOID; // 空操作
 		loadedFiles.put(dst.getAbsolutePath(), ret);
 		return ret;
 	}
@@ -188,7 +186,8 @@ public class ScriptVM {
 	private static class FuncExit extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			throw new ExitException();
 		}
 	}
@@ -205,7 +204,7 @@ public class ScriptVM {
 
 		// 默认全局变量
 		addVariable("exit", new Variable("exit", VarType.FUNCTION,
-				new FuncExit()));
+				new FuncExit()), SourceLocation.NATIVE);
 	}
 
 	// 调用栈
@@ -214,7 +213,8 @@ public class ScriptVM {
 		for (int i = callFrames.size() - 1; i >= 0; --i) {
 			CallFrame cf = callFrames.get(i);
 			sb.append("\t").append("at ").append(cf.module).append("(")
-					.append(cf.file).append(":").append(cf.line).append(")\n");
+					.append(cf.sl.file).append(":").append(cf.sl.line)
+					.append(")\n");
 		}
 		return sb.toString();
 	}
@@ -225,7 +225,7 @@ public class ScriptVM {
 		currentScriptPath = script;
 
 		try {
-			IOp op = loadScript(script);
+			IOp op = loadScript(script, SourceLocation.NATIVE);
 			op.eval(this);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

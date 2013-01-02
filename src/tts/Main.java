@@ -20,7 +20,7 @@ public class Main {
 				output = args[i];
 			} else {
 				if (input != null) {
-					System.out.println("too much args");
+					System.out.println("too much arguments");
 					return;
 				}
 				input = args[i];

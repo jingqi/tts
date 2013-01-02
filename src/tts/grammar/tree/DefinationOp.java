@@ -6,8 +6,7 @@ import tts.vm.*;
 
 public final class DefinationOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 
 	VarType type;
 	String name;
@@ -15,10 +14,9 @@ public final class DefinationOp implements IOp {
 
 	public DefinationOp(VarType vt, String name, IOp value, String file,
 			int line) {
+		this.sl = new SourceLocation(file, line);
 		this.type = vt;
 		this.name = name;
-		this.file = file;
-		this.line = line;
 
 		if (value == null) {
 			switch (vt) {
@@ -46,8 +44,8 @@ public final class DefinationOp implements IOp {
 	public IValueEval eval(ScriptVM vm) {
 		Variable v = new Variable(name, type, null);
 		if (value != null)
-			AssignOp.assign(v, value.eval(vm), file, line);
-		vm.addVariable(name, v);
+			AssignOp.assign(v, value.eval(vm), sl);
+		vm.addVariable(name, v, sl);
 		return VoidEval.instance;
 	}
 
@@ -68,12 +66,7 @@ public final class DefinationOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

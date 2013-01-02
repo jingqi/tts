@@ -3,8 +3,7 @@ package tts.grammar.tree.binaryop;
 import tts.eval.IValueEval;
 import tts.eval.ObjectEval;
 import tts.grammar.tree.IOp;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class MemberOp implements IOp {
 
@@ -22,7 +21,7 @@ public final class MemberOp implements IOp {
 		if (!(b instanceof ObjectEval))
 			throw new ScriptRuntimeException("value/object has no member", body);
 
-		return ((ObjectEval) b).member(member);
+		return ((ObjectEval) b).member(member, getSourceLocation());
 	}
 
 	@Override
@@ -39,12 +38,8 @@ public final class MemberOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return body.getFile();
+	public SourceLocation getSourceLocation() {
+		return body.getSourceLocation();
 	}
 
-	@Override
-	public int getLine() {
-		return body.getLine();
-	}
 }

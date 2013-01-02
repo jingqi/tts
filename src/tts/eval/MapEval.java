@@ -3,8 +3,7 @@ package tts.eval;
 import java.util.*;
 import java.util.Map.Entry;
 
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class MapEval extends ObjectEval {
 
@@ -26,10 +25,10 @@ public final class MapEval extends ObjectEval {
 	private class FuncSize extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument",
-						NATIVE_FILE, NATIVE_LINE);
+				throw new ScriptRuntimeException("need 0 argument", sl);
 
 			return new IntegerEval(entries.size());
 		}
@@ -38,23 +37,22 @@ public final class MapEval extends ObjectEval {
 	private class FuncGet extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument",
-						NATIVE_FILE, NATIVE_LINE);
+				throw new ScriptRuntimeException("need 1 argument", sl);
 
 			return entries.get(args.get(0));
 		}
 	}
 
 	@Override
-	public IValueEval member(String name) {
+	public IValueEval member(String name, SourceLocation sl) {
 		if (name.equals("size"))
 			return new FuncSize();
 		if (name.equals("get"))
 			return new FuncGet();
-		throw new ScriptRuntimeException("map no such member: " + name,
-				FunctionEval.NATIVE_FILE, FunctionEval.NATIVE_LINE);
+		throw new ScriptRuntimeException("map no such member: " + name, sl);
 	}
 
 	@Override

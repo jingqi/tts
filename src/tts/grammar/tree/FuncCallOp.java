@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 import tts.eval.FunctionEval;
 import tts.eval.IValueEval;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class FuncCallOp implements IOp {
 
@@ -28,8 +27,8 @@ public final class FuncCallOp implements IOp {
 			as.add(args.get(i).eval(vm));
 
 		FunctionEval fe = (FunctionEval) b;
-		vm.pushCallFrame(func.getFile(), func.getLine(), fe.getModuleName());
-		IValueEval ret = fe.call(as, vm);
+		vm.pushCallFrame(func.getSourceLocation(), fe.getModuleName());
+		IValueEval ret = fe.call(as, vm, getSourceLocation());
 		vm.popCallFrame();
 		return ret;
 	}
@@ -56,12 +55,8 @@ public final class FuncCallOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return func.getFile();
+	public SourceLocation getSourceLocation() {
+		return func.getSourceLocation();
 	}
 
-	@Override
-	public int getLine() {
-		return func.getLine();
-	}
 }

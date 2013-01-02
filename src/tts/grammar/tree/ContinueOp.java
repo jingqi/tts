@@ -1,22 +1,19 @@
 package tts.grammar.tree;
 
 import tts.eval.IValueEval;
-import tts.vm.ContinueLoopException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class ContinueOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 
 	public ContinueOp(String file, int line) {
-		this.file = file;
-		this.line = line;
+		this.sl = new SourceLocation(file, line);
 	}
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
-		throw new ContinueLoopException(file, line);
+		throw new ContinueLoopException(sl);
 	}
 
 	@Override
@@ -30,12 +27,7 @@ public final class ContinueOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

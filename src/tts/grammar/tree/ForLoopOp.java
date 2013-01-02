@@ -5,8 +5,7 @@ import tts.vm.*;
 
 public final class ForLoopOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	IOp init_exp, break_exp, fin_exp, body;
 
 	public ForLoopOp(IOp init, IOp brk, IOp fin, IOp body, String file, int line) {
@@ -14,8 +13,7 @@ public final class ForLoopOp implements IOp {
 		this.break_exp = brk;
 		this.fin_exp = fin;
 		this.body = body;
-		this.file = file;
-		this.line = line;
+		this.sl = new SourceLocation(file, line);
 	}
 
 	@Override
@@ -82,12 +80,7 @@ public final class ForLoopOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

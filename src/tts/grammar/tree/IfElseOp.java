@@ -1,21 +1,18 @@
 package tts.grammar.tree;
 
 import tts.eval.*;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class IfElseOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	IOp cond, body, else_body;
 
 	public IfElseOp(IOp cond, IOp body, IOp else_body, String file, int line) {
 		this.cond = cond;
 		this.body = body;
 		this.else_body = else_body;
-		this.file = file;
-		this.line = line;
+		this.sl = new SourceLocation(file, line);
 	}
 
 	@Override
@@ -70,12 +67,8 @@ public final class IfElseOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 
-	@Override
-	public int getLine() {
-		return line;
-	}
 }

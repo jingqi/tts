@@ -5,14 +5,17 @@ import tts.vm.*;
 
 public final class TextTemplateOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	String template;
 
-	public TextTemplateOp(String t, String file, int line) {
+	public TextTemplateOp(String t, SourceLocation sl) {
+		this.sl = sl;
 		template = t;
-		this.file = file;
-		this.line = line;
+	}
+
+	public TextTemplateOp(String t, String file, int line) {
+		this.sl = new SourceLocation(file, line);
+		template = t;
 	}
 
 	public static String resolveValue(IValueEval ve) {
@@ -78,7 +81,7 @@ public final class TextTemplateOp implements IOp {
 					break;
 				}
 
-				Variable v = vm.getVariable(name.toString());
+				Variable v = vm.getVariable(name.toString(), sl);
 				if (v == null || v.getValue() == null)
 					throw new ScriptRuntimeException("variable " + name
 							+ " not found", this);
@@ -107,12 +110,7 @@ public final class TextTemplateOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

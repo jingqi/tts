@@ -3,8 +3,7 @@ package tts.grammar.tree.binaryop;
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.IOp;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class IndexOp implements IOp {
 
@@ -48,12 +47,7 @@ public final class IndexOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return body.getFile();
-	}
-
-	@Override
-	public int getLine() {
-		return body.getLine();
+	public SourceLocation getSourceLocation() {
+		return body.getSourceLocation();
 	}
 }

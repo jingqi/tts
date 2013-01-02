@@ -2,21 +2,16 @@ package tts.grammar.tree;
 
 import tts.eval.BooleanEval;
 import tts.eval.IValueEval;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class BinSwitchOp implements IOp {
 
-	String file;
-	int line;
 	IOp cond, true_value, false_value;
 
 	public BinSwitchOp(IOp c, IOp t, IOp f) {
 		this.cond = c;
 		this.true_value = t;
 		this.false_value = f;
-		this.file = c.getFile();
-		this.line = c.getLine();
 	}
 
 	@Override
@@ -60,12 +55,7 @@ public final class BinSwitchOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return cond.getSourceLocation();
 	}
 }

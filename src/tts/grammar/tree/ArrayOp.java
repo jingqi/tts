@@ -5,17 +5,20 @@ import java.util.ArrayList;
 import tts.eval.ArrayEval;
 import tts.eval.IValueEval;
 import tts.vm.ScriptVM;
+import tts.vm.SourceLocation;
 
 public final class ArrayOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	ArrayList<IOp> elements;
 
-	public ArrayOp(ArrayList<IOp> v, String file, int line) {
+	public ArrayOp(ArrayList<IOp> v, SourceLocation sl) {
+		this.sl = sl;
 		elements = v;
-		this.file = file;
-		this.line = line;
+	}
+
+	public ArrayOp(ArrayList<IOp> v, String file, int line) {
+		this(v, new SourceLocation(file, line));
 	}
 
 	@Override
@@ -46,12 +49,8 @@ public final class ArrayOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 
-	@Override
-	public int getLine() {
-		return line;
-	}
 }

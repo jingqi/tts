@@ -5,19 +5,25 @@ import java.util.ArrayList;
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
 import tts.vm.ScriptVM;
+import tts.vm.SourceLocation;
 
 /**
  * 操作列表
  */
 public final class OpList implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	ArrayList<IOp> list = new ArrayList<IOp>();
 
+	public static final OpList VOID = new OpList(new SourceLocation(
+			"<native_file>", -1));
+
+	public OpList(SourceLocation sl) {
+		this.sl = sl;
+	}
+
 	public OpList(String file, int line) {
-		this.file = file;
-		this.line = line;
+		this.sl = new SourceLocation(file, line);
 	}
 
 	public void add(IOp op) {
@@ -67,12 +73,7 @@ public final class OpList implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

@@ -3,17 +3,16 @@ package tts.grammar.tree;
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
 import tts.vm.ScriptVM;
+import tts.vm.SourceLocation;
 
 public final class FrameScopOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	IOp op;
 
 	public FrameScopOp(IOp op) {
 		this.op = op;
-		this.file = op.getFile();
-		this.line = op.getLine();
+		this.sl = op.getSourceLocation();
 	}
 
 	@Override
@@ -43,12 +42,7 @@ public final class FrameScopOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

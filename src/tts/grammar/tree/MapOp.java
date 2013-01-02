@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import tts.eval.IValueEval;
 import tts.eval.MapEval;
 import tts.vm.ScriptVM;
+import tts.vm.SourceLocation;
 
 public class MapOp implements IOp {
 
@@ -17,14 +18,12 @@ public class MapOp implements IOp {
 		}
 	}
 
-	String file;
-	int line;
+	SourceLocation sl;
 	ArrayList<Entry> entries;
 
 	public MapOp(ArrayList<Entry> e, String file, int line) {
 		entries = e;
-		this.file = file;
-		this.line = line;
+		sl = new SourceLocation(file, line);
 	}
 
 	@Override
@@ -64,12 +63,7 @@ public class MapOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

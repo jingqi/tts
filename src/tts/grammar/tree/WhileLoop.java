@@ -5,15 +5,17 @@ import tts.vm.*;
 
 public final class WhileLoop implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	IOp brk_exp, body;
 
-	public WhileLoop(IOp brk, IOp body, String file, int line) {
+	public WhileLoop(IOp brk, IOp body, SourceLocation sl) {
+		this.sl = sl;
 		this.brk_exp = brk;
 		this.body = body;
-		this.file = file;
-		this.line = line;
+	}
+
+	public WhileLoop(IOp brk, IOp body, String file, int line) {
+		this(brk, body, new SourceLocation(file, line));
 	}
 
 	@Override
@@ -73,12 +75,8 @@ public final class WhileLoop implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 
-	@Override
-	public int getLine() {
-		return line;
-	}
 }

@@ -4,19 +4,15 @@ import java.io.File;
 import java.io.IOException;
 
 import tts.eval.IValueEval;
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class IncludeOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	String path;
 
 	public IncludeOp(String path, String file, int line) {
 		this.path = path;
-		this.file = file;
-		this.line = line;
 	}
 
 	@Override
@@ -28,7 +24,7 @@ public final class IncludeOp implements IOp {
 		File dst = new File(cur.getParentFile().getAbsolutePath() + "/" + path);
 		IOp op;
 		try {
-			op = vm.loadScript(dst);
+			op = vm.loadScript(dst, sl);
 		} catch (IOException e) {
 			throw new ScriptRuntimeException("can not load file:" + path, this);
 		}
@@ -55,12 +51,7 @@ public final class IncludeOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

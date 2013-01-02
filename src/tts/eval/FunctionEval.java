@@ -3,17 +3,15 @@ package tts.eval;
 import java.util.List;
 
 import tts.vm.ScriptVM;
+import tts.vm.SourceLocation;
 
 public abstract class FunctionEval implements IValueEval {
 
-	public static final String NATIVE_MODULE = "<native_module>";
-	public static final String NATIVE_FILE = "<native_file>";
-	public static final int NATIVE_LINE = -1;
-
-	public abstract IValueEval call(List<IValueEval> args, ScriptVM vm);
+	public abstract IValueEval call(List<IValueEval> args, ScriptVM vm,
+			SourceLocation sl);
 
 	public String getModuleName() {
-		return NATIVE_MODULE;
+		return SourceLocation.NATIVE_MODULE;
 	}
 
 	@Override

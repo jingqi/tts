@@ -5,15 +5,13 @@ import tts.vm.*;
 
 public final class DoWhileLoopOp implements IOp {
 
-	String file;
-	int line;
+	SourceLocation sl;
 	IOp body, brk_exp;
 
 	public DoWhileLoopOp(IOp body, IOp brk, String file, int line) {
 		this.body = body;
 		this.brk_exp = brk;
-		this.file = file;
-		this.line = line;
+		this.sl = new SourceLocation(file, line);
 	}
 
 	@Override
@@ -56,12 +54,7 @@ public final class DoWhileLoopOp implements IOp {
 	}
 
 	@Override
-	public String getFile() {
-		return file;
-	}
-
-	@Override
-	public int getLine() {
-		return line;
+	public SourceLocation getSourceLocation() {
+		return sl;
 	}
 }

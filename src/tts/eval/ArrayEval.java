@@ -2,8 +2,7 @@ package tts.eval;
 
 import java.util.*;
 
-import tts.vm.ScriptRuntimeException;
-import tts.vm.ScriptVM;
+import tts.vm.*;
 
 public final class ArrayEval extends ObjectEval {
 
@@ -50,10 +49,10 @@ public final class ArrayEval extends ObjectEval {
 	private class FuncSize extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument",
-						NATIVE_FILE, NATIVE_LINE);
+				throw new ScriptRuntimeException("need 0 argument", sl);
 
 			return new IntegerEval(size());
 		}
@@ -62,13 +61,12 @@ public final class ArrayEval extends ObjectEval {
 	private class FuncGet extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument",
-						NATIVE_FILE, NATIVE_LINE);
+				throw new ScriptRuntimeException("need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException("need integer", NATIVE_FILE,
-						NATIVE_LINE);
+				throw new ScriptRuntimeException("need integer", sl);
 
 			long i = ((IntegerEval) args.get(0)).getValue();
 			return get((int) i);
@@ -78,7 +76,8 @@ public final class ArrayEval extends ObjectEval {
 	private class FuncAppend extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i)
 				ArrayEval.this.add(args.get(i));
 			return VoidEval.instance;
@@ -88,10 +87,10 @@ public final class ArrayEval extends ObjectEval {
 	private class FuncContains extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument",
-						NATIVE_FILE, NATIVE_LINE);
+				throw new ScriptRuntimeException("need 1 argument", sl);
 
 			IValueEval ve = args.get(0);
 			return BooleanEval.valueOf(values.contains(ve));
@@ -101,13 +100,12 @@ public final class ArrayEval extends ObjectEval {
 	private class FuncRemove extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument",
-						NATIVE_FILE, NATIVE_LINE);
+				throw new ScriptRuntimeException("need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException("integer needed", NATIVE_FILE,
-						NATIVE_LINE);
+				throw new ScriptRuntimeException("integer needed", sl);
 
 			int i = (int) ((IntegerEval) args.get(0)).getValue();
 			values.remove(i);
@@ -118,13 +116,12 @@ public final class ArrayEval extends ObjectEval {
 	private class FuncSet extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			if (args.size() != 2)
-				throw new ScriptRuntimeException("need 2 argument",
-						NATIVE_FILE, NATIVE_LINE);
+				throw new ScriptRuntimeException("need 2 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException("integer needed", NATIVE_FILE,
-						NATIVE_LINE);
+				throw new ScriptRuntimeException("integer needed", sl);
 
 			long i = ((IntegerEval) args.get(0)).getValue();
 			return values.set((int) i, args.get(1));
@@ -134,17 +131,17 @@ public final class ArrayEval extends ObjectEval {
 	private class FuncClear extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm) {
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument",
-						NATIVE_FILE, NATIVE_LINE);
+				throw new ScriptRuntimeException("need 0 argument", sl);
 			values.clear();
 			return VoidEval.instance;
 		}
 	}
 
 	@Override
-	public IValueEval member(String name) {
+	public IValueEval member(String name, SourceLocation sl) {
 		if (name.equals("size"))
 			return new FuncSize();
 		else if (name.equals("get"))
@@ -159,8 +156,7 @@ public final class ArrayEval extends ObjectEval {
 			return new FuncSet();
 		else if (name.equals("clear"))
 			return new FuncClear();
-		throw new ScriptRuntimeException("array no such member: " + name,
-				FunctionEval.NATIVE_FILE, FunctionEval.NATIVE_LINE);
+		throw new ScriptRuntimeException("array no such member: " + name, sl);
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import tts.grammar.tree.*;
 import tts.grammar.tree.binaryop.*;
 import tts.token.scanner.*;
 import tts.token.scanner.Token.TokenType;
+import tts.vm.SourceLocation;
 import tts.vm.VarType;
 
 /**
@@ -160,6 +161,7 @@ public class GrammarScanner {
 		Token tok = tokenStream.match(TokenType.IDENTIFIER);
 		if (tok == null)
 			return null;
+		SourceLocation sl = new SourceLocation(tok.file, tok.line);
 
 		Object op = null;
 		if (tokenStream.match(TokenType.SEPARATOR, "=") != null) {
@@ -202,15 +204,15 @@ public class GrammarScanner {
 
 		String name = (String) tok.value;
 		if (op == null) {
-			return new AssignOp(name, v, tok.file, tok.line);
+			return new AssignOp(name, v, sl);
 		} else if (op instanceof MathOp.OpType) {
 			MathOp.OpType mop = (MathOp.OpType) op;
 			return new AssignOp(name, new MathOp(new Operand(new VariableEval(
-					name), tok.file, tok.line), mop, v), tok.file, tok.line);
+					name), sl), mop, v), sl);
 		} else if (op instanceof BitOp.OpType) {
 			BitOp.OpType bop = (BitOp.OpType) op;
 			return new AssignOp(name, new BitOp(new Operand(new VariableEval(
-					name), tok.file, tok.line), bop, v), tok.file, tok.line);
+					name), sl), bop, v), sl);
 		} else {
 			throw new RuntimeException();
 		}
@@ -514,7 +516,7 @@ public class GrammarScanner {
 
 		if (op == null)
 			return v;
-		return new UnaryOp(op, v, v.getFile(), v.getLine());
+		return new UnaryOp(op, v, v.getSourceLocation());
 	}
 
 	// function = index '(' (index (',' index)*)? ')';
@@ -893,6 +895,10 @@ public class GrammarScanner {
 				vt = VarType.STRING;
 			} else if (tt.value.equals("array")) {
 				vt = VarType.ARRAY;
+			} else if (tt.value.equals("map")) {
+				vt = VarType.MAP;
+			} else if (tt.value.equals("var")) {
+				vt = VarType.VAR;
 			} else {
 				tokenStream.putBack();
 				return null;

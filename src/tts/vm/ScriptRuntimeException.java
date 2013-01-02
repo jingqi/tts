@@ -9,37 +9,31 @@ public class ScriptRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	private String file;
-	private int line;
-
-	public ScriptRuntimeException(String description, String file, int line) {
-		super(description);
-		this.file = file;
-		this.line = line;
-	}
+	private SourceLocation sl;
 
 	public ScriptRuntimeException(String description, IOp op) {
 		super(description);
-		this.file = op.getFile();
-		this.line = op.getLine();
+		sl = op.getSourceLocation();
+	}
+
+	public ScriptRuntimeException(String description, SourceLocation sl) {
+		super(description);
+		this.sl = sl;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("\n");
-		sb.append("File \"").append(file).append("\", line ").append(line)
-				.append(": ").append(getMessage());
-		sb.append("\n");
+		sb.append("File \"").append(sl.file).append("\", line ")
+				.append(sl.line).append(": ").append(getMessage());
 		return sb.toString();
 	}
 
 	public String toString(String module) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("File \"").append(file).append("\", line ").append(line)
-				.append(", module ").append(module).append(": ")
-				.append(getMessage());
-		sb.append("\n");
+		sb.append("File \"").append(sl.file).append("\", line ")
+				.append(sl.line).append(", module ").append(module)
+				.append(": ").append(getMessage());
 		return sb.toString();
 	}
 }
