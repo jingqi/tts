@@ -17,6 +17,8 @@ public interface IScanReader {
 	 */
 	boolean preMatch(String s);
 
+	boolean match(String s);
+
 	void skip(int len) throws IOException;
 
 	int tell();
@@ -28,5 +30,7 @@ public interface IScanReader {
 	/**
 	 * 回退字符
 	 */
-	void backward(int len) throws IOException;
+	void putback() throws IOException;
+
+	void putback(int len) throws IOException;
 }

@@ -54,13 +54,26 @@ public class Reader2ScanReader implements IScanReader {
 
 	@Override
 	public boolean preMatch(String s) {
+		if (!match(s))
+			return false;
+
+		try {
+			putback(s.length());
+		} catch (IOException e) {
+			throw new RuntimeException("不可能发生");
+		}
+		return true;
+	}
+
+	@Override
+	public boolean match(String s) {
 		for (int i = 0; i < s.length(); ++i) {
 			char c;
 			try {
 				c = read();
 			} catch (IOException e) {
 				try {
-					backward(i);
+					putback(i);
 				} catch (IOException e1) {
 					throw new IllegalStateException("不可能发生");
 				}
@@ -69,7 +82,7 @@ public class Reader2ScanReader implements IScanReader {
 
 			if (c != s.charAt(i)) {
 				try {
-					backward(i + 1);
+					putback(i + 1);
 				} catch (IOException e) {
 					throw new IllegalStateException("不可能发生");
 				}
@@ -105,7 +118,12 @@ public class Reader2ScanReader implements IScanReader {
 	}
 
 	@Override
-	public void backward(int len) throws IOException {
+	public void putback() throws IOException {
+		putback(1);
+	}
+
+	@Override
+	public void putback(int len) throws IOException {
 		if (len > readed.size())
 			throw new IOException();
 		for (int i = 0; i < len; ++i)

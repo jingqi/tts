@@ -139,7 +139,7 @@ public class ScriptVM {
 
 		// 解析文件
 		ss.seek(0);
-		TokenScanner tsn = new TokenScanner(ss);
+		TokenScanner tsn = new TokenScanner(ss, dst.getName());
 		TokenStream ts = new TokenStream(tsn);
 		GrammarScanner gs = new GrammarScanner(ts);
 
@@ -171,7 +171,7 @@ public class ScriptVM {
 	public void run(IScanReader r) {
 		currentPath = null;
 		scriptPathStack.clear();
-		TokenScanner tsn = new TokenScanner(r);
+		TokenScanner tsn = new TokenScanner(r, "<memory>");
 		TokenStream ts = new TokenStream(tsn);
 		GrammarScanner gs = new GrammarScanner(ts);
 		IOp op = gs.all();

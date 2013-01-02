@@ -34,6 +34,10 @@ public class TokenScanner {
 	// 输入
 	private IScanReader reader;
 
+	// 源文件、行号
+	private String file;
+	private int line;
+
 	// 是否在行代码模式
 	private boolean inLineCode = false;
 
@@ -70,8 +74,10 @@ public class TokenScanner {
 			"{", "}", ">", "<", "=", "+", "-", "*", "/", "%", "!", "~", "^",
 			"&", "|", "(", ")", ";", ";", ".", ":", "[", "]", ",", "?" };
 
-	public TokenScanner(IScanReader reader) {
+	public TokenScanner(IScanReader reader, String file) {
 		this.reader = reader;
+		this.file = file;
+		this.line = 1;
 	}
 
 	public Token nextToken() throws IOException {
@@ -82,17 +88,15 @@ public class TokenScanner {
 				return null;
 
 			if (oldPos == reader.tell())
-				throw new ScannerException("");
+				throw new ScannerException("token not recognised", file, line);
 			oldPos = reader.tell();
 
 			if (!inLineCode && !inBlockCode) {
-				if (reader.preMatch(BLOCK_CODE_START)) {
-					reader.skip(BLOCK_CODE_START.length());
+				if (reader.match(BLOCK_CODE_START)) {
 					inBlockCode = true;
 					continue;
 				}
-				if (reader.preMatch(LINE_CODE_START)) {
-					reader.skip(LINE_CODE_START.length());
+				if (reader.match(LINE_CODE_START)) {
 					inLineCode = true;
 					continue;
 				}
@@ -102,21 +106,15 @@ public class TokenScanner {
 			} else if (inLineCode) {
 				// 略过空白
 				do {
-					char c = reader.read();
-					if (c == ' ' || c == '\t' || c == '\f') {
+					if (reader.match(" ") || reader.match("\t")
+							|| reader.match("\f")) {
 						continue;
-					} else if (c == '\n') {
-						if (!reader.eof() && reader.read() != '\r')
-							reader.backward(1);
-						inLineCode = false; // 代码行结束
-						continue TEXT_CODE_LOOP;
-					} else if (c == '\r') {
-						if (!reader.eof() && reader.read() != '\n')
-							reader.backward(1);
-						inLineCode = false; // 代码行结束
+					} else if (reader.match("\n\r") || reader.match("\r\n")
+							|| reader.match("\n") || reader.match("\r")) {
+						++line;
+						inLineCode = false; // 行代码结束
 						continue TEXT_CODE_LOOP;
 					} else {
-						reader.backward(1);
 						break;
 					}
 				} while (!reader.eof());
@@ -126,26 +124,38 @@ public class TokenScanner {
 				Token tk = getToken();
 				if (tk != null)
 					return tk;
-			} else if (inBlockCode) {// 略过空白
+			} else if (inBlockCode) {
+				// 略过空白
 				do {
-					char c = reader.read();
-					if (c == ' ' || c == '\t' || c == '\f' || c == '\n'
-							|| c == '\r') {
+					if (reader.match(" ") || reader.match("\t")
+							|| reader.match("\f")) {
+						continue;
+					} else if (reader.match("\n\r") || reader.match("\r\n")
+							|| reader.match("\n") || reader.match("\r")) {
+						++line;
 						continue;
 					} else {
-						reader.backward(1);
 						break;
 					}
 				} while (!reader.eof());
 				if (reader.eof())
 					return null;
 
-				if (reader.preMatch(BLOCK_CODE_END)) {
-					reader.skip(BLOCK_CODE_END.length());
-					if (reader.preMatch("\r\n") || reader.preMatch("\n\r"))
-						reader.skip(2);
-					else if (reader.preMatch("\n") || reader.preMatch("\r"))
-						reader.skip(1);
+				if (reader.match(BLOCK_CODE_END)) {
+					// 略过块代码后面的空行，以免TextTemplate后面带很多空白
+					do {
+						if (reader.match(" ") || reader.match("\t")
+								|| reader.match("\f")) {
+							continue;
+						} else if (reader.match("\n\r") || reader.match("\r\n")
+								|| reader.match("\n") || reader.match("\r")) {
+							++line;
+							break;
+						} else {
+							break;
+						}
+					} while (!reader.eof());
+
 					inBlockCode = false; // 代码块结束
 					continue TEXT_CODE_LOOP;
 				}
@@ -169,27 +179,27 @@ public class TokenScanner {
 
 		// 字符串
 		if (c == '\"' || c == '\'') {
-			reader.backward(1);
+			reader.putback();
 			return getString();
 		}
 
 		// 关键字，标识符
 		if (c == '_' || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')) {
-			reader.backward(1);
+			reader.putback(1);
 			return getIdentifierOrKeyword();
 		}
 
 		// 数字
 		if ('0' <= c && c <= '9') {
-			reader.backward(1);
+			reader.putback();
 			return getNumber();
 		} else if (c == '.' && !reader.eof()) {
 			c = reader.read();
 			if ('0' <= c && c <= '9') {
-				reader.backward(2);
+				reader.putback(2);
 				return getNumber();
 			} else {
-				reader.backward(1);
+				reader.putback(1);
 			}
 		}
 
@@ -197,16 +207,16 @@ public class TokenScanner {
 		if (c == '/' && !reader.eof()) {
 			c = reader.read();
 			if (c == '/' || c == '*') {
-				reader.backward(2);
+				reader.putback(2);
 				skipComment();
 				return null;
 			} else {
-				reader.backward(1);
+				reader.putback();
 			}
 		}
 
 		// 分隔符：标点、运算符
-		reader.backward(1);
+		reader.putback();
 		return getSeparator();
 	}
 
@@ -231,33 +241,36 @@ public class TokenScanner {
 	}
 
 	private void skipComment() throws IOException {
-		if (reader.preMatch("//")) {
+		if (reader.match("//")) {
 			// 行注释
-			reader.skip(2);
 			while (!reader.eof()) {
 				char c = reader.read();
 				if (c == '\n') {
 					if (!reader.eof() && reader.read() != '\r')
-						reader.backward(1);
+						reader.putback(1);
+					++line;
 					return;
 				} else if (c == '\r') {
 					if (!reader.eof() && reader.read() != '\n')
-						reader.backward(1);
+						reader.putback(1);
+					++line;
 					return;
 				}
 			}
 			return;
-		} else if (reader.preMatch("/*")) {
+		} else if (reader.match("/*")) {
 			// 块注释
-			reader.skip(2);
 			while (!reader.eof()) {
-				if (reader.preMatch("*/")) {
-					reader.skip(2);
+				if (reader.match("*/"))
 					return;
-				}
-				reader.skip(1);
+				else if (reader.match("\n\r") || reader.match("\r\n")
+						|| reader.match("\n") || reader.match("\r"))
+					++line;
+				else
+					reader.skip(1);
 			}
-			throw new ScannerException("need an end of block comment");
+			throw new ScannerException("need an end of block comment", file,
+					line);
 		}
 	}
 
@@ -269,7 +282,7 @@ public class TokenScanner {
 			if ('0' <= c && c <= '9') {
 				v = v * 10 + (c - '0');
 			} else {
-				reader.backward(1);
+				reader.putback(1);
 				break;
 			}
 		}
@@ -286,7 +299,7 @@ public class TokenScanner {
 			if ('0' <= c && c <= '9') {
 				v += (c - '0') / Math.pow(10, w);
 			} else {
-				reader.backward(1);
+				reader.putback(1);
 				break;
 			}
 		}
@@ -311,12 +324,12 @@ public class TokenScanner {
 			d = getDecimal();
 			float_value = true;
 		} else {
-			reader.backward(1);
+			reader.putback(1);
 			i = getInteger();
 			if (!reader.eof()) {
 				c = reader.read();
 				if (c != '.') {
-					reader.backward(1);
+					reader.putback(1);
 				} else {
 					d = getDecimal();
 					float_value = true;
@@ -327,7 +340,7 @@ public class TokenScanner {
 		if (!reader.eof()) {
 			c = reader.read();
 			if (c != 'e' && c != 'E') {
-				reader.backward(1);
+				reader.putback(1);
 			} else {
 				e = getInteger();
 				float_value = true;
@@ -348,7 +361,7 @@ public class TokenScanner {
 		reader.skip(2);
 
 		if (reader.eof())
-			throw new ScannerException("hex number expected");
+			throw new ScannerException("hex number expected", file, line);
 
 		long v = 0;
 		boolean over_flow = false;
@@ -380,7 +393,8 @@ public class TokenScanner {
 	// 处理转义字符
 	private char convertChar() throws IOException {
 		if (reader.eof())
-			throw new ScannerException("end of string expected");
+			throw new ScannerException("end of const string expected", file,
+					line);
 		char c = reader.read();
 		switch (c) {
 		case 'a':
@@ -418,7 +432,7 @@ public class TokenScanner {
 				} else if ('A' <= cc && cc <= 'F') {
 					c = (char) (c * 16 + cc - 'A' + 10);
 				} else {
-					reader.backward(1);
+					reader.putback(1);
 					break;
 				}
 			}
@@ -438,14 +452,15 @@ public class TokenScanner {
 				if ('0' <= cc && cc <= '7') {
 					c = (char) (c * 8 + cc - '0');
 				} else {
-					reader.backward(1);
+					reader.putback(1);
 					break;
 				}
 			}
 			return c;
 
 		default:
-			throw new ScannerException("unknow char convertion in string");
+			throw new ScannerException("unknow char convertion in string",
+					file, line);
 		}
 	}
 
@@ -457,18 +472,20 @@ public class TokenScanner {
 
 		final char string_dec = c;
 		if (reader.eof())
-			throw new ScannerException("end of string expected");
+			throw new ScannerException("end of const string expected", file,
+					line);
 
 		c = reader.read();
 		StringBuilder sb = new StringBuilder();
 		if (c == string_dec) { // 字符串块
 			if (reader.eof() || reader.read() != string_dec)
-				throw new ScannerException("string block expected");
+				throw new ScannerException("string block expected", file, line);
 
 			final String str_end = "" + string_dec + string_dec + string_dec;
 			while (true) {
 				if (reader.eof())
-					throw new ScannerException("string block expected");
+					throw new ScannerException("string block expected", file,
+							line);
 
 				if (reader.preMatch(str_end)) {
 					reader.skip(3);
@@ -478,12 +495,14 @@ public class TokenScanner {
 				c = reader.read();
 				if (c == '\n') {
 					if (!reader.eof() && reader.read() != '\r')
-						reader.backward(1);
+						reader.putback(1);
 					sb.append('\n');
+					++line;
 				} else if (c == '\r') {
 					if (!reader.eof() && reader.read() != '\n')
-						reader.backward(1);
+						reader.putback(1);
 					sb.append('\n');
+					++line;
 				} else {
 					sb.append(c);
 				}
@@ -497,7 +516,8 @@ public class TokenScanner {
 			if (c == '\\') {
 				sb.append(convertChar());
 			} else if (c == '\n' || c == '\r') {
-				throw new ScannerException("unexpected line end in string");
+				throw new ScannerException(
+						"unexpected line end in const string", file, line);
 			} else if (c == string_dec) {
 				break;
 			} else {
@@ -505,7 +525,7 @@ public class TokenScanner {
 			}
 
 			if (reader.eof())
-				throw new ScannerException("end of string expected");
+				throw new ScannerException("end of string expected", file, line);
 			c = reader.read();
 		}
 
@@ -537,7 +557,7 @@ public class TokenScanner {
 			if (isIdentifierChar(c)) {
 				sb.append(c);
 			} else {
-				reader.backward(1);
+				reader.putback(1);
 				break;
 			}
 		}
@@ -563,6 +583,7 @@ public class TokenScanner {
 			char c = reader.read();
 			if (c == '\n') {
 				sb.append('\n');
+				++line;
 				if (reader.eof())
 					break;
 				char cc = reader.read();
@@ -570,6 +591,7 @@ public class TokenScanner {
 					sb.append(cc);
 			} else if (c == '\r') {
 				sb.append('\n');
+				++line;
 				if (reader.eof())
 					break;
 				char cc = reader.read();

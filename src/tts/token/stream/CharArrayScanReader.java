@@ -211,7 +211,25 @@ public class CharArrayScanReader implements IScanReader, IBuferWriter {
 	}
 
 	@Override
-	public void backward(int len) {
+	public boolean match(String s) {
+		if (!preMatch(s))
+			return false;
+
+		try {
+			skip(s.length());
+		} catch (IOException e) {
+			throw new RuntimeException("不可能发生");
+		}
+		return true;
+	}
+
+	@Override
+	public void putback() {
+		putback(1);
+	}
+
+	@Override
+	public void putback(int len) {
 		if (len < 0 || len > index)
 			throw new IllegalArgumentException();
 		index -= len;
