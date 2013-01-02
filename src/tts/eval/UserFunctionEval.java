@@ -54,9 +54,8 @@ public class UserFunctionEval extends FunctionEval {
 			throw new ScriptRuntimeException("Continue without loop", e.sl);
 		} catch (ReturnFuncException e) {
 			ret = e.value;
-		} finally {
-			vm.leaveFrame();
 		}
+		vm.leaveFrame();
 		return ret;
 	}
 

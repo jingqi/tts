@@ -247,8 +247,9 @@ public class ScriptVM {
 			System.err.println("Grammar exception:");
 			System.err.println(e.toString());
 		} catch (ScriptRuntimeException e) {
-			System.err.println("Script runtime exception:");
-			System.err.println(e.toString(currentModule));
+			pushCallFrame(e.sl, SourceLocation.NATIVE_MODULE);
+			System.err.print("Script runtime exception: ");
+			System.err.println(e.getMessage());
 			System.err.println(callingStack());
 		}
 	}
@@ -283,8 +284,9 @@ public class ScriptVM {
 			System.err.println("Grammar exception:");
 			System.err.println(e.toString());
 		} catch (ScriptRuntimeException e) {
-			System.err.println("Script runtime exception:");
-			System.err.println(e.toString(currentModule));
+			pushCallFrame(e.sl, SourceLocation.NATIVE_MODULE);
+			System.err.print("Script runtime exception: ");
+			System.err.println(e.getMessage());
 			System.err.println(callingStack());
 		}
 	}

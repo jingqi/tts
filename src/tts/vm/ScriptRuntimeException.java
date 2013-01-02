@@ -9,7 +9,7 @@ public class ScriptRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	private SourceLocation sl;
+	public final SourceLocation sl;
 
 	public ScriptRuntimeException(String description, IOp op) {
 		super(description);
@@ -26,14 +26,6 @@ public class ScriptRuntimeException extends RuntimeException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("File \"").append(sl.file).append("\", line ")
 				.append(sl.line).append(": ").append(getMessage());
-		return sb.toString();
-	}
-
-	public String toString(String module) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("File \"").append(sl.file).append("\", line ")
-				.append(sl.line).append(", module ").append(module)
-				.append(": ").append(getMessage());
 		return sb.toString();
 	}
 }
