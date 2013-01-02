@@ -5,7 +5,7 @@ package tts.vm;
  */
 public enum VarType {
 	BOOLEAN("bool"), INTEGER("int"), DOUBLE("double"), STRING("string"), ARRAY(
-			"array"), FUNCTION("function"), MAP("map");
+			"array"), FUNCTION("function"), MAP("map"), VAR("var");
 
 	public final String name;
 

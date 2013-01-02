@@ -24,6 +24,10 @@ public final class AssignOp implements IOp {
 
 	public static void assign(Variable v, IValueEval vv, String file, int line) {
 		switch (v.getType()) {
+		case VAR:
+			v.setValue(vv);
+			break;
+
 		case BOOLEAN:
 			if (vv.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException(

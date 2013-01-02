@@ -675,6 +675,8 @@ public class GrammarScanner {
 			vt = VarType.ARRAY;
 		} else if (t.value.equals("map")) {
 			vt = VarType.MAP;
+		} else if (t.value.equals("var")) {
+			vt = VarType.VAR;
 		} else if (t.value.equals("function")) {
 			vt = VarType.FUNCTION;
 			if (tokenStream.match(TokenType.IDENTIFIER) == null) {
