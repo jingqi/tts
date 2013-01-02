@@ -33,6 +33,7 @@ public final class TextTemplateOp implements IOp {
 			return "";
 
 		case ARRAY:
+		case MAP:
 			return ve.toString();
 
 		default:

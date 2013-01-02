@@ -67,4 +67,9 @@ public class UserFunctionEval extends FunctionEval {
 	public String getModuleName() {
 		return module;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o == this;
+	}
 }

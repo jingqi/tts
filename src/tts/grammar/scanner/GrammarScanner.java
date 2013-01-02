@@ -622,6 +622,10 @@ public class GrammarScanner {
 				tokenStream.putBack();
 				IOp v = array();
 				return v;
+			} else if (t.value.equals("{")) {
+				tokenStream.putBack();
+				IOp v = map();
+				return v;
 			}
 
 		default:
@@ -669,6 +673,8 @@ public class GrammarScanner {
 			vt = VarType.STRING;
 		} else if (t.value.equals("array")) {
 			vt = VarType.ARRAY;
+		} else if (t.value.equals("map")) {
+			vt = VarType.MAP;
 		} else if (t.value.equals("function")) {
 			vt = VarType.FUNCTION;
 			if (tokenStream.match(TokenType.IDENTIFIER) == null) {
@@ -973,5 +979,42 @@ public class GrammarScanner {
 
 		UserFunctionEval ufe = new UserFunctionEval("<lambda>", ops, params);
 		return new Operand(ufe, t.file, t.line);
+	}
+
+	// map_entry = rvalue ':' rvalue
+	// map = '{' (map_entry (',' map_entry)*)? '}'
+	private IOp map() {
+		int p = tokenStream.tell();
+		Token t = tokenStream.match(TokenType.SEPARATOR, "{");
+		if (t == null)
+			return null;
+
+		ArrayList<MapOp.Entry> l = new ArrayList<MapOp.Entry>();
+		while (true) {
+			IOp k = expression();
+			if (k == null)
+				break;
+
+			if (tokenStream.match(TokenType.SEPARATOR, ":") == null) {
+				tokenStream.seek(p);
+				return null;
+			}
+
+			IOp v = expression();
+			if (v == null)
+				throw new GrammarException("value of map entry expected",
+						tokenStream.getFile(), tokenStream.getLine());
+
+			l.add(new MapOp.Entry(k, v));
+
+			if (tokenStream.match(TokenType.SEPARATOR, ",") == null)
+				break;
+		}
+		if (tokenStream.match(TokenType.SEPARATOR, "}") == null) {
+			tokenStream.seek(p);
+			return null;
+		}
+
+		return new MapOp(l, t.file, t.line);
 	}
 }
