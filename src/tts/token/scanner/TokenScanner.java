@@ -164,7 +164,7 @@ public class TokenScanner {
 						}
 					} while (!reader.eof());
 
-					inBlockCode = false; // 代码块结束
+					inBlockCode = false; // 块代码结束
 					continue TEXT_CODE_LOOP;
 				}
 
@@ -252,11 +252,13 @@ public class TokenScanner {
 					if (!reader.eof() && reader.read() != '\r')
 						reader.putBack(1);
 					++line;
+					inLineCode = false; // 行代码结束
 					return;
 				} else if (c == '\r') {
 					if (!reader.eof() && reader.read() != '\n')
 						reader.putBack(1);
 					++line;
+					inLineCode = false; // 行代码结束
 					return;
 				}
 			}
