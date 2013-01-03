@@ -493,25 +493,16 @@ public class TokenScanner {
 					throw new ScannerException("string block expected", file,
 							line);
 
-				if (reader.preMatch(str_end)) {
-					reader.skip(3);
+				if (reader.match(str_end)) {
 					break;
+				} else if (reader.match("\n\r") || reader.match("\r\n")
+						|| reader.match("\n") || reader.match("\r")) {
+					sb.append('\n');
+					++line;
+					continue;
 				}
 
-				c = reader.read();
-				if (c == '\n') {
-					if (!reader.eof() && reader.read() != '\r')
-						reader.putBack(1);
-					sb.append('\n');
-					++line;
-				} else if (c == '\r') {
-					if (!reader.eof() && reader.read() != '\n')
-						reader.putBack(1);
-					sb.append('\n');
-					++line;
-				} else {
-					sb.append(c);
-				}
+				sb.append(reader.read());
 			}
 			String s = sb.toString();
 			return new Token(TokenType.STRING, s, file, start_line);
