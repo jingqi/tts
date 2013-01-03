@@ -2,13 +2,14 @@ package tts.token.stream;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Stack;
+
+import tts.util.CharStack;
 
 public class Reader2ScanReader implements IScanReader {
 
 	Reader reader;
-	Stack<Character> readed = new Stack<Character>();
-	Stack<Character> unreaded = new Stack<Character>();
+	CharStack readed = new CharStack();
+	CharStack unreaded = new CharStack();
 
 	public Reader2ScanReader(Reader reader) {
 		this.reader = reader;
