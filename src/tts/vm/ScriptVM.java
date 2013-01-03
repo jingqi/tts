@@ -130,7 +130,7 @@ public class ScriptVM {
 
 	// 当前脚本路径压栈，换成相对的另一个路径
 	public void pushScriptPath(File path) {
-		scriptPathStack.push(currentScriptPath);
+		scriptPathStack.push(currentScriptPath.getAbsoluteFile());
 		currentScriptPath = path;
 	}
 
@@ -227,7 +227,7 @@ public class ScriptVM {
 	// 脚本入口
 	public void run(File script) {
 		initExecEnv();
-		currentScriptPath = script;
+		currentScriptPath = script.getAbsoluteFile();
 
 		try {
 			IOp op = loadScript(script, SourceLocation.NATIVE);
