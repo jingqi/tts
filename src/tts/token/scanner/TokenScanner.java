@@ -586,27 +586,14 @@ public class TokenScanner {
 			if (reader.eof() || reader.preMatch(BLOCK_CODE_START)
 					|| reader.preMatch(LINE_CODE_START)) {
 				break;
-			}
-			char c = reader.read();
-			if (c == '\n') {
+			} else if (reader.match("\n\r") || reader.match("\r\n")
+					|| reader.match("\n") || reader.match("\r")) {
 				sb.append('\n');
 				++line;
-				if (reader.eof())
-					break;
-				char cc = reader.read();
-				if (cc != '\r')
-					sb.append(cc);
-			} else if (c == '\r') {
-				sb.append('\n');
-				++line;
-				if (reader.eof())
-					break;
-				char cc = reader.read();
-				if (cc != '\n')
-					sb.append(cc);
-			} else {
-				sb.append(c);
+				continue;
 			}
+
+			sb.append(reader.read());
 		}
 
 		assert sb.length() > 0;
