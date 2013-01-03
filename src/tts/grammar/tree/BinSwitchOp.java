@@ -2,7 +2,9 @@ package tts.grammar.tree;
 
 import tts.eval.BooleanEval;
 import tts.eval.IValueEval;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class BinSwitchOp implements IOp {
 

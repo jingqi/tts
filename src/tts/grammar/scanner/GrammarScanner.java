@@ -8,7 +8,7 @@ import tts.grammar.tree.*;
 import tts.grammar.tree.binaryop.*;
 import tts.token.scanner.*;
 import tts.token.scanner.Token.TokenType;
-import tts.vm.SourceLocation;
+import tts.util.SourceLocation;
 import tts.vm.VarType;
 
 /**

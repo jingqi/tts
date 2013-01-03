@@ -2,7 +2,9 @@ package tts.eval;
 
 import java.util.List;
 
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class StringEval extends ObjectEval {
 

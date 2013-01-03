@@ -1,6 +1,6 @@
 package tts.token.scanner;
 
-import tts.vm.SourceLocation;
+import tts.util.SourceLocation;
 
 public class ScannerException extends RuntimeException {
 

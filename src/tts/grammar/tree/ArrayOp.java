@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import tts.eval.ArrayEval;
 import tts.eval.IValueEval;
+import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.SourceLocation;
 
 public final class ArrayOp implements IOp {
 

@@ -2,6 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.grammar.tree.binaryop.AssignOp;
+import tts.util.SourceLocation;
 import tts.vm.*;
 
 public final class DefinationOp implements IOp {

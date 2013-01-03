@@ -3,7 +3,9 @@ package tts.grammar.tree.binaryop;
 import tts.eval.*;
 import tts.grammar.tree.IOp;
 import tts.grammar.tree.Operand;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class CompareOp implements IOp {
 

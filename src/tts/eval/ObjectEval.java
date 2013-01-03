@@ -1,6 +1,6 @@
 package tts.eval;
 
-import tts.vm.SourceLocation;
+import tts.util.SourceLocation;
 
 public abstract class ObjectEval implements IValueEval {
 

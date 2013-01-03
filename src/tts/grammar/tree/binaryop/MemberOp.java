@@ -3,7 +3,9 @@ package tts.grammar.tree.binaryop;
 import tts.eval.IValueEval;
 import tts.eval.ObjectEval;
 import tts.grammar.tree.IOp;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class MemberOp implements IOp {
 

@@ -3,7 +3,9 @@ package tts.grammar.tree.binaryop;
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.IOp;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class IndexOp implements IOp {
 

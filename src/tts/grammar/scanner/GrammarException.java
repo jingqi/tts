@@ -1,6 +1,6 @@
 package tts.grammar.scanner;
 
-import tts.vm.SourceLocation;
+import tts.util.SourceLocation;
 
 public class GrammarException extends RuntimeException {
 

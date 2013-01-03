@@ -1,7 +1,9 @@
 package tts.grammar.tree;
 
 import tts.eval.*;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class TextTemplateOp implements IOp {
 

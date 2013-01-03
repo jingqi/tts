@@ -4,7 +4,9 @@ import tts.eval.IValueEval;
 import tts.eval.IntegerEval;
 import tts.grammar.tree.IOp;
 import tts.grammar.tree.Operand;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class BitOp implements IOp {
 

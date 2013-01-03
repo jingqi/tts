@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 
 import tts.eval.IValueEval;
+import tts.eval.VoidEval;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class IncludeOp implements IOp {
 
@@ -37,7 +40,7 @@ public final class IncludeOp implements IOp {
 			vm.popScriptPath();
 		}
 
-		return null;
+		return VoidEval.instance;
 	}
 
 	@Override

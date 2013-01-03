@@ -5,7 +5,9 @@ import java.util.List;
 
 import tts.grammar.tree.IOp;
 import tts.grammar.tree.binaryop.AssignOp;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.*;
 
 public class UserFunctionEval extends FunctionEval {
 

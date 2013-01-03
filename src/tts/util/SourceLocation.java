@@ -1,4 +1,4 @@
-package tts.vm;
+package tts.util;
 
 public class SourceLocation {
 

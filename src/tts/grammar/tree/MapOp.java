@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import tts.eval.IValueEval;
 import tts.eval.MapEval;
+import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.SourceLocation;
 
 public class MapOp implements IOp {
 

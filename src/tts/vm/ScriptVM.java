@@ -3,8 +3,6 @@ package tts.vm;
 import java.io.*;
 import java.util.*;
 
-import tts.eval.FunctionEval;
-import tts.eval.IValueEval;
 import tts.grammar.scanner.GrammarException;
 import tts.grammar.scanner.GrammarScanner;
 import tts.grammar.tree.IOp;
@@ -13,6 +11,11 @@ import tts.token.scanner.*;
 import tts.token.stream.CharArrayScanReader;
 import tts.token.stream.IScanReader;
 import tts.util.PrintStreamWriter;
+import tts.util.SourceLocation;
+import tts.vm.BuiltinApi.FuncEval;
+import tts.vm.BuiltinApi.FuncExit;
+import tts.vm.BuiltinApi.FuncOutput;
+import tts.vm.rtexcpt.*;
 
 /**
  * 脚本运行虚拟机
@@ -105,6 +108,14 @@ public class ScriptVM {
 
 	// 设置文本输出流
 	public void setTextOutput(Writer w) {
+		if (textOutput != null) {
+			try {
+				textOutput.flush();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
 		textOutput = w;
 	}
 
@@ -182,16 +193,6 @@ public class ScriptVM {
 		return ret;
 	}
 
-	// 退出程序
-	private static class FuncExit extends FunctionEval {
-
-		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
-			throw new ExitException();
-		}
-	}
-
 	// 初始化执行环境
 	private void initExecEnv() {
 		globalVars.clear();
@@ -203,6 +204,10 @@ public class ScriptVM {
 		currentModule = "<module>";
 
 		// 默认全局变量
+		addVariable("eval", new Variable("eval", VarType.FUNCTION,
+				new FuncEval()), SourceLocation.NATIVE);
+		addVariable("output", new Variable("output", VarType.FUNCTION,
+				new FuncOutput()), SourceLocation.NATIVE);
 		addVariable("exit", new Variable("exit", VarType.FUNCTION,
 				new FuncExit()), SourceLocation.NATIVE);
 	}
@@ -227,6 +232,7 @@ public class ScriptVM {
 		try {
 			IOp op = loadScript(script, SourceLocation.NATIVE);
 			op.eval(this);
+			textOutput.flush();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} catch (BreakLoopException e) {
@@ -266,6 +272,9 @@ public class ScriptVM {
 			op = op.optimize();
 			if (op != null)
 				op.eval(this);
+			textOutput.flush();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		} catch (BreakLoopException e) {
 			System.err.println("Break without loop:");
 			System.err.println(e.toString());

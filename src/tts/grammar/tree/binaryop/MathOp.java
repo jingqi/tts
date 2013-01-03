@@ -4,7 +4,9 @@ import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.IOp;
 import tts.grammar.tree.Operand;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class MathOp implements IOp {
 

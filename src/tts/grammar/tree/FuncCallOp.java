@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import tts.eval.FunctionEval;
 import tts.eval.IValueEval;
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class FuncCallOp implements IOp {
 

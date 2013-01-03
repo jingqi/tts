@@ -2,8 +2,8 @@ package tts.grammar.tree;
 
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
+import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.SourceLocation;
 
 public final class FrameScopOp implements IOp {
 

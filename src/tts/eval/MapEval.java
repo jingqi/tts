@@ -3,7 +3,9 @@ package tts.eval;
 import java.util.*;
 import java.util.Map.Entry;
 
+import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class MapEval extends ObjectEval {
 

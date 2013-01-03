@@ -2,8 +2,8 @@ package tts.eval;
 
 import java.util.List;
 
+import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.SourceLocation;
 
 public abstract class FunctionEval implements IValueEval {
 

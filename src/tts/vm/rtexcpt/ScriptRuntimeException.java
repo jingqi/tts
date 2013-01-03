@@ -1,6 +1,7 @@
-package tts.vm;
+package tts.vm.rtexcpt;
 
 import tts.grammar.tree.IOp;
+import tts.util.SourceLocation;
 
 /**
  * 脚本运行过程中的异常
