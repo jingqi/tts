@@ -501,7 +501,7 @@ public class GrammarScanner {
 		else if (tokenStream.match(TokenType.SEPARATOR, "--") != null)
 			op = UnaryOp.OpType.PRE_DECREMENT;
 
-		IOp v = functionCall();
+		IOp v = postOp();
 		if (v == null) {
 			tokenStream.seek(p);
 			return null;
@@ -519,65 +519,61 @@ public class GrammarScanner {
 		return new UnaryOp(op, v, v.getSourceLocation());
 	}
 
-	// function = index '(' (index (',' index)*)? ')';
-	private IOp functionCall() {
-		IOp func = index();
-		if (func == null)
-			return null;
-		if (tokenStream.match(TokenType.SEPARATOR, "(") == null)
-			return func;
-
-		ArrayList<IOp> args = new ArrayList<IOp>();
-		while (true) {
-			IOp arg = expression();
-			if (arg == null) {
-				if (args.size() == 0)
-					break;
-				else
-					throw new GrammarException("function argument expected",
-							tokenStream.getFile(), tokenStream.getLine());
-			}
-			args.add(arg);
-
-			if (tokenStream.match(TokenType.SEPARATOR, ",") == null)
-				break;
-		}
-		if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
-			throw new GrammarException("token ')' expected",
-					tokenStream.getFile(), tokenStream.getLine());
-		return new FuncCallOp(func, args);
-	}
-
-	// index = member '[' member ']';
-	private IOp index() {
-		IOp body = member();
-		if (body == null)
-			return null;
-		if (tokenStream.match(TokenType.SEPARATOR, "[") == null)
-			return body;
-		IOp i = expression();
-		if (i == null)
-			throw new GrammarException("expression expected",
-					tokenStream.getFile(), tokenStream.getLine());
-		if (tokenStream.match(TokenType.SEPARATOR, "]") == null)
-			throw new GrammarException("token ']' expected",
-					tokenStream.getFile(), tokenStream.getLine());
-		return new IndexOp(body, i);
-	}
-
-	// member = atom '.' atom ;
-	private IOp member() {
+	// 后置操作符, ++/--/./[]/()
+	// function = atom ('(' (expression (',' expression)*)? ')')*;
+	// index = atom ('[' expression ']')*;
+	// member = atom ('.' identifier)*;
+	private IOp postOp() {
 		IOp body = atom();
 		if (body == null)
 			return null;
-		if (tokenStream.match(TokenType.SEPARATOR, ".") == null)
-			return body;
 
-		Token t = tokenStream.match(TokenType.IDENTIFIER);
-		if (t == null)
-			throw new GrammarException("identifier token expected",
-					tokenStream.getFile(), tokenStream.getLine());
-		return new MemberOp(body, (String) t.value);
+		while (true) {
+			if (tokenStream.match(TokenType.SEPARATOR, "(") != null) {
+				// 函数调用
+				ArrayList<IOp> args = new ArrayList<IOp>();
+				while (true) {
+					IOp arg = expression();
+					if (arg == null) {
+						if (args.size() == 0)
+							break;
+						else
+							throw new GrammarException(
+									"function argument expected",
+									tokenStream.getFile(),
+									tokenStream.getLine());
+					}
+					args.add(arg);
+
+					if (tokenStream.match(TokenType.SEPARATOR, ",") == null)
+						break;
+				}
+				if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
+					throw new GrammarException("token ')' expected",
+							tokenStream.getFile(), tokenStream.getLine());
+				body = new FuncCallOp(body, args);
+			} else if (tokenStream.match(TokenType.SEPARATOR, "[") != null) {
+				// 数组索引
+				IOp i = expression();
+				if (i == null)
+					throw new GrammarException("expression expected",
+							tokenStream.getFile(), tokenStream.getLine());
+				if (tokenStream.match(TokenType.SEPARATOR, "]") == null)
+					throw new GrammarException("token ']' expected",
+							tokenStream.getFile(), tokenStream.getLine());
+				body = new IndexOp(body, i);
+			} else if (tokenStream.match(TokenType.SEPARATOR, ".") != null) {
+				// 取成员
+				Token t = tokenStream.match(TokenType.IDENTIFIER);
+				if (t == null)
+					throw new GrammarException("identifier token expected",
+							tokenStream.getFile(), tokenStream.getLine());
+				body = new MemberOp(body, (String) t.value);
+			} else {
+				break;
+			}
+		}
+		return body;
 	}
 
 	// atom = variable | constant | function | ('(' expression ')') | array;
