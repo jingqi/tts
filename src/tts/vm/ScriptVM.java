@@ -131,7 +131,7 @@ public class ScriptVM {
 	// 当前脚本路径压栈，换成相对的另一个路径
 	public void pushScriptPath(File path) {
 		scriptPathStack.push(currentScriptPath.getAbsoluteFile());
-		currentScriptPath = path;
+		currentScriptPath = path.getAbsoluteFile();
 	}
 
 	// 脚本路径从栈中弹出

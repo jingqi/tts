@@ -49,7 +49,7 @@ public final class OpList implements IOp {
 
 	@Override
 	public IOp optimize() {
-		ArrayList<IOp> nl = new ArrayList<>(list.size());
+		ArrayList<IOp> nl = new ArrayList<IOp>(list.size());
 		for (int i = 0, size = list.size(); i < size; ++i) {
 			IOp e = list.get(i).optimize();
 			if (e != null)
