@@ -529,7 +529,7 @@ public class GrammarScanner {
 
 		ArrayList<IOp> args = new ArrayList<IOp>();
 		while (true) {
-			IOp arg = index();
+			IOp arg = expression();
 			if (arg == null) {
 				if (args.size() == 0)
 					break;
@@ -555,7 +555,7 @@ public class GrammarScanner {
 			return null;
 		if (tokenStream.match(TokenType.SEPARATOR, "[") == null)
 			return body;
-		IOp i = member();
+		IOp i = expression();
 		if (i == null)
 			throw new GrammarException("expression expected",
 					tokenStream.getFile(), tokenStream.getLine());
