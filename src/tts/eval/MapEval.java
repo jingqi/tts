@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class MapEval extends ObjectEval {
@@ -48,12 +48,44 @@ public final class MapEval extends ObjectEval {
 		}
 	}
 
+	private class FuncKeys extends FunctionEval {
+
+		@Override
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
+			if (args.size() != 0)
+				throw new ScriptRuntimeException("need 0 argument", sl);
+
+			ArrayEval ret = new ArrayEval();
+			for (IValueEval v : entries.keySet())
+				ret.add(v);
+			return ret;
+		}
+	}
+
+	private class FuncValues extends FunctionEval {
+		@Override
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
+			if (args.size() != 0)
+				throw new ScriptRuntimeException("need 0 argument", sl);
+
+			ArrayEval ret = new ArrayEval();
+			ret.addAll(entries.values());
+			return ret;
+		}
+	}
+
 	@Override
 	public IValueEval member(String name, SourceLocation sl) {
 		if (name.equals("size"))
 			return new FuncSize();
 		if (name.equals("get"))
 			return new FuncGet();
+		if (name.equals("keys"))
+			return new FuncKeys();
+		if (name.equals("values"))
+			return new FuncValues();
 		throw new ScriptRuntimeException("map no such member: " + name, sl);
 	}
 
