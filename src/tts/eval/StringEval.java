@@ -3,7 +3,7 @@ package tts.eval;
 import java.util.List;
 
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class StringEval extends ObjectEval {
@@ -183,6 +183,25 @@ public final class StringEval extends ObjectEval {
 		}
 	}
 
+	private class FuncReplace extends FunctionEval {
+		@Override
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
+			if (args.size() != 2)
+				throw new ScriptRuntimeException("need 2 argument", sl);
+
+			if (args.get(0).getType() != IValueEval.EvalType.STRING)
+				throw new ScriptRuntimeException("string needed", sl);
+			String from = ((StringEval) args.get(0)).getValue();
+
+			if (args.get(1).getType() != IValueEval.EvalType.STRING)
+				throw new ScriptRuntimeException("integer needed", sl);
+			String to = ((StringEval) args.get(1)).getValue();
+
+			return new StringEval(value.replace(from, to));
+		}
+	}
+
 	@Override
 	public IValueEval member(String name, SourceLocation sl) {
 		if (name.equals("length"))
@@ -203,6 +222,8 @@ public final class StringEval extends ObjectEval {
 			return new FuncIndexOf();
 		else if (name.equals("lastIndexOf"))
 			return new FuncLastIndexOf();
+		else if (name.equals("replace"))
+			return new FuncReplace();
 		throw new ScriptRuntimeException("string no such member: " + name, sl);
 	}
 }
