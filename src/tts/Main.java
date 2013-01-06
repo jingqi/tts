@@ -37,7 +37,8 @@ public class Main {
 		// 启动脚本
 		ScriptEngine en = new ScriptEngine();
 		if (output != null)
-			en.setTextOutput(new FileWriter(output));
+			en.setTextOutput(new OutputStreamWriter(
+					new FileOutputStream(output), "UTF-8"));
 		en.run(new File(input));
 	}
 }

@@ -167,7 +167,7 @@ public class ScriptVM {
 		if (!dst.exists())
 			throw new ScriptRuntimeException("file not exists: "
 					+ dst.getName(), sl);
-		FileReader fr = new FileReader(dst);
+		Reader fr = new InputStreamReader(new FileInputStream(dst), "UTF-8");
 		CharArrayScanReader ss = new CharArrayScanReader();
 		char[] buf = new char[4096];
 		int readed = 0;
