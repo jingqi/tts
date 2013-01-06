@@ -426,6 +426,12 @@ public class TokenScanner {
 		case '\\':
 			return '\\';
 
+		case '\"':
+			return '\"';
+
+		case '\'':
+			return '\'';
+
 		case 'x': // 16进制转义
 			c = 0;
 			for (int i = 0; i < 2 && !reader.eof(); ++i) {
@@ -484,8 +490,12 @@ public class TokenScanner {
 		c = reader.read();
 		StringBuilder sb = new StringBuilder();
 		if (c == string_dec) { // 字符串块
-			if (reader.eof() || reader.read() != string_dec)
-				throw new ScannerException("string block expected", file, line);
+			if (reader.eof()) { // 空字符串
+				return new Token(TokenType.STRING, "", file, start_line);
+			} else if (reader.read() != string_dec) {
+				reader.putBack();
+				return new Token(TokenType.STRING, "", file, start_line);
+			}
 
 			final String str_end = "" + string_dec + string_dec + string_dec;
 			while (true) {
