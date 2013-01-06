@@ -3,7 +3,7 @@ package tts.eval;
 import java.util.*;
 
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class ArrayEval extends ObjectEval {
@@ -46,6 +46,14 @@ public final class ArrayEval extends ObjectEval {
 			if (!get(i).equals(ae.get(i)))
 				return false;
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 17;
+		for (int i = 0, size = size(); i < size; ++i)
+			h = h * 17 + get(i).hashCode();
+		return h;
 	}
 
 	private class FuncSize extends FunctionEval {

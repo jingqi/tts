@@ -108,6 +108,15 @@ public final class MapEval extends ObjectEval {
 	}
 
 	@Override
+	public int hashCode() {
+		int h = 17;
+		for (Entry<IValueEval, IValueEval> e : entries.entrySet()) {
+			h = h * 31 + e.getKey().hashCode() * 17 + e.getValue().hashCode();
+		}
+		return h;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");

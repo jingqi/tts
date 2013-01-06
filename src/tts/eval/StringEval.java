@@ -39,6 +39,11 @@ public final class StringEval extends ObjectEval {
 		return ((StringEval) o).value.equals(value);
 	}
 
+	@Override
+	public int hashCode() {
+		return value.hashCode();
+	}
+
 	private class FuncLen extends FunctionEval {
 
 		@Override
