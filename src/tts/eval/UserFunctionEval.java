@@ -9,7 +9,7 @@ import tts.util.SourceLocation;
 import tts.vm.*;
 import tts.vm.rtexcpt.*;
 
-public class UserFunctionEval extends FunctionEval {
+public final class UserFunctionEval extends FunctionEval {
 
 	public static class ParamInfo {
 		String name;

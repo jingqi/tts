@@ -6,7 +6,7 @@ import java.io.IOException;
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class IncludeOp implements IOp {
@@ -16,6 +16,7 @@ public final class IncludeOp implements IOp {
 
 	public IncludeOp(String path, String file, int line) {
 		this.path = path;
+		sl = new SourceLocation(file, line);
 	}
 
 	@Override
@@ -32,13 +33,14 @@ public final class IncludeOp implements IOp {
 			throw new ScriptRuntimeException("can not load file:" + path, this);
 		}
 
+		vm.pushCallFrame(sl, SourceLocation.NATIVE_MODULE);
+		vm.enterFrame();
 		vm.pushScriptPath(dst);
-		try {
-			if (op != null)
-				op.eval(vm);
-		} finally {
-			vm.popScriptPath();
-		}
+		if (op != null)
+			op.eval(vm);
+		vm.popScriptPath();
+		vm.leaveFrame();
+		vm.popCallFrame();
 
 		return VoidEval.instance;
 	}
