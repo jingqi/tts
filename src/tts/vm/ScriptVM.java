@@ -12,9 +12,13 @@ import tts.token.stream.CharArrayScanReader;
 import tts.token.stream.IScanReader;
 import tts.util.PrintStreamWriter;
 import tts.util.SourceLocation;
+import tts.vm.BuiltinApi.FuncChr;
 import tts.vm.BuiltinApi.FuncEval;
 import tts.vm.BuiltinApi.FuncExit;
+import tts.vm.BuiltinApi.FuncOrd;
 import tts.vm.BuiltinApi.FuncOutput;
+import tts.vm.BuiltinApi.FuncPrint;
+import tts.vm.BuiltinApi.FuncPrintln;
 import tts.vm.rtexcpt.*;
 
 /**
@@ -210,6 +214,16 @@ public class ScriptVM {
 				new FuncOutput()), SourceLocation.NATIVE);
 		addVariable("exit", new Variable("exit", VarType.FUNCTION,
 				new FuncExit()), SourceLocation.NATIVE);
+		addVariable("print", new Variable("print", VarType.FUNCTION,
+				new FuncPrint()), SourceLocation.NATIVE);
+		addVariable("println", new Variable("println", VarType.FUNCTION,
+				new FuncPrintln()), SourceLocation.NATIVE);
+		addVariable("chr",
+				new Variable("chr", VarType.FUNCTION, new FuncChr()),
+				SourceLocation.NATIVE);
+		addVariable("ord",
+				new Variable("ord", VarType.FUNCTION, new FuncOrd()),
+				SourceLocation.NATIVE);
 	}
 
 	// 调用栈
