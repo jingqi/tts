@@ -9,25 +9,25 @@ import tts.token.stream.IScanReader;
 
 /**
  * ragel 语法规则: <br/>
- * 
+ *
  * Boolean = 'true' | 'false'; <br/>
  * Integer = [\+\-]? digit+; <br/>
  * Hex = '0x' xdigit+; <br/>
  * Double = [\+\-]? ((digit+ '.' digit*) | ('.' digit+)); <br/>
  * Sentic = (Integer | Float) 'E'i [\+\-]? digit+; <br/>
- * 
+ *
  * String1 = ['] ([^\\\n\'] | ('\' any))* [']; <br/>
  * String2 = ["] ([^\\\n\"] | ('\' any))* ["]; <br/>
  * String3 = ['''] ([^\\\"] | ('\' any))* [''']; <br/>
  * String4 = ["""] ([^\\\"] | ('\' any))* ["""]; <br/>
  * String = String1 | String2 | String3 | String4; <br/>
- * 
+ *
  * Keyword = 'if' | 'else' | 'while' ...; <br/>
  * Identifier = (('_' | alpha) ('_' | alnum)*) - Keyword; <br/>
  * Separator = '>>>' | '+=' | '>' ...; <br/>
- * 
+ *
  * @author jingqi
- * 
+ *
  */
 public class TokenScanner {
 
@@ -78,6 +78,14 @@ public class TokenScanner {
 		this.reader = reader;
 		this.file = file;
 		this.line = 1;
+	}
+
+	public TokenScanner(IScanReader reader, String file, int line,
+			boolean inBlockCode) {
+		this.reader = reader;
+		this.file = file;
+		this.line = line;
+		this.inBlockCode = inBlockCode;
 	}
 
 	public String getFile() {

@@ -1,23 +1,24 @@
 package tts.grammar.tree;
 
+import java.util.ArrayList;
+
 import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.*;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.ScriptVM;
 
 public final class TextTemplateOp implements IOp {
 
 	SourceLocation sl;
-	String template;
+	ArrayList<Object> template = new ArrayList<Object>();
 
-	public TextTemplateOp(String t, SourceLocation sl) {
+	public TextTemplateOp(ArrayList<Object> t, SourceLocation sl) {
 		this.sl = sl;
-		template = t;
+		this.template = t;
 	}
 
-	public TextTemplateOp(String t, String file, int line) {
+	public TextTemplateOp(ArrayList<Object> t, String file, int line) {
 		this.sl = new SourceLocation(file, line);
-		template = t;
+		this.template = t;
 	}
 
 	public static String resolveValue(IValueEval ve) {
@@ -48,54 +49,18 @@ public final class TextTemplateOp implements IOp {
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
-		StringBuilder sb = new StringBuilder(template.length());
-		StringBuilder name = new StringBuilder();
-		int state = 0;
-		for (int i = 0, len = template.length(); i < len; ++i) {
-			char c = template.charAt(i);
-			switch (state) {
-			case 0:
-				if (c != '$') {
-					sb.append(c);
-					break;
-				}
-				state = 1;
-				break;
-
-			case 1:
-				if (c != '{') {
-					sb.append('$');
-					sb.append(c);
-					state = 0;
-					break;
-				}
-				state = 2;
-				break;
-
-			case 2:
-				if (c != '}') {
-					name.append(c);
-					break;
-				}
-				if (name.length() == 0) {
-					sb.append("${}");
-					state = 0;
-					break;
-				}
-
-				Variable v = vm.getVariable(name.toString(), sl);
-				if (v == null || v.getValue() == null)
-					throw new ScriptRuntimeException("variable " + name
-							+ " not found", this);
-				sb.append(resolveValue(v.getValue()));
-				state = 0;
-				name.setLength(0);
-				break;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0, size = template.size(); i < size; ++i) {
+			Object o = template.get(i);
+			if (o instanceof String) {
+				sb.append(o);
+			} else if (o instanceof IOp) {
+				IValueEval ve = ((IOp) o).eval(vm);
+				sb.append(resolveValue(ve));
+			} else {
+				throw new RuntimeException();
 			}
 		}
-		if (state != 0)
-			throw new ScriptRuntimeException("text template has wrong format",
-					this);
 
 		vm.writeText(sb.toString());
 		return VoidEval.instance;
@@ -108,7 +73,10 @@ public final class TextTemplateOp implements IOp {
 
 	@Override
 	public String toString() {
-		return template;
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0, size = template.size(); i < size; ++i)
+			sb.append(template.get(i).toString());
+		return sb.toString();
 	}
 
 	@Override

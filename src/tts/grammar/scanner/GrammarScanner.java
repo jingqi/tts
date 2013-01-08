@@ -8,14 +8,16 @@ import tts.grammar.tree.*;
 import tts.grammar.tree.binaryop.*;
 import tts.token.scanner.*;
 import tts.token.scanner.Token.TokenType;
+import tts.token.stream.CharArrayScanReader;
+import tts.token.stream.IScanReader;
 import tts.util.SourceLocation;
 import tts.vm.VarType;
 
 /**
  * 语法分析，并构建出语法树
- * 
+ *
  * @author jingqi
- * 
+ *
  */
 public class GrammarScanner {
 
@@ -94,7 +96,47 @@ public class GrammarScanner {
 		Token t = tokenStream.match(TokenType.TEXT_TEMPLATE);
 		if (t == null)
 			return null;
-		return new TextTemplateOp((String) t.value, t.file, t.line);
+
+		String s = (String) t.value;
+		ArrayList<Object> ret = new ArrayList<Object>();
+		StringBuilder sb = new StringBuilder();
+		int i = 0, line = t.line;
+		while (i < s.length()) {
+			char c = s.charAt(i);
+			if (c == '\n') {
+				++line;
+			} else if (c == '$' && i + 1 < s.length()) {
+				char cc = s.charAt(i + 1);
+				if (cc == '{') {
+					// 分析嵌入式代码
+					IScanReader sr = new CharArrayScanReader(s.substring(i + 2).toCharArray());
+					TokenScanner ts = new TokenScanner(sr, t.file, line, true);
+					TokenStream tst = new TokenStream(ts);
+					GrammarScanner gs = new GrammarScanner(tst);
+					IOp op = gs.expression();
+					if (op == null)
+						throw new GrammarException("expression needed", tst.getFile(), tst.getLine());
+					if (tst.match(TokenType.SEPARATOR, "}") == null)
+						throw new GrammarException("token '{' needed", tst.getFile(), tst.getLine());
+
+					if (sb.length() > 0) {
+						ret.add(sb.toString());
+						sb.setLength(0);
+					}
+					ret.add(op);
+					i = i + 2 + sr.tell();
+					line = ts.getLine();
+					continue;
+				}
+			}
+
+			++i;
+			sb.append(c);
+		}
+		if (sb.length() > 0)
+			ret.add(sb.toString());
+
+		return new TextTemplateOp(ret, t.file, t.line);
 	}
 
 	/**
@@ -142,7 +184,7 @@ public class GrammarScanner {
 
 	/**
 	 * expression = assignment | rvalue; <br/>
-	 * 
+	 *
 	 * 各个操作符的优先级顺序，参看
 	 * http://www.cppblog.com/aqazero/archive/2012/06/02/8284.html
 	 */
