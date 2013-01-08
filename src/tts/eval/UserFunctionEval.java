@@ -38,7 +38,6 @@ public final class UserFunctionEval extends FunctionEval {
 					"count of argument not match in calling function", sl);
 
 		IValueEval ret = VoidEval.instance;
-		vm.enterFrame();
 		try {
 			// 设置参数
 			for (int i = 0, size = params.size(); i < size; ++i) {
@@ -57,7 +56,6 @@ public final class UserFunctionEval extends FunctionEval {
 		} catch (ReturnFuncException e) {
 			ret = e.value;
 		}
-		vm.leaveFrame();
 		return ret;
 	}
 

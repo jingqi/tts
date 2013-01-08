@@ -6,8 +6,7 @@ import java.util.List;
 import tts.eval.*;
 import tts.grammar.tree.IOp;
 import tts.util.SourceLocation;
-import tts.vm.rtexcpt.ExitException;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcpt.*;
 
 class BuiltinApi {
 
@@ -40,13 +39,15 @@ class BuiltinApi {
 						sl);
 			}
 
-			vm.pushScriptPath(dst);
+			vm.enterScriptFile(dst);
 			try {
 				if (op != null)
 					op.eval(vm);
-			} finally {
-				vm.popScriptPath();
+			} catch (ScriptLogicException e) {
+				vm.leaveScriptFile();
+				throw e;
 			}
+			vm.leaveScriptFile();
 			return VoidEval.instance;
 		}
 	}
@@ -87,7 +88,7 @@ class BuiltinApi {
 				SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need no argument", sl);
-			throw new ExitException();
+			throw new ExitException(sl);
 		}
 	}
 

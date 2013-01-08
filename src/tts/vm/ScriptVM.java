@@ -30,16 +30,8 @@ public class ScriptVM {
 	// 文本输出
 	private Writer textOutput;
 
-	// 全局变量
-	private final Map<String, Variable> globalVars = new HashMap<String, Variable>();
-
-	// 帧
-	private static class Frame {
-		Map<String, Variable> localValues = new HashMap<String, Variable>();
-	}
-
-	// 帧栈
-	private final List<Frame> frames = new ArrayList<Frame>();
+	// 调用栈变量(最前面是全局帧，最后面是当前执行帧)
+	private final ArrayList<Frame> frames = new ArrayList<Frame>();
 
 	// 当前脚本路径
 	private File currentScriptPath;
@@ -47,19 +39,6 @@ public class ScriptVM {
 
 	// 已经加载的脚本文件
 	private final Map<String, IOp> loadedFiles = new HashMap<String, IOp>();
-
-	// 调用栈
-	private static class CallFrame {
-		SourceLocation sl;
-		String module;
-
-		public CallFrame(SourceLocation sl, String module) {
-			this.sl = sl;
-			this.module = module;
-		}
-	}
-
-	private final Stack<CallFrame> callFrames = new Stack<CallFrame>();
 
 	// 当前模块
 	private String currentModule;
@@ -72,41 +51,30 @@ public class ScriptVM {
 		this.textOutput = textOutput;
 	}
 
-	// 进入帧
-	public void enterFrame() {
-		frames.add(new Frame());
-	}
-
-	// 退出帧
-	public void leaveFrame() {
-		frames.remove(frames.size() - 1);
-	}
-
 	// 添加变量定义
 	public void addVariable(String name, Variable var, SourceLocation sl) {
-		Map<String, Variable> pool;
-		if (frames.size() == 0)
-			pool = globalVars;
-		else
-			pool = frames.get(frames.size() - 1).localValues;
-
-		if (pool.containsKey(name))
+		List<Scope> ls = frames.get(frames.size() - 1).scopes;
+		Scope s = ls.get(ls.size() - 1);
+		if (s.variables.containsKey(name))
 			throw new ScriptRuntimeException("variable " + name + " redefined",
 					sl);
 
-		pool.put(name, var);
+		s.variables.put(name, var);
 	}
 
 	// 获取变量的值
 	public Variable getVariable(String name, SourceLocation sl) {
-		for (int i = frames.size() - 1; i >= 0; --i) {
-			Map<String, Variable> pool = frames.get(i).localValues;
-			if (pool.containsKey(name))
-				return pool.get(name);
-		}
+		// 局部变量
+		Variable v = frames.get(frames.size() - 1).getVariable(name);
+		if (v != null)
+			return v;
 
-		if (globalVars.containsKey(name))
-			return globalVars.get(name);
+		// 全局变量
+		if (frames.size() > 1) {
+			v = frames.get(0).getVariable(name);
+			if (v != null)
+				return v;
+		}
 
 		throw new ScriptRuntimeException("variable " + name + " not found", sl);
 	}
@@ -133,27 +101,40 @@ public class ScriptVM {
 		}
 	}
 
-	// 当前脚本路径压栈，换成相对的另一个路径
-	public void pushScriptPath(File path) {
+	// 进入脚本文件
+	public void enterScriptFile(File path) {
 		scriptPathStack.push(currentScriptPath.getAbsoluteFile());
 		currentScriptPath = path.getAbsoluteFile();
 	}
 
-	// 脚本路径从栈中弹出
-	public void popScriptPath() {
+	// 退出脚本文件
+	public void leaveScriptFile() {
 		currentScriptPath = scriptPathStack.pop();
 	}
 
-	// 调用栈压栈
-	public void pushCallFrame(SourceLocation sl, String nextModule) {
-		callFrames.push(new CallFrame(sl, currentModule));
+	// 进入函数
+	public void enterFrame(SourceLocation sl, String nextModule) {
+		Frame f = new Frame(sl, currentModule);
+		frames.add(f);
 		currentModule = nextModule;
+		f.enterScope();
 	}
 
-	// 调用栈弹出
-	public void popCallFrame() {
-		CallFrame cf = callFrames.pop();
-		currentModule = cf.module;
+	// 退出函数
+	public void leaveFrame() {
+		Frame f = frames.remove(frames.size() - 1);
+		currentModule = f.module;
+		f.leaveScope();
+	}
+
+	// 进入代码段
+	public void enterScope() {
+		frames.get(frames.size() - 1).enterScope();
+	}
+
+	// 退出代码段
+	public void leaveScope() {
+		frames.get(frames.size() - 1).leaveScope();
 	}
 
 	// 当前脚本路径
@@ -200,12 +181,11 @@ public class ScriptVM {
 
 	// 初始化执行环境
 	private void initExecEnv() {
-		globalVars.clear();
 		frames.clear();
+		enterFrame(SourceLocation.NATIVE, SourceLocation.NATIVE_MODULE);
 		currentScriptPath = null;
 		scriptPathStack.clear();
 		loadedFiles.clear();
-		callFrames.clear();
 		currentModule = "<module>";
 
 		// 默认全局变量
@@ -232,10 +212,10 @@ public class ScriptVM {
 	// 调用栈
 	private String callingStack() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = callFrames.size() - 1; i >= 0; --i) {
-			CallFrame cf = callFrames.get(i);
-			sb.append("\t").append("at ").append(cf.module).append("(")
-					.append(cf.sl.file).append(":").append(cf.sl.line)
+		for (int i = frames.size() - 1; i >= 1; --i) {
+			Frame f = frames.get(i);
+			sb.append("\t").append("at ").append(f.module).append("(")
+					.append(f.sl.file).append(":").append(f.sl.line)
 					.append(")\n");
 		}
 		return sb.toString();
@@ -270,7 +250,7 @@ public class ScriptVM {
 			System.err.println("Grammar exception:");
 			System.err.println(e.toString());
 		} catch (ScriptRuntimeException e) {
-			pushCallFrame(e.sl, SourceLocation.NATIVE_MODULE);
+			enterFrame(e.sl, SourceLocation.NATIVE_MODULE);
 			System.err.print("Script runtime exception: ");
 			System.err.println(e.getMessage());
 			System.err.println(callingStack());
@@ -310,7 +290,7 @@ public class ScriptVM {
 			System.err.println("Grammar exception:");
 			System.err.println(e.toString());
 		} catch (ScriptRuntimeException e) {
-			pushCallFrame(e.sl, SourceLocation.NATIVE_MODULE);
+			enterFrame(e.sl, SourceLocation.NATIVE_MODULE);
 			System.err.print("Script runtime exception: ");
 			System.err.println(e.getMessage());
 			System.err.println(callingStack());

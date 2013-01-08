@@ -3,21 +3,23 @@ package tts.vm.rtexcpt;
 import tts.eval.IValueEval;
 import tts.util.SourceLocation;
 
-public class ReturnFuncException extends RuntimeException {
+/**
+ * return from function
+ */
+public final class ReturnFuncException extends ScriptLogicException {
 
 	private static final long serialVersionUID = 1L;
 
-	public final SourceLocation sl;
 	public final IValueEval value;
 
 	public ReturnFuncException(IValueEval v, String file, int line) {
+		super(new SourceLocation(file, line));
 		this.value = v;
-		sl = new SourceLocation(file, line);
 	}
 
 	public ReturnFuncException(IValueEval v, SourceLocation sl) {
+		super(sl);
 		this.value = v;
-		this.sl = sl;
 	}
 
 	@Override

@@ -2,18 +2,19 @@ package tts.vm.rtexcpt;
 
 import tts.util.SourceLocation;
 
-public class ContinueLoopException extends RuntimeException {
+/**
+ * continue a loop
+ */
+public final class ContinueLoopException extends ScriptLogicException {
 
 	private static final long serialVersionUID = 1L;
 
-	public final SourceLocation sl;
-
 	public ContinueLoopException(String file, int line) {
-		sl = new SourceLocation(file, line);
+		super(new SourceLocation(file, line));
 	}
 
 	public ContinueLoopException(SourceLocation sl) {
-		this.sl = sl;
+		super(sl);
 	}
 
 	@Override

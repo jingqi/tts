@@ -5,18 +5,16 @@ import tts.util.SourceLocation;
 /**
  * break a loop
  */
-public class BreakLoopException extends RuntimeException {
+public final class BreakLoopException extends ScriptLogicException {
 
 	private static final long serialVersionUID = 1L;
 
-	public final SourceLocation sl;
-
 	public BreakLoopException(String file, int line) {
-		sl = new SourceLocation(file, line);
+		super(new SourceLocation(file, line));
 	}
 
 	public BreakLoopException(SourceLocation sl) {
-		this.sl = sl;
+		super(sl);
 	}
 
 	@Override

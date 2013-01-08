@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import tts.eval.FunctionEval;
 import tts.eval.IValueEval;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
+import tts.vm.rtexcpt.ScriptLogicException;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class FuncCallOp implements IOp {
@@ -29,9 +30,15 @@ public final class FuncCallOp implements IOp {
 			as.add(args.get(i).eval(vm));
 
 		FunctionEval fe = (FunctionEval) b;
-		vm.pushCallFrame(func.getSourceLocation(), fe.getModuleName());
-		IValueEval ret = fe.call(as, vm, getSourceLocation());
-		vm.popCallFrame();
+		vm.enterFrame(func.getSourceLocation(), fe.getModuleName());
+		final IValueEval ret;
+		try {
+			ret = fe.call(as, vm, getSourceLocation());
+		} catch (ScriptLogicException e) {
+			vm.leaveFrame();
+			throw e;
+		}
+		vm.leaveFrame();
 		return ret;
 	}
 

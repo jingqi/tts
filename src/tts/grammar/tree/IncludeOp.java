@@ -7,7 +7,7 @@ import tts.eval.IValueEval;
 import tts.eval.VoidEval;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcpt.*;
 
 public final class IncludeOp implements IOp {
 
@@ -33,14 +33,24 @@ public final class IncludeOp implements IOp {
 			throw new ScriptRuntimeException("can not load file:" + path, this);
 		}
 
-		vm.pushCallFrame(sl, SourceLocation.NATIVE_MODULE);
-		vm.enterFrame();
-		vm.pushScriptPath(dst);
-		if (op != null)
-			op.eval(vm);
-		vm.popScriptPath();
+		vm.enterScriptFile(dst);
+		vm.enterFrame(sl, SourceLocation.NATIVE_MODULE);
+		try {
+			if (op != null)
+				op.eval(vm);
+		} catch (BreakLoopException e) {
+			throw new ScriptRuntimeException("Break without loop", e.sl);
+		} catch (ContinueLoopException e) {
+			throw new ScriptRuntimeException("Continue without loop", e.sl);
+		} catch (ReturnFuncException e) {
+			throw new ScriptRuntimeException("Return without function", e.sl);
+		} catch (ScriptLogicException e) {
+			vm.leaveScriptFile();
+			vm.leaveFrame();
+			throw e;
+		}
 		vm.leaveFrame();
-		vm.popCallFrame();
+		vm.leaveScriptFile();
 
 		return VoidEval.instance;
 	}

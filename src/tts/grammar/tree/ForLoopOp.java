@@ -2,7 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.*;
 
 public final class ForLoopOp implements IOp {
@@ -20,33 +20,38 @@ public final class ForLoopOp implements IOp {
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
-		vm.enterFrame();
-		if (init_exp != null)
-			init_exp.eval(vm);
-		while (true) {
-			if (break_exp != null) {
-				IValueEval ve = break_exp.eval(vm);
-				if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-					throw new ScriptRuntimeException("boolean value needed",
-							break_exp);
-				BooleanEval be = (BooleanEval) ve;
-				if (!be.getValue())
+		vm.enterScope();
+		try {
+			if (init_exp != null)
+				init_exp.eval(vm);
+			while (true) {
+				if (break_exp != null) {
+					IValueEval ve = break_exp.eval(vm);
+					if (ve.getType() != IValueEval.EvalType.BOOLEAN)
+						throw new ScriptRuntimeException("boolean value needed",
+								break_exp);
+					BooleanEval be = (BooleanEval) ve;
+					if (!be.getValue())
+						break;
+				}
+
+				try {
+					if (body != null)
+						body.eval(vm);
+				} catch (BreakLoopException e) {
 					break;
-			}
+				} catch (ContinueLoopException e) {
+					// do nothing
+				}
 
-			try {
-				if (body != null)
-					body.eval(vm);
-			} catch (BreakLoopException e) {
-				break;
-			} catch (ContinueLoopException e) {
-				// do nothing
+				if (fin_exp != null)
+					fin_exp.eval(vm);
 			}
-
-			if (fin_exp != null)
-				fin_exp.eval(vm);
+		} catch (ScriptLogicException e) {
+			vm.leaveScope();
+			throw e;
 		}
-		vm.leaveFrame();
+		vm.leaveScope();
 
 		return VoidEval.instance;
 	}

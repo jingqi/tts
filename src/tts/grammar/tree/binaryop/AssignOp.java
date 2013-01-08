@@ -3,7 +3,8 @@ package tts.grammar.tree.binaryop;
 import tts.eval.*;
 import tts.grammar.tree.IOp;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
+import tts.vm.Variable;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 /**
@@ -100,9 +101,7 @@ public final class AssignOp implements IOp {
 	public IValueEval eval(ScriptVM vm) {
 		Variable v = vm.getVariable(varname, this.getSourceLocation());
 		IValueEval vv = value.eval(vm);
-		vm.pushCallFrame(getSourceLocation(), SourceLocation.NATIVE_MODULE);
 		assign(v, vv, getSourceLocation());
-		vm.popCallFrame();
 		return v.getValue();
 	}
 
