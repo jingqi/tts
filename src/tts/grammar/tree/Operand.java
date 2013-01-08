@@ -1,9 +1,8 @@
 package tts.grammar.tree;
 
-import tts.eval.IValueEval;
-import tts.eval.VariableEval;
+import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 /**
@@ -63,6 +62,9 @@ public final class Operand implements IOp {
 
 	@Override
 	public IOp optimize() {
+		if (eval instanceof UserFunctionEval) {
+			((UserFunctionEval) eval).optimize();
+		}
 		return this;
 	}
 

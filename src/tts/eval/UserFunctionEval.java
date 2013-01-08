@@ -48,7 +48,8 @@ public final class UserFunctionEval extends FunctionEval {
 			}
 
 			// 调用函数
-			ops.eval(vm);
+			if (ops != null)
+				ops.eval(vm);
 		} catch (BreakLoopException e) {
 			throw new ScriptRuntimeException("Break without loop", e.sl);
 		} catch (ContinueLoopException e) {
@@ -57,6 +58,11 @@ public final class UserFunctionEval extends FunctionEval {
 			ret = e.value;
 		}
 		return ret;
+	}
+
+	public void optimize() {
+		if (ops != null)
+			ops = ops.optimize();
 	}
 
 	@Override
