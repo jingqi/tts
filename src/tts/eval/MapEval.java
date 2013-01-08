@@ -24,6 +24,56 @@ public final class MapEval extends ObjectEval {
 		return entries.put(k, v);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof MapEval))
+			return false;
+
+		MapEval me = (MapEval) o;
+		if (me.entries.size() != entries.size())
+			return false;
+		for (Entry<IValueEval, IValueEval> e : entries.entrySet()) {
+			IValueEval v = me.entries.get(e.getKey());
+			if (v == null)
+				return false;
+			if (!v.equals(e.getValue()))
+				return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 17;
+		for (Entry<IValueEval, IValueEval> e : entries.entrySet()) {
+			h = h * 31 + e.getKey().hashCode() * 17 + e.getValue().hashCode();
+		}
+		return h;
+	}
+
+	@Override
+	public MapEval clone() {
+		MapEval ret = new MapEval();
+		for (Entry<IValueEval, IValueEval> e : entries.entrySet()) {
+			ret.entries.put(e.getKey(), e.getValue());
+		}
+		return ret;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		for (Entry<IValueEval, IValueEval> e : entries.entrySet()) {
+			sb.append(e.getKey().toString());
+			sb.append(":");
+			sb.append(e.getValue().toString());
+			sb.append(", ");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+
 	private class FuncSize extends FunctionEval {
 
 		@Override
@@ -45,6 +95,18 @@ public final class MapEval extends ObjectEval {
 				throw new ScriptRuntimeException("need 1 argument", sl);
 
 			return entries.get(args.get(0));
+		}
+	}
+
+	private class FuncPut extends FunctionEval {
+
+		@Override
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
+			if (args.size() != 2)
+				throw new ScriptRuntimeException("need 1 argument", sl);
+
+			return entries.put(args.get(0), args.get(1));
 		}
 	}
 
@@ -76,57 +138,31 @@ public final class MapEval extends ObjectEval {
 		}
 	}
 
+	private class FuncClone extends FunctionEval {
+		@Override
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
+			if (args.size() != 0)
+				throw new ScriptRuntimeException("need 0 argument", sl);
+
+			return MapEval.this.clone();
+		}
+	}
+
 	@Override
 	public IValueEval member(String name, SourceLocation sl) {
 		if (name.equals("size"))
 			return new FuncSize();
 		if (name.equals("get"))
 			return new FuncGet();
+		if (name.equals("put"))
+			return new FuncPut();
 		if (name.equals("keys"))
 			return new FuncKeys();
 		if (name.equals("values"))
 			return new FuncValues();
+		if (name.equals("clone"))
+			return new FuncClone();
 		throw new ScriptRuntimeException("map no such member: " + name, sl);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof MapEval))
-			return false;
-
-		MapEval me = (MapEval) o;
-		if (me.entries.size() != entries.size())
-			return false;
-		for (Entry<IValueEval, IValueEval> e : entries.entrySet()) {
-			IValueEval v = me.entries.get(e.getKey());
-			if (v == null)
-				return false;
-			if (!v.equals(e.getValue()))
-				return false;
-		}
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		int h = 17;
-		for (Entry<IValueEval, IValueEval> e : entries.entrySet()) {
-			h = h * 31 + e.getKey().hashCode() * 17 + e.getValue().hashCode();
-		}
-		return h;
-	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		for (Entry<IValueEval, IValueEval> e : entries.entrySet()) {
-			sb.append(e.getKey().toString());
-			sb.append(":");
-			sb.append(e.getValue().toString());
-			sb.append(", ");
-		}
-		sb.append("}");
-		return sb.toString();
 	}
 }

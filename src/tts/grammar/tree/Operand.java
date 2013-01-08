@@ -45,9 +45,11 @@ public final class Operand implements IOp {
 		case BOOLEAN:
 		case INTEGER:
 		case DOUBLE:
-		case STRING:
 		case FUNCTION:
 			return eval;
+
+		case STRING:
+			return ((StringEval)eval).clone();
 
 		case VARIABLE:
 			VariableEval ve = (VariableEval) eval;

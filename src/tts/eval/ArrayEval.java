@@ -56,6 +56,19 @@ public final class ArrayEval extends ObjectEval {
 		return h;
 	}
 
+	@Override
+	public ArrayEval clone() {
+		ArrayEval ret = new ArrayEval();
+		for (int i = 0, size = values.size(); i < size; ++i)
+			ret.values.add(values.get(i));
+		return ret;
+	}
+
+	@Override
+	public String toString() {
+		return values.toString();
+	}
+
 	private class FuncSize extends FunctionEval {
 
 		@Override
@@ -89,8 +102,8 @@ public final class ArrayEval extends ObjectEval {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i)
-				ArrayEval.this.add(args.get(i));
-			return VoidEval.instance;
+				values.add(args.get(i));
+			return this;
 		}
 	}
 
@@ -150,6 +163,17 @@ public final class ArrayEval extends ObjectEval {
 		}
 	}
 
+	private class FuncClone extends FunctionEval {
+		@Override
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
+			if (args.size() != 0)
+				throw new ScriptRuntimeException("need 0 argument", sl);
+
+			return ArrayEval.this.clone();
+		}
+	}
+
 	@Override
 	public IValueEval member(String name, SourceLocation sl) {
 		if (name.equals("size"))
@@ -166,11 +190,8 @@ public final class ArrayEval extends ObjectEval {
 			return new FuncSet();
 		else if (name.equals("clear"))
 			return new FuncClear();
+		else if (name.equals("clone"))
+			return new FuncClone();
 		throw new ScriptRuntimeException("array no such member: " + name, sl);
-	}
-
-	@Override
-	public String toString() {
-		return values.toString();
 	}
 }

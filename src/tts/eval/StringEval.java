@@ -29,6 +29,14 @@ public final class StringEval extends ObjectEval {
 	}
 
 	@Override
+	public StringEval clone() {
+		StringEval ret = new StringEval();
+		for (int i = 0, size = value.size(); i < size; ++i)
+			ret.value.add(value.get(i));
+		return ret;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(value.size());
 		for (int i = 0, size = value.size(); i < size; ++i)
@@ -231,6 +239,17 @@ public final class StringEval extends ObjectEval {
 		}
 	}
 
+	private class FuncClone extends FunctionEval {
+		@Override
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
+			if (args.size() != 0)
+				throw new ScriptRuntimeException("need 0 argument", sl);
+
+			return StringEval.this.clone();
+		}
+	}
+
 	@Override
 	public IValueEval member(String name, SourceLocation sl) {
 		if (name.equals("length"))
@@ -255,6 +274,8 @@ public final class StringEval extends ObjectEval {
 			return new FuncReplace();
 		else if (name.equals("append"))
 			return new FuncAppend();
+		else if (name.equals("clone"))
+			return new FuncClone();
 		throw new ScriptRuntimeException("string no such member: " + name, sl);
 	}
 }
