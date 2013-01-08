@@ -10,8 +10,7 @@ import tts.grammar.tree.OpList;
 import tts.token.scanner.*;
 import tts.token.stream.CharArrayScanReader;
 import tts.token.stream.IScanReader;
-import tts.util.PrintStreamWriter;
-import tts.util.SourceLocation;
+import tts.util.*;
 import tts.vm.BuiltinApi.FuncChr;
 import tts.vm.BuiltinApi.FuncEval;
 import tts.vm.BuiltinApi.FuncExit;
@@ -32,6 +31,9 @@ public class ScriptVM {
 
 	// 调用栈变量(最前面是全局帧，最后面是当前执行帧)
 	private final ArrayList<Frame> frames = new ArrayList<Frame>();
+
+	// 调用栈位置
+	private final ArrayList<RuntimeLocation> callingStack = new ArrayList<RuntimeLocation>();
 
 	// 当前脚本路径
 	private File currentScriptPath;
@@ -114,17 +116,29 @@ public class ScriptVM {
 
 	// 进入函数
 	public void enterFrame(SourceLocation sl, String nextModule) {
-		Frame f = new Frame(sl, currentModule);
+		Frame f = new Frame();
 		frames.add(f);
-		currentModule = nextModule;
 		f.enterScope();
+		pushFrameLocation(sl, nextModule);
 	}
 
 	// 退出函数
 	public void leaveFrame() {
 		Frame f = frames.remove(frames.size() - 1);
-		currentModule = f.module;
 		f.leaveScope();
+		popFrameLocation();
+	}
+
+	// 记录调用栈
+	public void pushFrameLocation(SourceLocation sl, String nextModule) {
+		callingStack.add(new RuntimeLocation(sl, currentModule));
+		currentModule = nextModule;
+	}
+
+	// 弹出调用栈
+	public void popFrameLocation() {
+		RuntimeLocation rl = callingStack.remove(callingStack.size() - 1);
+		currentModule = rl.module;
 	}
 
 	// 进入代码段
@@ -212,10 +226,10 @@ public class ScriptVM {
 	// 调用栈
 	private String callingStack() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = frames.size() - 1; i >= 1; --i) {
-			Frame f = frames.get(i);
-			sb.append("\t").append("at ").append(f.module).append("(")
-					.append(f.sl.file).append(":").append(f.sl.line)
+		for (int i = callingStack.size() - 1; i >= 1; --i) {
+			RuntimeLocation rl = callingStack.get(i);
+			sb.append("\t").append("at ").append(rl.module).append("(")
+					.append(rl.sl.file).append(":").append(rl.sl.line)
 					.append(")\n");
 		}
 		return sb.toString();

@@ -34,7 +34,7 @@ public final class IncludeOp implements IOp {
 		}
 
 		vm.enterScriptFile(dst);
-		vm.enterFrame(sl, SourceLocation.NATIVE_MODULE);
+		vm.pushFrameLocation(sl, SourceLocation.NATIVE_MODULE);
 		try {
 			if (op != null)
 				op.eval(vm);
@@ -45,11 +45,11 @@ public final class IncludeOp implements IOp {
 		} catch (ReturnFuncException e) {
 			throw new ScriptRuntimeException("Return without function", e.sl);
 		} catch (ScriptLogicException e) {
+			vm.popFrameLocation();
 			vm.leaveScriptFile();
-			vm.leaveFrame();
 			throw e;
 		}
-		vm.leaveFrame();
+		vm.popFrameLocation();
 		vm.leaveScriptFile();
 
 		return VoidEval.instance;
