@@ -2,29 +2,38 @@ package tts.eval;
 
 import java.util.List;
 
+import tts.util.CharList;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class StringEval extends ObjectEval {
 
-	private String value;
+	private CharList value = new CharList();
+
+	public StringEval() {
+	}
 
 	public StringEval(String s) {
-		value = s;
+		value.addAll(s.toCharArray());
 	}
 
 	public String getValue() {
-		return value;
+		return toString();
 	}
 
 	public IValueEval charAt(int i) {
-		return new StringEval(value.substring(i, i + 1));
+		StringEval ret = new StringEval();
+		ret.value.add(value.get(i));
+		return ret;
 	}
 
 	@Override
 	public String toString() {
-		return "\"" + value + "\"";
+		StringBuilder sb = new StringBuilder(value.size());
+		for (int i = 0, size = value.size(); i < size; ++i)
+			sb.append(value.get(i));
+		return sb.toString();
 	}
 
 	@Override
@@ -52,7 +61,7 @@ public final class StringEval extends ObjectEval {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 
-			return new IntegerEval(value.length());
+			return new IntegerEval(value.size());
 		}
 	}
 
@@ -82,7 +91,7 @@ public final class StringEval extends ObjectEval {
 				throw new ScriptRuntimeException("string needed", sl);
 
 			String s = ((StringEval) args.get(0)).getValue();
-			return BooleanEval.valueOf(value.startsWith(s));
+			return BooleanEval.valueOf(toString().startsWith(s));
 		}
 	}
 
@@ -97,7 +106,7 @@ public final class StringEval extends ObjectEval {
 				throw new ScriptRuntimeException("string needed", sl);
 
 			String s = ((StringEval) args.get(0)).getValue();
-			return BooleanEval.valueOf(value.endsWith(s));
+			return BooleanEval.valueOf(toString().endsWith(s));
 		}
 	}
 
@@ -114,7 +123,7 @@ public final class StringEval extends ObjectEval {
 
 			int begin = (int) ((IntegerEval) args.get(0)).getValue();
 			int end = (int) ((IntegerEval) args.get(1)).getValue();
-			return new StringEval(value.substring(begin, end));
+			return new StringEval(toString().substring(begin, end));
 		}
 	}
 
@@ -126,7 +135,7 @@ public final class StringEval extends ObjectEval {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 
-			return new StringEval(value.toLowerCase());
+			return new StringEval(toString().toLowerCase());
 		}
 	}
 
@@ -138,7 +147,7 @@ public final class StringEval extends ObjectEval {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 
-			return new StringEval(value.toUpperCase());
+			return new StringEval(toString().toUpperCase());
 		}
 	}
 
@@ -161,7 +170,7 @@ public final class StringEval extends ObjectEval {
 				start = (int) ((IntegerEval) args.get(1)).getValue();
 			}
 
-			return new IntegerEval(value.indexOf(s, start));
+			return new IntegerEval(toString().indexOf(s, start));
 		}
 	}
 
@@ -177,14 +186,14 @@ public final class StringEval extends ObjectEval {
 				throw new ScriptRuntimeException("string needed", sl);
 			String s = ((StringEval) args.get(0)).getValue();
 
-			int start = value.length();
+			int start = value.size();
 			if (args.size() == 2) {
 				if (args.get(1).getType() != IValueEval.EvalType.INTEGER)
 					throw new ScriptRuntimeException("integer needed", sl);
 				start = (int) ((IntegerEval) args.get(1)).getValue();
 			}
 
-			return new IntegerEval(value.lastIndexOf(s, start));
+			return new IntegerEval(toString().lastIndexOf(s, start));
 		}
 	}
 
@@ -203,7 +212,22 @@ public final class StringEval extends ObjectEval {
 				throw new ScriptRuntimeException("integer needed", sl);
 			String to = ((StringEval) args.get(1)).getValue();
 
-			return new StringEval(value.replace(from, to));
+			return new StringEval(toString().replace(from, to));
+		}
+	}
+
+	private class FuncAppend extends FunctionEval {
+		@Override
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
+			if (args.size() != 1 || args.get(0).getType() != EvalType.STRING)
+				throw new ScriptRuntimeException("need 1 string argument", sl);
+
+			StringEval se = (StringEval) args.get(0);
+			for (int i = 0, size = se.value.size(); i < size; ++i)
+				value.add(se.value.get(i));
+
+			return this;
 		}
 	}
 
@@ -229,6 +253,8 @@ public final class StringEval extends ObjectEval {
 			return new FuncLastIndexOf();
 		else if (name.equals("replace"))
 			return new FuncReplace();
+		else if (name.equals("append"))
+			return new FuncAppend();
 		throw new ScriptRuntimeException("string no such member: " + name, sl);
 	}
 }
