@@ -383,6 +383,7 @@ public class TokenScanner {
 			} else if ('A' <= c && c <= 'F') {
 				x = c - 'A' + 10;
 			} else {
+				reader.putBack();
 				break;
 			}
 			if (((v << 4) >> 4) != v)

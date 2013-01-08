@@ -19,6 +19,7 @@ import tts.vm.BuiltinApi.FuncOrd;
 import tts.vm.BuiltinApi.FuncOutput;
 import tts.vm.BuiltinApi.FuncPrint;
 import tts.vm.BuiltinApi.FuncPrintln;
+import tts.vm.BuiltinApi.FuncTostring;
 import tts.vm.rtexcpt.*;
 
 /**
@@ -224,6 +225,8 @@ public class ScriptVM {
 		addVariable("ord",
 				new Variable("ord", VarType.FUNCTION, new FuncOrd()),
 				SourceLocation.NATIVE);
+		addVariable("toString", new Variable("toString", VarType.FUNCTION,
+				new FuncTostring()), SourceLocation.NATIVE);
 	}
 
 	// 调用栈

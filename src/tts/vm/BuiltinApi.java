@@ -138,4 +138,14 @@ class BuiltinApi {
 			return new IntegerEval(v.charAt(0));
 		}
 	}
+
+	static class FuncTostring extends FunctionEval {
+		@Override
+		public IValueEval call(List<IValueEval> args, ScriptVM vm,
+				SourceLocation sl) {
+			if (args.size() != 1)
+				throw new ScriptRuntimeException("need 1 argument", sl);
+			return new StringEval(args.get(0).toString());
+		}
+	}
 }
