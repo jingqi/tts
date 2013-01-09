@@ -74,8 +74,14 @@ public final class TextTemplateOp implements IOp {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0, size = template.size(); i < size; ++i)
-			sb.append(template.get(i).toString());
+		for (int i = 0, size = template.size(); i < size; ++i) {
+			Object o = template.get(i);
+			if (o instanceof String) {
+				sb.append(o.toString());
+			} else if (o instanceof IOp) {
+				sb.append("${").append(o.toString()).append("}");
+			}
+		}
 		return sb.toString();
 	}
 

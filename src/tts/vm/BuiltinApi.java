@@ -97,7 +97,12 @@ class BuiltinApi {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i) {
-				System.out.print(args.get(i).toString());
+				IValueEval ve = args.get(i);
+				if (ve instanceof StringEval) {
+					System.out.print(((StringEval) ve).getValue());
+				} else {
+					System.out.print(ve.toString());
+				}
 			}
 			return VoidEval.instance;
 		}
@@ -107,8 +112,14 @@ class BuiltinApi {
 		@Override
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
-			for (int i = 0, size = args.size(); i < size; ++i)
-				System.out.print(args.get(i).toString());
+			for (int i = 0, size = args.size(); i < size; ++i) {
+				IValueEval ve = args.get(i);
+				if (ve instanceof StringEval) {
+					System.out.print(((StringEval) ve).getValue());
+				} else {
+					System.out.print(ve.toString());
+				}
+			}
 			System.out.println();
 			return VoidEval.instance;
 		}
@@ -146,7 +157,11 @@ class BuiltinApi {
 				SourceLocation sl) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument", sl);
-			return new StringEval(args.get(0).toString());
+
+			IValueEval ve = args.get(0);
+			if (ve instanceof StringEval)
+				return ve;
+			return new StringEval(ve.toString());
 		}
 	}
 }
