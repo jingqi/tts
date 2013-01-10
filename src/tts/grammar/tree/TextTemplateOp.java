@@ -6,18 +6,17 @@ import tts.eval.*;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 
-public final class TextTemplateOp implements IOp {
+public final class TextTemplateOp extends Op {
 
-	SourceLocation sl;
 	ArrayList<Object> template = new ArrayList<Object>();
 
 	public TextTemplateOp(ArrayList<Object> t, SourceLocation sl) {
-		this.sl = sl;
+		super(sl);
 		this.template = t;
 	}
 
 	public TextTemplateOp(ArrayList<Object> t, String file, int line) {
-		this.sl = new SourceLocation(file, line);
+		super(new SourceLocation(file, line));
 		this.template = t;
 	}
 
@@ -55,8 +54,8 @@ public final class TextTemplateOp implements IOp {
 			Object o = template.get(i);
 			if (o instanceof String) {
 				sb.append(o);
-			} else if (o instanceof IOp) {
-				IValueEval ve = ((IOp) o).eval(vm);
+			} else if (o instanceof Op) {
+				IValueEval ve = ((Op) o).eval(vm);
 				sb.append(resolveValue(ve));
 			} else {
 				throw new RuntimeException();
@@ -68,7 +67,7 @@ public final class TextTemplateOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		return this;
 	}
 
@@ -79,15 +78,10 @@ public final class TextTemplateOp implements IOp {
 			Object o = template.get(i);
 			if (o instanceof String) {
 				sb.append(o.toString());
-			} else if (o instanceof IOp) {
+			} else if (o instanceof Op) {
 				sb.append("${").append(o.toString()).append("}");
 			}
 		}
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
 	}
 }

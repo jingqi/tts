@@ -2,21 +2,20 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.*;
 
-public final class WhileLoop implements IOp {
+public final class WhileLoop extends Op {
 
-	SourceLocation sl;
-	IOp brk_exp, body;
+	Op brk_exp, body;
 
-	public WhileLoop(IOp brk, IOp body, SourceLocation sl) {
-		this.sl = sl;
+	public WhileLoop(Op brk, Op body, SourceLocation sl) {
+		super(sl);
 		this.brk_exp = brk;
 		this.body = body;
 	}
 
-	public WhileLoop(IOp brk, IOp body, String file, int line) {
+	public WhileLoop(Op brk, Op body, String file, int line) {
 		this(brk, body, new SourceLocation(file, line));
 	}
 
@@ -28,7 +27,7 @@ public final class WhileLoop implements IOp {
 			IValueEval ve = brk_exp.eval(vm);
 			if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException("boolean value needed",
-						brk_exp);
+						brk_exp.getSourceLocation());
 			BooleanEval be = (BooleanEval) ve;
 			if (!be.getValue())
 				break;
@@ -46,7 +45,7 @@ public final class WhileLoop implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		brk_exp = brk_exp.optimize();
 		if (body != null)
 			body = body.optimize();
@@ -57,7 +56,7 @@ public final class WhileLoop implements IOp {
 				IValueEval ve = brk_exp.eval(null);
 				if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 					throw new ScriptRuntimeException("boolean value needed",
-							brk_exp);
+							brk_exp.getSourceLocation());
 				BooleanEval be = (BooleanEval) ve;
 
 				if (!be.getValue())
@@ -75,10 +74,4 @@ public final class WhileLoop implements IOp {
 		sb.append("\n");
 		return sb.toString();
 	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
-	}
-
 }

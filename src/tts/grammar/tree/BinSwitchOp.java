@@ -2,15 +2,15 @@ package tts.grammar.tree;
 
 import tts.eval.BooleanEval;
 import tts.eval.IValueEval;
-import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
-public final class BinSwitchOp implements IOp {
+public final class BinSwitchOp extends Op {
 
-	IOp cond, true_value, false_value;
+	Op cond, true_value, false_value;
 
-	public BinSwitchOp(IOp c, IOp t, IOp f) {
+	public BinSwitchOp(Op c, Op t, Op f) {
+		super(c.getSourceLocation());
 		this.cond = c;
 		this.true_value = t;
 		this.false_value = f;
@@ -20,7 +20,7 @@ public final class BinSwitchOp implements IOp {
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval c = cond.eval(vm);
 		if (c.getType() != IValueEval.EvalType.BOOLEAN)
-			throw new ScriptRuntimeException("boolean value needed", cond);
+			throw new ScriptRuntimeException("boolean value needed", cond.getSourceLocation());
 
 		if (((BooleanEval) c).getValue())
 			return true_value.eval(vm);
@@ -28,7 +28,7 @@ public final class BinSwitchOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		cond = cond.optimize();
 		true_value = true_value.optimize();
 		false_value = false_value.optimize();
@@ -38,7 +38,7 @@ public final class BinSwitchOp implements IOp {
 				IValueEval c = cond.eval(null);
 				if (c.getType() != IValueEval.EvalType.BOOLEAN)
 					throw new ScriptRuntimeException("boolean value needed",
-							cond);
+							cond.getSourceLocation());
 
 				if (((BooleanEval) c).getValue())
 					return true_value;
@@ -54,10 +54,5 @@ public final class BinSwitchOp implements IOp {
 		sb.append(cond).append(" ? ").append(true_value).append(" : ")
 				.append(false_value);
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return cond.getSourceLocation();
 	}
 }

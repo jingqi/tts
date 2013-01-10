@@ -9,32 +9,31 @@ import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.*;
 
-public final class IncludeOp implements IOp {
+public final class IncludeOp extends Op {
 
-	SourceLocation sl;
 	String path;
 
 	public IncludeOp(String path, String file, int line) {
+		super(new SourceLocation(file, line));
 		this.path = path;
-		sl = new SourceLocation(file, line);
 	}
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		File cur = vm.getCurrentScriptPath();
 		if (cur == null)
-			throw new ScriptRuntimeException("file not found", this);
+			throw new ScriptRuntimeException("file not found", getSourceLocation());
 
 		File dst = new File(cur.getParentFile().getAbsolutePath() + "/" + path);
-		IOp op;
+		Op op;
 		try {
-			op = vm.loadScript(dst, sl);
+			op = vm.loadScript(dst, getSourceLocation());
 		} catch (IOException e) {
-			throw new ScriptRuntimeException("can not load file:" + path, this);
+			throw new ScriptRuntimeException("can not load file:" + path, getSourceLocation());
 		}
 
 		vm.enterScriptFile(dst);
-		vm.pushFrameLocation(sl, SourceLocation.NATIVE_MODULE);
+		vm.pushFrameLocation(getSourceLocation(), SourceLocation.NATIVE_MODULE);
 		try {
 			if (op != null)
 				op.eval(vm);
@@ -56,17 +55,12 @@ public final class IncludeOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		return this;
 	}
 
 	@Override
 	public String toString() {
 		return "include \"" + path + "\"";
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
 	}
 }

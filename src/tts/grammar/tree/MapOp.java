@@ -7,23 +7,22 @@ import tts.eval.MapEval;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 
-public class MapOp implements IOp {
+public class MapOp extends Op {
 
 	public static class Entry {
-		IOp key, value;
+		Op key, value;
 
-		public Entry(IOp k, IOp v) {
+		public Entry(Op k, Op v) {
 			key = k;
 			value = v;
 		}
 	}
 
-	SourceLocation sl;
 	ArrayList<Entry> entries;
 
 	public MapOp(ArrayList<Entry> e, String file, int line) {
+		super(new SourceLocation(file, line));
 		entries = e;
-		sl = new SourceLocation(file, line);
 	}
 
 	@Override
@@ -38,7 +37,7 @@ public class MapOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		for (int i = 0, size = entries.size(); i < size; ++i) {
 			Entry e = entries.get(i);
 			e.key = e.key.optimize();
@@ -60,10 +59,5 @@ public class MapOp implements IOp {
 		}
 		sb.append("}");
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
 	}
 }

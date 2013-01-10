@@ -2,13 +2,12 @@ package tts.grammar.tree.binaryop;
 
 import tts.eval.IValueEval;
 import tts.eval.IntegerEval;
-import tts.grammar.tree.IOp;
+import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
-import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
-public final class BitOp implements IOp {
+public final class BitOp extends Op {
 
 	public enum OpType {
 		BIT_AND("&"), BIT_OR("|"), BIT_XOR("^"), SHIFT_LEFT("<<"), SHIFT_RIGHT(
@@ -22,9 +21,10 @@ public final class BitOp implements IOp {
 	}
 
 	OpType op;
-	IOp left, right;
+	Op left, right;
 
-	public BitOp(IOp left, OpType op, IOp right) {
+	public BitOp(Op left, OpType op, Op right) {
+		super(left.getSourceLocation());
 		this.left = left;
 		this.op = op;
 		this.right = right;
@@ -36,7 +36,7 @@ public final class BitOp implements IOp {
 		if (l.getType() != IValueEval.EvalType.INTEGER
 				|| r.getType() != IValueEval.EvalType.INTEGER)
 			throw new ScriptRuntimeException("type not match in bit operation",
-					this);
+					getSourceLocation());
 
 		long ll = ((IntegerEval) l).getValue();
 		long rr = ((IntegerEval) r).getValue();
@@ -69,7 +69,7 @@ public final class BitOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		left = left.optimize();
 		right = right.optimize();
 
@@ -88,10 +88,5 @@ public final class BitOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(left).append(" ").append(op.op).append(" ").append(right);
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return left.getSourceLocation();
 	}
 }

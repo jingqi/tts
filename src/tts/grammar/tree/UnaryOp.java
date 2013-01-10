@@ -5,13 +5,14 @@ import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.binaryop.AssignOp;
 import tts.grammar.tree.binaryop.MathOp;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
+import tts.vm.Variable;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 /**
  * 一元操作符
  */
-public final class UnaryOp implements IOp {
+public final class UnaryOp extends Op {
 
 	public enum OpType {
 		POSITIVE("-"), NEGATIEVE("+"), BIT_NOT("~"), NOT("!"), PRE_INCREMENT(
@@ -27,10 +28,10 @@ public final class UnaryOp implements IOp {
 
 	private SourceLocation sl;
 	private OpType op;
-	private IOp eval;
+	private Op eval;
 
-	public UnaryOp(OpType op, IOp e, SourceLocation sl) {
-		this.sl = sl;
+	public UnaryOp(OpType op, Op e, SourceLocation sl) {
+		super(sl);
 		this.op = op;
 		this.eval = e;
 	}
@@ -41,11 +42,11 @@ public final class UnaryOp implements IOp {
 				|| op == OpType.POST_INCREMENT || op == OpType.POST_DECREMENT) {
 			if (!(eval instanceof Operand))
 				throw new ScriptRuntimeException("operand can not be assigned",
-						eval);
+						eval.getSourceLocation());
 			IValueEval ve = ((Operand) eval).eval;
 			if (ve.getType() != IValueEval.EvalType.VARIABLE)
 				throw new ScriptRuntimeException("operand can not be assigned",
-						eval);
+						eval.getSourceLocation());
 			String name = ((VariableEval) ve).getName();
 			Variable v = vm.getVariable(name, sl);
 
@@ -91,7 +92,7 @@ public final class UnaryOp implements IOp {
 			if (ve.getType() != IValueEval.EvalType.DOUBLE
 					&& ve.getType() != IValueEval.EvalType.INTEGER)
 				throw new ScriptRuntimeException("type mismatch for operation",
-						eval);
+						eval.getSourceLocation());
 			return ve;
 
 		case NEGATIEVE:
@@ -104,13 +105,13 @@ public final class UnaryOp implements IOp {
 
 			default:
 				throw new ScriptRuntimeException("type mismatch for operation",
-						eval);
+						eval.getSourceLocation());
 			}
 
 		case NOT:
 			if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException("type mismatch for operation",
-						eval);
+						eval.getSourceLocation());
 			return BooleanEval.valueOf(!((BooleanEval) ve).getValue());
 
 		case BIT_NOT:
@@ -118,7 +119,7 @@ public final class UnaryOp implements IOp {
 				return new IntegerEval(~((IntegerEval) ve).getValue());
 			else
 				throw new ScriptRuntimeException("type mismatch for operation",
-						eval);
+						eval.getSourceLocation());
 
 		default:
 			throw new RuntimeException();
@@ -126,13 +127,13 @@ public final class UnaryOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		eval = eval.optimize();
 
 		// 优化常量
 		if (eval instanceof Operand) {
 			if (((Operand) eval).isConst()) {
-				return new Operand(eval(null), sl);
+				return new Operand(eval(null), getSourceLocation());
 			}
 		}
 
@@ -145,10 +146,4 @@ public final class UnaryOp implements IOp {
 		sb.append(op.op).append(eval);
 		return sb.toString();
 	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
-	}
-
 }

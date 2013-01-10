@@ -2,18 +2,17 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.*;
 
-public final class DoWhileLoopOp implements IOp {
+public final class DoWhileLoopOp extends Op {
 
-	SourceLocation sl;
-	IOp body, brk_exp;
+	Op body, brk_exp;
 
-	public DoWhileLoopOp(IOp body, IOp brk, String file, int line) {
+	public DoWhileLoopOp(Op body, Op brk, String file, int line) {
+		super(new SourceLocation(file, line));
 		this.body = body;
 		this.brk_exp = brk;
-		this.sl = new SourceLocation(file, line);
 	}
 
 	@Override
@@ -31,7 +30,7 @@ public final class DoWhileLoopOp implements IOp {
 			IValueEval ve = brk_exp.eval(vm);
 			if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException("boolean value needed",
-						brk_exp);
+						brk_exp.getSourceLocation());
 			BooleanEval be = (BooleanEval) ve;
 			if (!be.getValue())
 				break;
@@ -40,7 +39,7 @@ public final class DoWhileLoopOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		if (body != null)
 			body = body.optimize();
 		brk_exp = brk_exp.optimize();
@@ -53,10 +52,5 @@ public final class DoWhileLoopOp implements IOp {
 		sb.append("do").append(body).append("while(").append(brk_exp)
 				.append(");\n");
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
 	}
 }

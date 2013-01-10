@@ -2,13 +2,13 @@ package tts.grammar.tree.binaryop;
 
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
-import tts.grammar.tree.IOp;
+import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
-public final class CompareOp implements IOp {
+public final class CompareOp extends Op {
 
 	public enum OpType {
 		REF_EQ("==="), REF_NOT_EQ("!=="), EQ("=="), NOT_EQ("!="), LESS("<"), GREATER(
@@ -22,9 +22,10 @@ public final class CompareOp implements IOp {
 	}
 
 	OpType op;
-	IOp left, right;
+	Op left, right;
 
-	public CompareOp(IOp left, OpType op, IOp right) {
+	public CompareOp(Op left, OpType op, Op right) {
+		super(left.getSourceLocation());
 		this.left = left;
 		this.op = op;
 		this.right = right;
@@ -159,7 +160,7 @@ public final class CompareOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		left = left.optimize();
 		right = right.optimize();
 
@@ -178,10 +179,5 @@ public final class CompareOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(left).append(" ").append(op.op).append(" ").append(right);
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return left.getSourceLocation();
 	}
 }

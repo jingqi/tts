@@ -2,13 +2,12 @@ package tts.grammar.tree.binaryop;
 
 import tts.eval.BooleanEval;
 import tts.eval.IValueEval;
-import tts.grammar.tree.IOp;
+import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
-import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
-public final class BooleanOp implements IOp {
+public final class BooleanOp extends Op {
 
 	public enum OpType {
 		AND("&&"), OR("||");
@@ -21,9 +20,10 @@ public final class BooleanOp implements IOp {
 	}
 
 	OpType op;
-	IOp left, right;
+	Op left, right;
 
-	public BooleanOp(IOp left, OpType op, IOp right) {
+	public BooleanOp(Op left, OpType op, Op right) {
+		super(left.getSourceLocation());
 		this.left = left;
 		this.op = op;
 		this.right = right;
@@ -34,7 +34,7 @@ public final class BooleanOp implements IOp {
 		IValueEval _l = left.eval(vm);
 		if (_l.getType() != IValueEval.EvalType.BOOLEAN)
 			throw new ScriptRuntimeException(
-					"type mismatch for boolean operation", this);
+					"type mismatch for boolean operation", getSourceLocation());
 		BooleanEval l = (BooleanEval) _l;
 
 		switch (op) {
@@ -44,7 +44,7 @@ public final class BooleanOp implements IOp {
 			IValueEval r = right.eval(vm);
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException(
-						"type mismatch for boolean operation", this);
+						"type mismatch for boolean operation", getSourceLocation());
 			return r;
 		}
 
@@ -54,7 +54,7 @@ public final class BooleanOp implements IOp {
 			IValueEval r = right.eval(vm);
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException(
-						"type mismatch for boolean operation", this);
+						"type mismatch for boolean operation", getSourceLocation());
 			return r;
 		}
 
@@ -64,7 +64,7 @@ public final class BooleanOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		left = left.optimize();
 		right = right.optimize();
 
@@ -83,10 +83,5 @@ public final class BooleanOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(left).append(" ").append(op.op).append(" ").append(right);
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return left.getSourceLocation();
 	}
 }

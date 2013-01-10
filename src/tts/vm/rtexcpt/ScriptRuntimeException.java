@@ -1,6 +1,5 @@
 package tts.vm.rtexcpt;
 
-import tts.grammar.tree.IOp;
 import tts.util.SourceLocation;
 
 /**
@@ -11,11 +10,6 @@ public class ScriptRuntimeException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public final SourceLocation sl;
-
-	public ScriptRuntimeException(String description, IOp op) {
-		super(description);
-		sl = op.getSourceLocation();
-	}
 
 	public ScriptRuntimeException(String description, SourceLocation sl) {
 		super(description);

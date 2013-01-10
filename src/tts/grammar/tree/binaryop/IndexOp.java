@@ -2,17 +2,17 @@ package tts.grammar.tree.binaryop;
 
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
-import tts.grammar.tree.IOp;
-import tts.util.SourceLocation;
+import tts.grammar.tree.Op;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptNullPointerException;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
-public final class IndexOp implements IOp {
+public final class IndexOp extends Op {
 
-	IOp body, index;
+	Op body, index;
 
-	public IndexOp(IOp body, IOp index) {
+	public IndexOp(Op body, Op index) {
+		super(body.getSourceLocation());
 		this.body = body;
 		this.index = index;
 	}
@@ -25,12 +25,12 @@ public final class IndexOp implements IOp {
 		} else if (b.getType() == EvalType.ARRAY) {
 			IValueEval i = index.eval(vm);
 			if (i.getType() != EvalType.INTEGER)
-				throw new ScriptRuntimeException("integer needed for index", index);
+				throw new ScriptRuntimeException("integer needed for index", index.getSourceLocation());
 			return ((ArrayEval) b).get((int) ((IntegerEval) i).getValue());
 		} else if (b.getType() == EvalType.STRING) {
 			IValueEval i = index.eval(vm);
 			if (i.getType() != EvalType.INTEGER)
-				throw new ScriptRuntimeException("integer needed for index", index);
+				throw new ScriptRuntimeException("integer needed for index", index.getSourceLocation());
 			return ((StringEval) b).charAt((int) ((IntegerEval) i).getValue());
 		} else if (b.getType() == EvalType.MAP) {
 			IValueEval i = index.eval(vm);
@@ -40,11 +40,11 @@ public final class IndexOp implements IOp {
 			return ret;
 		}
 
-		throw new ScriptRuntimeException("value can not be indexed", body);
+		throw new ScriptRuntimeException("value can not be indexed", body.getSourceLocation());
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		body = body.optimize();
 		index = index.optimize();
 		return this;
@@ -55,10 +55,5 @@ public final class IndexOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(body).append("[").append(index).append("]");
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return body.getSourceLocation();
 	}
 }

@@ -7,31 +7,31 @@ import tts.eval.IValueEval;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 
-public final class ArrayOp implements IOp {
+public final class ArrayOp extends Op {
 
 	SourceLocation sl;
-	ArrayList<IOp> elements;
+	ArrayList<Op> elements;
 
-	public ArrayOp(ArrayList<IOp> v, SourceLocation sl) {
-		this.sl = sl;
+	public ArrayOp(ArrayList<Op> v, SourceLocation sl) {
+		super(sl);
 		elements = v;
 	}
 
-	public ArrayOp(ArrayList<IOp> v, String file, int line) {
+	public ArrayOp(ArrayList<Op> v, String file, int line) {
 		this(v, new SourceLocation(file, line));
 	}
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		ArrayEval ret = new ArrayEval();
-		for (IOp op : elements) {
+		for (Op op : elements) {
 			ret.add(op.eval(vm));
 		}
 		return ret;
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		for (int i = 0, size = elements.size(); i < size; ++i)
 			elements.set(i, elements.get(i).optimize());
 
@@ -47,10 +47,4 @@ public final class ArrayOp implements IOp {
 		sb.append("]");
 		return sb.toString();
 	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
-	}
-
 }

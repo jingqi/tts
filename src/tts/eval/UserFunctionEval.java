@@ -3,7 +3,7 @@ package tts.eval;
 import java.util.ArrayList;
 import java.util.List;
 
-import tts.grammar.tree.IOp;
+import tts.grammar.tree.Op;
 import tts.grammar.tree.binaryop.AssignOp;
 import tts.util.SourceLocation;
 import tts.vm.*;
@@ -22,10 +22,10 @@ public final class UserFunctionEval extends FunctionEval {
 	}
 
 	String module;
-	IOp ops;
+	Op ops;
 	ArrayList<ParamInfo> params;
 
-	public UserFunctionEval(String module, IOp ops, ArrayList<ParamInfo> params) {
+	public UserFunctionEval(String module, Op ops, ArrayList<ParamInfo> params) {
 		this.module = module;
 		this.ops = ops;
 		this.params = params;

@@ -5,17 +5,15 @@ import tts.grammar.tree.binaryop.AssignOp;
 import tts.util.SourceLocation;
 import tts.vm.*;
 
-public final class DefinationOp implements IOp {
-
-	SourceLocation sl;
+public final class DefinationOp extends Op {
 
 	VarType type;
 	String name;
-	IOp value;
+	Op value;
 
-	public DefinationOp(VarType vt, String name, IOp value, String file,
+	public DefinationOp(VarType vt, String name, Op value, String file,
 			int line) {
-		this.sl = new SourceLocation(file, line);
+		super(new SourceLocation(file, line));
 		this.type = vt;
 		this.name = name;
 
@@ -41,15 +39,15 @@ public final class DefinationOp implements IOp {
 	public IValueEval eval(ScriptVM vm) {
 		Variable v = new Variable(name, type, null);
 		if (value != null)
-			AssignOp.assign(v, value.eval(vm), sl);
+			AssignOp.assign(v, value.eval(vm), getSourceLocation());
 		else
-			AssignOp.assign(v, NullEval.instance, sl);
-		vm.addVariable(name, v, sl);
+			AssignOp.assign(v, NullEval.instance, getSourceLocation());
+		vm.addVariable(name, v, getSourceLocation());
 		return VoidEval.instance;
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		if (value != null)
 			value = value.optimize();
 		return this;
@@ -62,10 +60,5 @@ public final class DefinationOp implements IOp {
 		if (value != null)
 			sb.append("=").append(value);
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
 	}
 }

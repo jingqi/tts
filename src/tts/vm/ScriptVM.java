@@ -5,7 +5,7 @@ import java.util.*;
 
 import tts.grammar.scanner.GrammarException;
 import tts.grammar.scanner.GrammarScanner;
-import tts.grammar.tree.IOp;
+import tts.grammar.tree.Op;
 import tts.grammar.tree.OpList;
 import tts.lexer.scanner.*;
 import tts.lexer.stream.CharArrayScanReader;
@@ -40,7 +40,7 @@ public class ScriptVM {
 	private final Stack<File> scriptPathStack = new Stack<File>();
 
 	// 已经加载的脚本文件
-	private final Map<String, IOp> loadedFiles = new HashMap<String, IOp>();
+	private final Map<String, Op> loadedFiles = new HashMap<String, Op>();
 
 	// 当前模块
 	private String currentModule;
@@ -157,9 +157,9 @@ public class ScriptVM {
 	}
 
 	// 加载脚本
-	public IOp loadScript(File dst, SourceLocation sl) throws IOException {
+	public Op loadScript(File dst, SourceLocation sl) throws IOException {
 		// 从缓存加载
-		IOp ret = loadedFiles.get(dst.getAbsolutePath());
+		Op ret = loadedFiles.get(dst.getAbsolutePath());
 		if (ret != null)
 			return ret;
 
@@ -241,7 +241,7 @@ public class ScriptVM {
 		currentScriptPath = script.getAbsoluteFile();
 
 		try {
-			IOp op = loadScript(script, SourceLocation.NATIVE);
+			Op op = loadScript(script, SourceLocation.NATIVE);
 			op.eval(this);
 			textOutput.flush();
 		} catch (IOException e) {
@@ -279,7 +279,7 @@ public class ScriptVM {
 			TokenScanner tsn = new TokenScanner(r, "<memory>");
 			TokenStream ts = new TokenStream(tsn);
 			GrammarScanner gs = new GrammarScanner(ts);
-			IOp op = gs.all();
+			Op op = gs.all();
 			op = op.optimize();
 			if (op != null)
 				op.eval(this);

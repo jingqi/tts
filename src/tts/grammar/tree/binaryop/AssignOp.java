@@ -1,7 +1,7 @@
 package tts.grammar.tree.binaryop;
 
 import tts.eval.*;
-import tts.grammar.tree.IOp;
+import tts.grammar.tree.Op;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.Variable;
@@ -10,19 +10,18 @@ import tts.vm.rtexcpt.ScriptRuntimeException;
 /**
  * 赋值操作
  */
-public final class AssignOp implements IOp {
+public final class AssignOp extends Op {
 
-	SourceLocation sl;
 	String varname;
-	IOp value;
+	Op value;
 
-	public AssignOp(String name, IOp value, SourceLocation sl) {
-		this.sl = sl;
+	public AssignOp(String name, Op value, SourceLocation sl) {
+		super(sl);
 		this.varname = name;
 		this.value = value;
 	}
 
-	public AssignOp(String name, IOp value, String file, int line) {
+	public AssignOp(String name, Op value, String file, int line) {
 		this(name, value, new SourceLocation(file, line));
 	}
 
@@ -106,7 +105,7 @@ public final class AssignOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		if (value != null)
 			value = value.optimize();
 		return this;
@@ -118,10 +117,4 @@ public final class AssignOp implements IOp {
 		sb.append(varname).append(" = ").append(value);
 		return sb.toString();
 	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
-	}
-
 }

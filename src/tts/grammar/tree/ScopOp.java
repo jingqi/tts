@@ -2,18 +2,16 @@ package tts.grammar.tree;
 
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
-import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptLogicException;
 
-public final class ScopOp implements IOp {
+public final class ScopOp extends Op {
 
-	SourceLocation sl;
-	IOp op;
+	Op op;
 
-	public ScopOp(IOp op) {
+	public ScopOp(Op op) {
+		super(op.getSourceLocation());
 		this.op = op;
-		this.sl = op.getSourceLocation();
 	}
 
 	@Override
@@ -32,7 +30,7 @@ public final class ScopOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		if (op != null)
 			op = op.optimize();
 		if (op == null)
@@ -45,10 +43,5 @@ public final class ScopOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{\n").append(op).append("\n}\n");
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
 	}
 }

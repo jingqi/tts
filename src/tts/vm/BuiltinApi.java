@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.List;
 
 import tts.eval.*;
-import tts.grammar.tree.IOp;
+import tts.grammar.tree.Op;
 import tts.util.SourceLocation;
 import tts.vm.rtexcpt.*;
 
@@ -31,7 +31,7 @@ class BuiltinApi {
 				dst = new File(parent + "/" + path);
 			}
 
-			IOp op;
+			Op op;
 			try {
 				op = vm.loadScript(dst, sl);
 			} catch (IOException e) {

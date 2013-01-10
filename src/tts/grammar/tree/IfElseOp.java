@@ -2,26 +2,25 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
-public final class IfElseOp implements IOp {
+public final class IfElseOp extends Op {
 
-	SourceLocation sl;
-	IOp cond, body, else_body;
+	Op cond, body, else_body;
 
-	public IfElseOp(IOp cond, IOp body, IOp else_body, String file, int line) {
+	public IfElseOp(Op cond, Op body, Op else_body, String file, int line) {
+		super(new SourceLocation(file, line));
 		this.cond = cond;
 		this.body = body;
 		this.else_body = else_body;
-		this.sl = new SourceLocation(file, line);
 	}
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval ve = cond.eval(vm);
 		if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-			throw new ScriptRuntimeException("boolean value needed", cond);
+			throw new ScriptRuntimeException("boolean value needed", cond.getSourceLocation());
 
 		BooleanEval be = (BooleanEval) ve;
 		if (be.getValue()) {
@@ -34,7 +33,7 @@ public final class IfElseOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		cond = cond.optimize();
 		if (body != null)
 			body = body.optimize();
@@ -47,7 +46,7 @@ public final class IfElseOp implements IOp {
 				IValueEval ve = cond.eval(null);
 				if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 					throw new ScriptRuntimeException("boolean value needed",
-							cond);
+							cond.getSourceLocation());
 
 				BooleanEval be = (BooleanEval) ve;
 				if (be.getValue())
@@ -67,10 +66,4 @@ public final class IfElseOp implements IOp {
 		sb.append("\n");
 		return sb.toString();
 	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
-	}
-
 }

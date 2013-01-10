@@ -2,18 +2,18 @@ package tts.grammar.tree.binaryop;
 
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
-import tts.grammar.tree.IOp;
-import tts.util.SourceLocation;
+import tts.grammar.tree.Op;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptNullPointerException;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
-public final class MemberOp implements IOp {
+public final class MemberOp extends Op {
 
-	IOp body;
+	Op body;
 	String member;
 
-	public MemberOp(IOp body, String member) {
+	public MemberOp(Op body, String member) {
+		super(body.getSourceLocation());
 		this.body = body;
 		this.member = member;
 	}
@@ -24,13 +24,13 @@ public final class MemberOp implements IOp {
 		if (b.getType() == EvalType.NULL)
 			throw new ScriptNullPointerException(body.getSourceLocation());
 		else if (!(b instanceof ObjectEval))
-			throw new ScriptRuntimeException("value/object has no member", body);
+			throw new ScriptRuntimeException("value/object has no member", body.getSourceLocation());
 
 		return ((ObjectEval) b).member(member, getSourceLocation());
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		body = body.optimize();
 		return this;
 	}
@@ -41,10 +41,4 @@ public final class MemberOp implements IOp {
 		sb.append(body).append(".").append(member);
 		return sb.toString();
 	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return body.getSourceLocation();
-	}
-
 }

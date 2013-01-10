@@ -8,13 +8,12 @@ import tts.vm.rtexcpt.ScriptRuntimeException;
 /**
  * 操作数
  */
-public final class Operand implements IOp {
+public final class Operand extends Op {
 
-	SourceLocation sl;
 	IValueEval eval;
 
 	public Operand(IValueEval ve, SourceLocation sl) {
-		this.sl = sl;
+		super(sl);
 		this.eval = ve;
 	}
 
@@ -58,17 +57,17 @@ public final class Operand implements IOp {
 
 		case VARIABLE:
 			VariableEval ve = (VariableEval) eval;
-			IValueEval ret = vm.getVariable(ve.getName(), sl).getValue();
+			IValueEval ret = vm.getVariable(ve.getName(), getSourceLocation()).getValue();
 			if (ret == null)
 				throw new ScriptRuntimeException("variable not initialized",
-						this);
+						getSourceLocation());
 			return ret;
 		}
-		throw new ScriptRuntimeException("wrong type of value", this);
+		throw new ScriptRuntimeException("wrong type of value", getSourceLocation());
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		if (eval instanceof UserFunctionEval) {
 			((UserFunctionEval) eval).optimize();
 		}
@@ -78,10 +77,5 @@ public final class Operand implements IOp {
 	@Override
 	public String toString() {
 		return eval.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
 	}
 }

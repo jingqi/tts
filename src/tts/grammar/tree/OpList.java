@@ -10,27 +10,26 @@ import tts.vm.ScriptVM;
 /**
  * 操作列表
  */
-public final class OpList implements IOp {
+public final class OpList extends Op {
 
-	SourceLocation sl;
-	ArrayList<IOp> list = new ArrayList<IOp>();
+	ArrayList<Op> list = new ArrayList<Op>();
 
 	public static final OpList VOID = new OpList(new SourceLocation(
 			"<native_file>", -1));
 
 	public OpList(SourceLocation sl) {
-		this.sl = sl;
+		super(sl);
 	}
 
 	public OpList(String file, int line) {
-		this.sl = new SourceLocation(file, line);
+		super(new SourceLocation(file, line));
 	}
 
-	public void add(IOp op) {
+	public void add(Op op) {
 		list.add(op);
 	}
 
-	public IOp get(int i) {
+	public Op get(int i) {
 		return list.get(i);
 	}
 
@@ -48,10 +47,10 @@ public final class OpList implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
-		ArrayList<IOp> nl = new ArrayList<IOp>(list.size());
+	public Op optimize() {
+		ArrayList<Op> nl = new ArrayList<Op>(list.size());
 		for (int i = 0, size = list.size(); i < size; ++i) {
-			IOp e = list.get(i).optimize();
+			Op e = list.get(i).optimize();
 			if (e != null)
 				nl.add(e);
 		}
@@ -70,10 +69,5 @@ public final class OpList implements IOp {
 		for (int i = 0; i < list.size(); ++i)
 			sb.append(list.get(i)).append(";\n");
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
 	}
 }

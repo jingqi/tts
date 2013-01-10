@@ -1,15 +1,15 @@
 package tts.grammar.tree;
 
 import tts.eval.IValueEval;
-import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ReturnFuncException;
 
-public class ReturnFuncOp implements IOp {
+public class ReturnFuncOp extends Op {
 
-	IOp value;
+	Op value;
 
-	public ReturnFuncOp(IOp v) {
+	public ReturnFuncOp(Op v) {
+		super(v.getSourceLocation());
 		this.value = v;
 	}
 
@@ -21,7 +21,7 @@ public class ReturnFuncOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		value = value.optimize();
 		return this;
 	}
@@ -29,10 +29,5 @@ public class ReturnFuncOp implements IOp {
 	@Override
 	public String toString() {
 		return "return " + value.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return value.getSourceLocation();
 	}
 }

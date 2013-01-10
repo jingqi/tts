@@ -4,16 +4,16 @@ import java.util.ArrayList;
 
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
-import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.*;
 
-public final class FuncCallOp implements IOp {
+public final class FuncCallOp extends Op {
 
-	IOp func;
-	ArrayList<IOp> args;
+	Op func;
+	ArrayList<Op> args;
 
-	public FuncCallOp(IOp func, ArrayList<IOp> args) {
+	public FuncCallOp(Op func, ArrayList<Op> args) {
+		super(func.getSourceLocation());
 		this.func = func;
 		this.args = args;
 	}
@@ -24,7 +24,7 @@ public final class FuncCallOp implements IOp {
 		if (b.getType() == EvalType.NULL)
 			throw new ScriptNullPointerException(func.getSourceLocation());
 		else if (b.getType() != IValueEval.EvalType.FUNCTION)
-			throw new ScriptRuntimeException("function value needed", func);
+			throw new ScriptRuntimeException("function value needed", func.getSourceLocation());
 
 		ArrayList<IValueEval> as = new ArrayList<IValueEval>();
 		for (int i = 0, size = args.size(); i < size; ++i)
@@ -44,7 +44,7 @@ public final class FuncCallOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		func = func.optimize();
 		for (int i = 0, size = args.size(); i < size; ++i)
 			args.set(i, args.get(i).optimize());
@@ -63,10 +63,4 @@ public final class FuncCallOp implements IOp {
 		sb.append(")");
 		return sb.toString();
 	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return func.getSourceLocation();
-	}
-
 }

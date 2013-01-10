@@ -5,17 +5,16 @@ import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.*;
 
-public final class ForLoopOp implements IOp {
+public final class ForLoopOp extends Op {
 
-	SourceLocation sl;
-	IOp init_exp, break_exp, fin_exp, body;
+	Op init_exp, break_exp, fin_exp, body;
 
-	public ForLoopOp(IOp init, IOp brk, IOp fin, IOp body, String file, int line) {
+	public ForLoopOp(Op init, Op brk, Op fin, Op body, String file, int line) {
+		super(new SourceLocation(file, line));
 		this.init_exp = init;
 		this.break_exp = brk;
 		this.fin_exp = fin;
 		this.body = body;
-		this.sl = new SourceLocation(file, line);
 	}
 
 	@Override
@@ -29,7 +28,7 @@ public final class ForLoopOp implements IOp {
 					IValueEval ve = break_exp.eval(vm);
 					if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 						throw new ScriptRuntimeException("boolean value needed",
-								break_exp);
+								break_exp.getSourceLocation());
 					BooleanEval be = (BooleanEval) ve;
 					if (!be.getValue())
 						break;
@@ -57,7 +56,7 @@ public final class ForLoopOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		if (init_exp != null)
 			init_exp = init_exp.optimize();
 		if (break_exp != null)
@@ -84,10 +83,5 @@ public final class ForLoopOp implements IOp {
 		sb.append(")\n").append(body);
 		sb.append("\n");
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return sl;
 	}
 }

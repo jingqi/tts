@@ -2,13 +2,12 @@ package tts.grammar.tree.binaryop;
 
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
-import tts.grammar.tree.IOp;
+import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
-import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
-public final class MathOp implements IOp {
+public final class MathOp extends Op {
 
 	public enum OpType {
 		ADD("+"), SUB("-"), MULTIPLY("*"), DIVID("/"), MOD("%");
@@ -21,9 +20,10 @@ public final class MathOp implements IOp {
 	}
 
 	OpType op;
-	IOp left, right;
+	Op left, right;
 
-	public MathOp(IOp left, OpType op, IOp right) {
+	public MathOp(Op left, OpType op, Op right) {
+		super(left.getSourceLocation());
 		this.left = left;
 		this.op = op;
 		this.right = right;
@@ -76,7 +76,7 @@ public final class MathOp implements IOp {
 
 		default:
 			throw new ScriptRuntimeException("type mismatch in math operation",
-					this);
+					getSourceLocation());
 		}
 
 		double rd = 0;
@@ -94,7 +94,7 @@ public final class MathOp implements IOp {
 
 		default:
 			throw new ScriptRuntimeException("type mismatch in math operation",
-					this);
+					getSourceLocation());
 		}
 
 		double rsd = 0;
@@ -144,7 +144,7 @@ public final class MathOp implements IOp {
 	}
 
 	@Override
-	public IOp optimize() {
+	public Op optimize() {
 		left = left.optimize();
 		right = right.optimize();
 
@@ -163,10 +163,5 @@ public final class MathOp implements IOp {
 		StringBuilder sb = new StringBuilder();
 		sb.append(left).append(" ").append(op.op).append(" ").append(right);
 		return sb.toString();
-	}
-
-	@Override
-	public SourceLocation getSourceLocation() {
-		return left.getSourceLocation();
 	}
 }
