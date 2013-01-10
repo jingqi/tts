@@ -318,7 +318,7 @@ public class GrammarScanner {
 		if (v == null)
 			return null;
 
-		while (tokenStream.match(TokenType.SEPARATOR, "||") != null) {
+		while (tokenStream.match(TokenType.SEPARATOR, "&&") != null) {
 			IOp vv = bitOr();
 			if (vv == null)
 				throw new GrammarException("expression expected",
