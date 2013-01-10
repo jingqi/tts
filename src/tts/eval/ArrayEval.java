@@ -103,7 +103,7 @@ public final class ArrayEval extends ObjectEval {
 				SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i)
 				values.add(args.get(i));
-			return this;
+			return ArrayEval.this;
 		}
 	}
 

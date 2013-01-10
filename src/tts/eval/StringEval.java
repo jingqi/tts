@@ -235,7 +235,7 @@ public final class StringEval extends ObjectEval {
 			for (int i = 0, size = se.value.size(); i < size; ++i)
 				value.add(se.value.get(i));
 
-			return this;
+			return StringEval.this;
 		}
 	}
 
