@@ -1,17 +1,18 @@
 package tts.grammar.tree.binaryop;
 
 import tts.eval.*;
+import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.IOp;
 import tts.grammar.tree.Operand;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class CompareOp implements IOp {
 
 	public enum OpType {
-		EQ("=="), NOT_EQ("!="), LESS("<"), GREATER(">"), LESS_EQ("<="), GREATER_EQ(
-				">=");
+		REF_EQ("==="), REF_NOT_EQ("!=="), EQ("=="), NOT_EQ("!="), LESS("<"), GREATER(
+				">"), LESS_EQ("<="), GREATER_EQ(">=");
 
 		String op;
 
@@ -29,19 +30,12 @@ public final class CompareOp implements IOp {
 		this.right = right;
 	}
 
-	static boolean eq(IValueEval l, IValueEval r, IOp op) {
+	static boolean eq(IValueEval l, IValueEval r, SourceLocation sl) {
 		switch (l.getType()) {
-		case STRING:
-			if (r.getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException("type mismatch in comparison",
-						op);
-			return ((StringEval) l).getValue().equals(
-					((StringEval) r).getValue());
-
 		case BOOLEAN:
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						op);
+						sl);
 			return l == r;
 
 		case DOUBLE:
@@ -56,7 +50,7 @@ public final class CompareOp implements IOp {
 
 			default:
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						op);
+						sl);
 			}
 
 		case INTEGER:
@@ -71,20 +65,23 @@ public final class CompareOp implements IOp {
 
 			default:
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						op);
+						sl);
 			}
 
 		default:
-			throw new ScriptRuntimeException("type mismatch in comparison", op);
+			if (r.getType() != EvalType.NULL && l.getType() != EvalType.NULL && r.getType() != l.getType())
+				throw new ScriptRuntimeException("type mismatch in comparison",
+						sl);
+			return l.equals(r);
 		}
 	}
 
-	static boolean less(IValueEval l, IValueEval r, IOp op) {
+	static boolean less(IValueEval l, IValueEval r, SourceLocation sl) {
 		switch (l.getType()) {
 		case STRING:
 			if (r.getType() != IValueEval.EvalType.STRING)
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						op);
+						sl);
 			return ((StringEval) l).getValue().compareTo(
 					((StringEval) r).getValue()) < 0;
 
@@ -100,7 +97,7 @@ public final class CompareOp implements IOp {
 
 			default:
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						op);
+						sl);
 			}
 
 		case INTEGER:
@@ -115,11 +112,11 @@ public final class CompareOp implements IOp {
 
 			default:
 				throw new ScriptRuntimeException("type mismatch in comparison",
-						op);
+						sl);
 			}
 
 		default:
-			throw new ScriptRuntimeException("type mismatch in comparison", op);
+			throw new ScriptRuntimeException("type mismatch in comparison", sl);
 		}
 	}
 
@@ -129,28 +126,34 @@ public final class CompareOp implements IOp {
 
 		boolean rs = false;
 		switch (op) {
+		case REF_EQ:
+			return BooleanEval.valueOf(l == r);
+
+		case REF_NOT_EQ:
+			return BooleanEval.valueOf(l != r);
+
 		case EQ:
-			rs = eq(l, r, this);
+			rs = eq(l, r, getSourceLocation());
 			break;
 
 		case NOT_EQ:
-			rs = !eq(l, r, this);
+			rs = !eq(l, r, getSourceLocation());
 			break;
 
 		case LESS:
-			rs = less(l, r, this);
+			rs = less(l, r, getSourceLocation());
 			break;
 
 		case GREATER:
-			rs = less(r, l, this);
+			rs = less(r, l, getSourceLocation());
 			break;
 
 		case LESS_EQ:
-			rs = !less(r, l, this);
+			rs = !less(r, l, getSourceLocation());
 			break;
 
 		case GREATER_EQ:
-			rs = !less(l, r, this);
+			rs = !less(l, r, getSourceLocation());
 		}
 		return BooleanEval.valueOf(rs);
 	}

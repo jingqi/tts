@@ -32,10 +32,6 @@ public final class DefinationOp implements IOp {
 			case DOUBLE:
 				value = new Operand(new DoubleEval(0), file, line);
 				break;
-
-			case STRING:
-				value = new Operand(new StringEval(""), file, line);
-				break;
 			}
 		}
 		this.value = value;
@@ -46,6 +42,8 @@ public final class DefinationOp implements IOp {
 		Variable v = new Variable(name, type, null);
 		if (value != null)
 			AssignOp.assign(v, value.eval(vm), sl);
+		else
+			AssignOp.assign(v, NullEval.instance, sl);
 		vm.addVariable(name, v, sl);
 		return VoidEval.instance;
 	}

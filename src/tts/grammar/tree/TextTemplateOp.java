@@ -38,6 +38,7 @@ public final class TextTemplateOp implements IOp {
 		case VOID:
 			return "";
 
+		case NULL:
 		case ARRAY:
 		case MAP:
 			return ve.toString();

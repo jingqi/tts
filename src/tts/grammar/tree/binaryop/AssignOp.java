@@ -60,7 +60,7 @@ public final class AssignOp implements IOp {
 			break;
 
 		case STRING:
-			if (vv.getType() == IValueEval.EvalType.STRING)
+			if (vv.getType() == IValueEval.EvalType.STRING || vv.getType() == IValueEval.EvalType.NULL)
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
@@ -68,7 +68,7 @@ public final class AssignOp implements IOp {
 			break;
 
 		case ARRAY:
-			if (vv.getType() == IValueEval.EvalType.ARRAY)
+			if (vv.getType() == IValueEval.EvalType.ARRAY || vv.getType() == IValueEval.EvalType.NULL)
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
@@ -76,7 +76,7 @@ public final class AssignOp implements IOp {
 			break;
 
 		case MAP:
-			if (vv.getType() == IValueEval.EvalType.MAP)
+			if (vv.getType() == IValueEval.EvalType.MAP || vv.getType() == IValueEval.EvalType.NULL)
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
@@ -84,7 +84,7 @@ public final class AssignOp implements IOp {
 			break;
 
 		case FUNCTION:
-			if (vv.getType() == IValueEval.EvalType.FUNCTION)
+			if (vv.getType() == IValueEval.EvalType.FUNCTION || vv.getType() == IValueEval.EvalType.NULL)
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(

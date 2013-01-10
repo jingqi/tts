@@ -2,12 +2,11 @@ package tts.grammar.tree;
 
 import java.util.ArrayList;
 
-import tts.eval.FunctionEval;
-import tts.eval.IValueEval;
+import tts.eval.*;
+import tts.eval.IValueEval.EvalType;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptLogicException;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcpt.*;
 
 public final class FuncCallOp implements IOp {
 
@@ -22,7 +21,9 @@ public final class FuncCallOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval b = func.eval(vm);
-		if (b.getType() != IValueEval.EvalType.FUNCTION)
+		if (b.getType() == EvalType.NULL)
+			throw new ScriptNullPointerException(func.getSourceLocation());
+		else if (b.getType() != IValueEval.EvalType.FUNCTION)
 			throw new ScriptRuntimeException("function value needed", func);
 
 		ArrayList<IValueEval> as = new ArrayList<IValueEval>();

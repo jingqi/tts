@@ -3,7 +3,7 @@ package tts.vm;
 import java.io.File;
 import java.io.Writer;
 
-import tts.token.stream.IScanReader;
+import tts.lexer.stream.IScanReader;
 
 public class ScriptEngine {
 

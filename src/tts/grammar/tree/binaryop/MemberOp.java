@@ -1,10 +1,11 @@
 package tts.grammar.tree.binaryop;
 
-import tts.eval.IValueEval;
-import tts.eval.ObjectEval;
+import tts.eval.*;
+import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.IOp;
 import tts.util.SourceLocation;
-import tts.vm.*;
+import tts.vm.ScriptVM;
+import tts.vm.rtexcpt.ScriptNullPointerException;
 import tts.vm.rtexcpt.ScriptRuntimeException;
 
 public final class MemberOp implements IOp {
@@ -20,7 +21,9 @@ public final class MemberOp implements IOp {
 	@Override
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval b = body.eval(vm);
-		if (!(b instanceof ObjectEval))
+		if (b.getType() == EvalType.NULL)
+			throw new ScriptNullPointerException(body.getSourceLocation());
+		else if (!(b instanceof ObjectEval))
 			throw new ScriptRuntimeException("value/object has no member", body);
 
 		return ((ObjectEval) b).member(member, getSourceLocation());

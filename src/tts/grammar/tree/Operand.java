@@ -29,6 +29,7 @@ public final class Operand implements IOp {
 	public boolean isConst() {
 		switch (eval.getType()) {
 		case VOID:
+		case NULL:
 		case BOOLEAN:
 		case INTEGER:
 		case DOUBLE:
@@ -40,8 +41,12 @@ public final class Operand implements IOp {
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
+		if (eval == null)
+			return null;
+
 		switch (eval.getType()) {
 		case VOID:
+		case NULL:
 		case BOOLEAN:
 		case INTEGER:
 		case DOUBLE:

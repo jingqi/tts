@@ -1,20 +1,20 @@
 package tts.eval;
 
-public final class VoidEval implements IValueEval {
+public final class NullEval implements IValueEval {
 
-	private VoidEval() {
+	private NullEval() {
 	}
 
-	public static final VoidEval instance = new VoidEval();
+	public static final NullEval instance = new NullEval();
 
 	@Override
 	public String toString() {
-		return "void";
+		return "(null)";
 	}
 
 	@Override
 	public EvalType getType() {
-		return EvalType.VOID;
+		return EvalType.NULL;
 	}
 
 	@Override
@@ -24,6 +24,6 @@ public final class VoidEval implements IValueEval {
 
 	@Override
 	public int hashCode() {
-		return 875;
+		return 457;
 	}
 }

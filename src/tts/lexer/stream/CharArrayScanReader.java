@@ -1,4 +1,4 @@
-package tts.token.stream;
+package tts.lexer.stream;
 
 import java.io.IOException;
 

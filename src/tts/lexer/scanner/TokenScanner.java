@@ -1,11 +1,11 @@
-package tts.token.scanner;
+package tts.lexer.scanner;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import tts.token.scanner.Token.TokenType;
-import tts.token.stream.IScanReader;
+import tts.lexer.scanner.Token.TokenType;
+import tts.lexer.stream.IScanReader;
 
 /**
  * ragel 语法规则: <br/>
@@ -54,7 +54,7 @@ public class TokenScanner {
 	static {
 		String[] keywords = { "if", "else", "for", "do", "while", "break",
 				"continue", "bool", "int", "double", "string", "return",
-				"array", "include", "function", "return", "map", "var" };
+				"array", "include", "function", "return", "map", "var", "null" };
 		for (int i = 0, len = keywords.length; i < len; ++i)
 			KEY_WORDS.add(keywords[i]);
 	}
@@ -66,7 +66,7 @@ public class TokenScanner {
 			">>>=",
 			// 3个字符
 			"<<<", ">>>", "<<=",
-			">>=",
+			">>=", "===", "!==",
 			// 2 个字符
 			"==", ">=", "<=", "!=", "+=", "-=", "*=", "/=", "%=", "++", "--",
 			"&=", "^=", "|=", ">>", "<<", "&&", "||",

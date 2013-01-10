@@ -16,7 +16,7 @@ public final class MapEval extends ObjectEval {
 		return EvalType.MAP;
 	}
 
-	IValueEval get(IValueEval e) {
+	public IValueEval get(IValueEval e) {
 		return entries.get(e);
 	}
 

@@ -6,10 +6,10 @@ import tts.eval.*;
 import tts.eval.UserFunctionEval.ParamInfo;
 import tts.grammar.tree.*;
 import tts.grammar.tree.binaryop.*;
-import tts.token.scanner.*;
-import tts.token.scanner.Token.TokenType;
-import tts.token.stream.CharArrayScanReader;
-import tts.token.stream.IScanReader;
+import tts.lexer.scanner.*;
+import tts.lexer.scanner.Token.TokenType;
+import tts.lexer.stream.CharArrayScanReader;
+import tts.lexer.stream.IScanReader;
 import tts.util.SourceLocation;
 import tts.vm.VarType;
 
@@ -376,7 +376,7 @@ public class GrammarScanner {
 		return v;
 	}
 
-	// eq_cmp = less_cmp (('==' | '!=') less_cmp)*;
+	// eq_cmp = less_cmp (('==' | '!=' | '===' | '!==') less_cmp)*;
 	private IOp eqCmp() {
 		IOp v = lessCmp();
 		if (v == null)
@@ -388,6 +388,10 @@ public class GrammarScanner {
 				op = CompareOp.OpType.EQ;
 			else if (tokenStream.match(TokenType.SEPARATOR, "!=") != null)
 				op = CompareOp.OpType.NOT_EQ;
+			else if (tokenStream.match(TokenType.SEPARATOR, "===") != null)
+				op = CompareOp.OpType.REF_EQ;
+			else if (tokenStream.match(TokenType.SEPARATOR, "!==") != null)
+				op = CompareOp.OpType.REF_NOT_EQ;
 			else
 				break;
 
@@ -635,6 +639,13 @@ public class GrammarScanner {
 			return new Operand(new VariableEval((String) t.value), t.file,
 					t.line);
 
+		case KEY_WORD:
+			if (t.value.equals("null")) {
+				return new Operand(NullEval.instance, t.file, t.line);
+			}
+			tokenStream.putBack();
+			return null;
+
 		case BOOLEAN:
 			return new Operand(BooleanEval.valueOf((Boolean) t.value), t.file,
 					t.line);
@@ -667,6 +678,8 @@ public class GrammarScanner {
 				IOp v = map();
 				return v;
 			}
+			tokenStream.putBack();
+			return null;
 
 		default:
 			tokenStream.putBack();

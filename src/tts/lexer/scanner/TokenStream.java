@@ -1,9 +1,9 @@
-package tts.token.scanner;
+package tts.lexer.scanner;
 
 import java.io.IOException;
 import java.util.Stack;
 
-import tts.token.scanner.Token.TokenType;
+import tts.lexer.scanner.Token.TokenType;
 
 public class TokenStream {
 

@@ -1,4 +1,4 @@
-package tts.token.scanner;
+package tts.lexer.scanner;
 
 public class Token {
 
