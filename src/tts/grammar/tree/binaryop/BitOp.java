@@ -11,7 +11,7 @@ public final class BitOp extends Op {
 
 	public enum OpType {
 		BIT_AND("&"), BIT_OR("|"), BIT_XOR("^"), SHIFT_LEFT("<<"), SHIFT_RIGHT(
-				">>"), CIRCLE_SHIFT_LEFT("<<<"), CIRCLE_SHIFT_RIGHT(">>>");
+				">>"), PRIMITIVE_SHIFT_RIGHT(">>>");
 
 		String op;
 
@@ -57,10 +57,7 @@ public final class BitOp extends Op {
 		case SHIFT_RIGHT:
 			return new IntegerEval(ll >> rr);
 
-		case CIRCLE_SHIFT_LEFT:
-			return new IntegerEval(ll >>> (64 - (rr % 64)));
-
-		case CIRCLE_SHIFT_RIGHT:
+		case PRIMITIVE_SHIFT_RIGHT:
 			return new IntegerEval(ll >>> rr);
 
 		default:

@@ -228,10 +228,8 @@ public class GrammarScanner {
 			op = BitOp.OpType.SHIFT_LEFT;
 		} else if (tokenStream.match(TokenType.SEPARATOR, ">>=") != null) {
 			op = BitOp.OpType.SHIFT_RIGHT;
-		} else if (tokenStream.match(TokenType.SEPARATOR, "<<<=") != null) {
-			op = BitOp.OpType.CIRCLE_SHIFT_LEFT;
 		} else if (tokenStream.match(TokenType.SEPARATOR, ">>>=") != null) {
-			op = BitOp.OpType.CIRCLE_SHIFT_RIGHT;
+			op = BitOp.OpType.PRIMITIVE_SHIFT_RIGHT;
 		} else {
 			tokenStream.putBack();
 			return null;
@@ -441,10 +439,8 @@ public class GrammarScanner {
 				op = BitOp.OpType.SHIFT_LEFT;
 			else if (tokenStream.match(TokenType.SEPARATOR, ">>") != null)
 				op = BitOp.OpType.SHIFT_RIGHT;
-			else if (tokenStream.match(TokenType.SEPARATOR, "<<<") != null)
-				op = BitOp.OpType.CIRCLE_SHIFT_LEFT;
 			else if (tokenStream.match(TokenType.SEPARATOR, ">>>") != null)
-				op = BitOp.OpType.CIRCLE_SHIFT_RIGHT;
+				op = BitOp.OpType.PRIMITIVE_SHIFT_RIGHT;
 			else
 				break;
 
