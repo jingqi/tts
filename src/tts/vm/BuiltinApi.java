@@ -71,7 +71,7 @@ class BuiltinApi {
 			}
 
 			try {
-				vm.setTextOutput(new FileWriter(f));
+				vm.setTextOutput(new OutputStreamWriter(new FileOutputStream(f), "UTF-8"));
 			} catch (IOException e) {
 				throw new ScriptRuntimeException("can not write to file: "
 						+ output, sl);
