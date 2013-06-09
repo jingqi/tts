@@ -5,11 +5,11 @@ import tts.eval.VoidEval;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcpt.ScriptLogicException;
 
-public final class ScopOp extends Op {
+public final class ScopeOp extends Op {
 
 	Op op;
 
-	public ScopOp(Op op) {
+	public ScopeOp(Op op) {
 		super(op.getSourceLocation());
 		this.op = op;
 	}

@@ -2,7 +2,7 @@ package tts;
 
 import java.io.*;
 
-import tts.vm.ScriptEngine;
+import tts.vm.ScriptVM;
 
 public class Main {
 
@@ -35,10 +35,10 @@ public class Main {
 		}
 
 		// 启动脚本
-		ScriptEngine en = new ScriptEngine();
+		ScriptVM vm = new ScriptVM();
 		if (output != null)
-			en.setTextOutput(new OutputStreamWriter(
+			vm.setTextOutput(new OutputStreamWriter(
 					new FileOutputStream(output), "UTF-8"));
-		en.run(new File(input));
+		vm.run(new File(input));
 	}
 }

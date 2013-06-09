@@ -89,7 +89,7 @@ public class GrammarScanner {
 			throw new GrammarException("token '}' expected",
 					tokenStream.getFile(), tokenStream.getLine());
 
-		return new ScopOp(ret);
+		return new ScopeOp(ret);
 	}
 
 	private Op textTemplate() {
