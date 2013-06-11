@@ -3,7 +3,7 @@ package tts.grammar.tree;
 import tts.eval.IValueEval;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ContinueLoopException;
+import tts.vm.rtexcept.ContinueLoopException;
 
 public final class ContinueOp extends Op {
 

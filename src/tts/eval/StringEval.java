@@ -5,7 +5,7 @@ import java.util.List;
 import tts.util.CharList;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class StringEval extends ObjectEval {
 

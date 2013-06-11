@@ -6,7 +6,7 @@ import java.util.List;
 import tts.eval.*;
 import tts.grammar.tree.Op;
 import tts.util.SourceLocation;
-import tts.vm.rtexcpt.*;
+import tts.vm.rtexcept.*;
 
 class BuiltinApi {
 

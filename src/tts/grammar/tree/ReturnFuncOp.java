@@ -2,7 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.IValueEval;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ReturnFuncException;
+import tts.vm.rtexcept.ReturnFuncException;
 
 public class ReturnFuncOp extends Op {
 

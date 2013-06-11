@@ -3,7 +3,7 @@ package tts.grammar.tree;
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptLogicException;
+import tts.vm.rtexcept.ScriptLogicException;
 
 public final class ScopeOp extends Op {
 

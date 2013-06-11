@@ -4,7 +4,7 @@ import java.util.*;
 
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class ArrayEval extends ObjectEval {
 

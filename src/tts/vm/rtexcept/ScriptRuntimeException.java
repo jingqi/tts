@@ -1,4 +1,4 @@
-package tts.vm.rtexcpt;
+package tts.vm.rtexcept;
 
 import tts.util.SourceLocation;
 

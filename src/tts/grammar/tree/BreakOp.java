@@ -3,7 +3,7 @@ package tts.grammar.tree;
 import tts.eval.IValueEval;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.BreakLoopException;
+import tts.vm.rtexcept.BreakLoopException;
 
 public final class BreakOp extends Op {
 

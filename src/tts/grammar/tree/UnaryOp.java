@@ -7,7 +7,7 @@ import tts.grammar.tree.binaryop.MathOp;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.Variable;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**
  * 一元操作符

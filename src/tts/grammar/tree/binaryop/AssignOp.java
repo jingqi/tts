@@ -5,7 +5,7 @@ import tts.grammar.tree.Op;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.Variable;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**
  * 赋值操作

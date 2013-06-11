@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.*;
+import tts.vm.rtexcept.*;
 
 public final class FuncCallOp extends Op {
 

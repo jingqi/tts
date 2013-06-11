@@ -19,7 +19,7 @@ import tts.vm.BuiltinApi.FuncOutput;
 import tts.vm.BuiltinApi.FuncPrint;
 import tts.vm.BuiltinApi.FuncPrintln;
 import tts.vm.BuiltinApi.FuncTostring;
-import tts.vm.rtexcpt.*;
+import tts.vm.rtexcept.*;
 
 /**
  * 脚本运行虚拟机

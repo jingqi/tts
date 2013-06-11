@@ -3,7 +3,7 @@ package tts.grammar.tree;
 import tts.eval.BooleanEval;
 import tts.eval.IValueEval;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class BinSwitchOp extends Op {
 

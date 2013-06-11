@@ -5,7 +5,7 @@ import tts.eval.IValueEval;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class BooleanOp extends Op {
 

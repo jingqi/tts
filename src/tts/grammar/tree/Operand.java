@@ -3,7 +3,7 @@ package tts.grammar.tree;
 import tts.eval.*;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**
  * 操作数

@@ -3,7 +3,7 @@ package tts.grammar.tree;
 import tts.eval.*;
 import tts.util.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.*;
+import tts.vm.rtexcept.*;
 
 public final class DoWhileLoopOp extends Op {
 

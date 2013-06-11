@@ -4,8 +4,8 @@ import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.Op;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptNullPointerException;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcept.ScriptNullPointerException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class MemberOp extends Op {
 

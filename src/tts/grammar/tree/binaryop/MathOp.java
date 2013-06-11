@@ -5,7 +5,7 @@ import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcpt.ScriptRuntimeException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class MathOp extends Op {
 

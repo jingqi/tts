@@ -7,7 +7,7 @@ import tts.grammar.tree.Op;
 import tts.grammar.tree.binaryop.AssignOp;
 import tts.util.SourceLocation;
 import tts.vm.*;
-import tts.vm.rtexcpt.*;
+import tts.vm.rtexcept.*;
 
 public final class UserFunctionEval extends FunctionEval {
 
