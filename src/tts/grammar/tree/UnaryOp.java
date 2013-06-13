@@ -15,7 +15,7 @@ import tts.vm.rtexcept.ScriptRuntimeException;
 public final class UnaryOp extends Op {
 
 	public enum OpType {
-		POSITIVE("-"), NEGATIEVE("+"), BIT_NOT("~"), NOT("!"), PRE_INCREMENT(
+		POSITIVE("+"), NEGATIVE("-"), BIT_NOT("~"), NOT("!"), PRE_INCREMENT(
 				"++"), PRE_DECREMENT("--"), POST_INCREMENT("++"), POST_DECREMENT(
 				"--");
 
@@ -26,7 +26,6 @@ public final class UnaryOp extends Op {
 		}
 	}
 
-	private SourceLocation sl;
 	private OpType op;
 	private Op eval;
 
@@ -38,8 +37,8 @@ public final class UnaryOp extends Op {
 
 	@Override
 	public IValueEval eval(ScriptVM vm) {
-		if (op == OpType.PRE_INCREMENT || op == OpType.PRE_DECREMENT
-				|| op == OpType.POST_INCREMENT || op == OpType.POST_DECREMENT) {
+		if (op == OpType.PRE_INCREMENT || op == OpType.PRE_DECREMENT ||
+				op == OpType.POST_INCREMENT || op == OpType.POST_DECREMENT) {
 			if (!(eval instanceof Operand))
 				throw new ScriptRuntimeException("operand can not be assigned",
 						eval.getSourceLocation());
@@ -48,36 +47,36 @@ public final class UnaryOp extends Op {
 				throw new ScriptRuntimeException("operand can not be assigned",
 						eval.getSourceLocation());
 			String name = ((VariableEval) ve).getName();
-			Variable v = vm.getVariable(name, sl);
+			Variable v = vm.getVariable(name, getSourceLocation());
 
 			switch (op) {
 			case PRE_INCREMENT: {
 				IValueEval rs = new MathOp(eval, MathOp.OpType.ADD,
-						new Operand(new IntegerEval(1), sl)).eval(vm);
-				AssignOp.assign(v, rs, sl);
+						new Operand(new IntegerEval(1), getSourceLocation())).eval(vm);
+				AssignOp.assign(v, rs, getSourceLocation());
 				return rs;
 			}
 
 			case PRE_DECREMENT: {
 				IValueEval rs = new MathOp(eval, MathOp.OpType.SUB,
-						new Operand(new IntegerEval(1), sl)).eval(vm);
-				AssignOp.assign(v, rs, sl);
+						new Operand(new IntegerEval(1), getSourceLocation())).eval(vm);
+				AssignOp.assign(v, rs, getSourceLocation());
 				return rs;
 			}
 
 			case POST_INCREMENT: {
 				IValueEval ret = v.getValue();
 				IValueEval rs = new MathOp(eval, MathOp.OpType.ADD,
-						new Operand(new IntegerEval(1), sl)).eval(vm);
-				AssignOp.assign(v, rs, sl);
+						new Operand(new IntegerEval(1), getSourceLocation())).eval(vm);
+				AssignOp.assign(v, rs, getSourceLocation());
 				return ret;
 			}
 
 			case POST_DECREMENT: {
 				IValueEval ret = v.getValue();
 				IValueEval rs = new MathOp(eval, MathOp.OpType.SUB,
-						new Operand(new IntegerEval(1), sl)).eval(vm);
-				AssignOp.assign(v, rs, sl);
+						new Operand(new IntegerEval(1), getSourceLocation())).eval(vm);
+				AssignOp.assign(v, rs, getSourceLocation());
 				return ret;
 			}
 
@@ -95,7 +94,7 @@ public final class UnaryOp extends Op {
 						eval.getSourceLocation());
 			return ve;
 
-		case NEGATIEVE:
+		case NEGATIVE:
 			switch (ve.getType()) {
 			case DOUBLE:
 				return new DoubleEval(-((DoubleEval) ve).getValue());

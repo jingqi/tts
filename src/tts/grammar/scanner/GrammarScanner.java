@@ -60,8 +60,6 @@ public class GrammarScanner {
 		tokenStream.seek(p);
 		ret = textTemplate();
 		if (ret == null)
-			ret = defination();
-		if (ret == null)
 			ret = block();
 		if (ret == null)
 			ret = statement();
@@ -533,7 +531,7 @@ public class GrammarScanner {
 		if (tokenStream.match(TokenType.SEPARATOR, "+") != null)
 			op = UnaryOp.OpType.POSITIVE;
 		else if (tokenStream.match(TokenType.SEPARATOR, "-") != null)
-			op = UnaryOp.OpType.NEGATIEVE;
+			op = UnaryOp.OpType.NEGATIVE;
 		else if (tokenStream.match(TokenType.SEPARATOR, "!") != null)
 			op = UnaryOp.OpType.NOT;
 		else if (tokenStream.match(TokenType.SEPARATOR, "~") != null)

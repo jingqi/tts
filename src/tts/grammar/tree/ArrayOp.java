@@ -9,7 +9,6 @@ import tts.vm.ScriptVM;
 
 public final class ArrayOp extends Op {
 
-	SourceLocation sl;
 	ArrayList<Op> elements;
 
 	public ArrayOp(ArrayList<Op> v, SourceLocation sl) {
