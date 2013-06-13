@@ -178,7 +178,7 @@ public class ScriptVM {
 
 		// 解析文件
 		ss.seek(0);
-		TokenScanner tsn = new TokenScanner(ss, dst.getName());
+		LexerScanner tsn = new LexerScanner(ss, dst.getName());
 		TokenStream ts = new TokenStream(tsn);
 		GrammarScanner gs = new GrammarScanner(ts);
 
@@ -257,8 +257,8 @@ public class ScriptVM {
 			System.err.println(e.toString());
 		} catch (ExitException e) {
 			return;
-		} catch (ScannerException e) {
-			System.err.println("Scanner exception:");
+		} catch (LexerException e) {
+			System.err.println("Lexer exception:");
 			System.err.println(e.toString());
 		} catch (GrammarException e) {
 			System.err.println("Grammar exception:");
@@ -276,7 +276,7 @@ public class ScriptVM {
 		initExecEnv();
 
 		try {
-			TokenScanner tsn = new TokenScanner(r, "<memory>");
+			LexerScanner tsn = new LexerScanner(r, "<memory>");
 			TokenStream ts = new TokenStream(tsn);
 			GrammarScanner gs = new GrammarScanner(ts);
 			Op op = gs.all();
@@ -297,8 +297,8 @@ public class ScriptVM {
 			System.err.println(e.toString());
 		} catch (ExitException e) {
 			return;
-		} catch (ScannerException e) {
-			System.err.println("Scanner exception:");
+		} catch (LexerException e) {
+			System.err.println("Lexer exception:");
 			System.err.println(e.toString());
 		} catch (GrammarException e) {
 			System.err.println("Grammar exception:");

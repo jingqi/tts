@@ -20,7 +20,7 @@ public final class BinSwitchOp extends Op {
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval c = cond.eval(vm);
 		if (c.getType() != IValueEval.EvalType.BOOLEAN)
-			throw new ScriptRuntimeException("boolean value needed", cond.getSourceLocation());
+			throw new ScriptRuntimeException("Boolean value needed", cond.getSourceLocation());
 
 		if (((BooleanEval) c).getValue())
 			return true_value.eval(vm);
@@ -37,7 +37,7 @@ public final class BinSwitchOp extends Op {
 			if (((Operand) cond).isConst()) {
 				IValueEval c = cond.eval(null);
 				if (c.getType() != IValueEval.EvalType.BOOLEAN)
-					throw new ScriptRuntimeException("boolean value needed",
+					throw new ScriptRuntimeException("Boolean value needed",
 							cond.getSourceLocation());
 
 				if (((BooleanEval) c).getValue())

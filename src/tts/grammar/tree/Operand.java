@@ -59,11 +59,11 @@ public final class Operand extends Op {
 			VariableEval ve = (VariableEval) eval;
 			IValueEval ret = vm.getVariable(ve.getName(), getSourceLocation()).getValue();
 			if (ret == null)
-				throw new ScriptRuntimeException("variable not initialized",
+				throw new ScriptRuntimeException("Variable not initialized",
 						getSourceLocation());
 			return ret;
 		}
-		throw new ScriptRuntimeException("wrong type of value", getSourceLocation());
+		throw new ScriptRuntimeException("Wrong type of value", getSourceLocation());
 	}
 
 	@Override

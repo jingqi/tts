@@ -14,4 +14,9 @@ public abstract class ScriptLogicException extends RuntimeException {
 	public ScriptLogicException(SourceLocation sl) {
 		this.sl = sl;
 	}
+
+	@Override
+	public String toString() {
+		return "File \"" + sl.file + "\", line " + sl.line;
+	}
 }

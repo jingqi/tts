@@ -16,9 +16,4 @@ public final class BreakLoopException extends ScriptLogicException {
 	public BreakLoopException(SourceLocation sl) {
 		super(sl);
 	}
-
-	@Override
-	public String toString() {
-		return "File \"" + sl.file + "\", line " + sl.line;
-	}
 }

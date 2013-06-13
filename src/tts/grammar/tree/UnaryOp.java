@@ -40,11 +40,11 @@ public final class UnaryOp extends Op {
 		if (op == OpType.PRE_INCREMENT || op == OpType.PRE_DECREMENT ||
 				op == OpType.POST_INCREMENT || op == OpType.POST_DECREMENT) {
 			if (!(eval instanceof Operand))
-				throw new ScriptRuntimeException("operand can not be assigned",
+				throw new ScriptRuntimeException("Operand can not be assigned",
 						eval.getSourceLocation());
 			IValueEval ve = ((Operand) eval).eval;
 			if (ve.getType() != IValueEval.EvalType.VARIABLE)
-				throw new ScriptRuntimeException("operand can not be assigned",
+				throw new ScriptRuntimeException("Operand can not be assigned",
 						eval.getSourceLocation());
 			String name = ((VariableEval) ve).getName();
 			Variable v = vm.getVariable(name, getSourceLocation());
@@ -90,7 +90,7 @@ public final class UnaryOp extends Op {
 		case POSITIVE:
 			if (ve.getType() != IValueEval.EvalType.DOUBLE
 					&& ve.getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException("type mismatch for operation",
+				throw new ScriptRuntimeException("Type mismatch for operation",
 						eval.getSourceLocation());
 			return ve;
 
@@ -103,13 +103,13 @@ public final class UnaryOp extends Op {
 				return new IntegerEval(-((IntegerEval) ve).getValue());
 
 			default:
-				throw new ScriptRuntimeException("type mismatch for operation",
+				throw new ScriptRuntimeException("Type mismatch for operation",
 						eval.getSourceLocation());
 			}
 
 		case NOT:
 			if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-				throw new ScriptRuntimeException("type mismatch for operation",
+				throw new ScriptRuntimeException("Type mismatch for operation",
 						eval.getSourceLocation());
 			return BooleanEval.valueOf(!((BooleanEval) ve).getValue());
 
@@ -117,7 +117,7 @@ public final class UnaryOp extends Op {
 			if (ve.getType() == EvalType.INTEGER)
 				return new IntegerEval(~((IntegerEval) ve).getValue());
 			else
-				throw new ScriptRuntimeException("type mismatch for operation",
+				throw new ScriptRuntimeException("Type mismatch for operation",
 						eval.getSourceLocation());
 
 		default:

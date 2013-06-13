@@ -25,12 +25,12 @@ public final class IndexOp extends Op {
 		} else if (b.getType() == EvalType.ARRAY) {
 			IValueEval i = index.eval(vm);
 			if (i.getType() != EvalType.INTEGER)
-				throw new ScriptRuntimeException("integer needed for index", index.getSourceLocation());
+				throw new ScriptRuntimeException("Integer needed for index", index.getSourceLocation());
 			return ((ArrayEval) b).get((int) ((IntegerEval) i).getValue());
 		} else if (b.getType() == EvalType.STRING) {
 			IValueEval i = index.eval(vm);
 			if (i.getType() != EvalType.INTEGER)
-				throw new ScriptRuntimeException("integer needed for index", index.getSourceLocation());
+				throw new ScriptRuntimeException("Integer needed for index", index.getSourceLocation());
 			return ((StringEval) b).charAt((int) ((IntegerEval) i).getValue());
 		} else if (b.getType() == EvalType.MAP) {
 			IValueEval i = index.eval(vm);
@@ -40,7 +40,7 @@ public final class IndexOp extends Op {
 			return ret;
 		}
 
-		throw new ScriptRuntimeException("value can not be indexed", body.getSourceLocation());
+		throw new ScriptRuntimeException("Value can not be indexed", body.getSourceLocation());
 	}
 
 	@Override

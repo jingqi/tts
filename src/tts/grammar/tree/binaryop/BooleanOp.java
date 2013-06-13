@@ -34,7 +34,7 @@ public final class BooleanOp extends Op {
 		IValueEval _l = left.eval(vm);
 		if (_l.getType() != IValueEval.EvalType.BOOLEAN)
 			throw new ScriptRuntimeException(
-					"type mismatch for boolean operation", getSourceLocation());
+					"Type mismatch for boolean operation", getSourceLocation());
 		BooleanEval l = (BooleanEval) _l;
 
 		switch (op) {
@@ -44,7 +44,7 @@ public final class BooleanOp extends Op {
 			IValueEval r = right.eval(vm);
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException(
-						"type mismatch for boolean operation", getSourceLocation());
+						"Type mismatch for boolean operation", getSourceLocation());
 			return r;
 		}
 
@@ -54,7 +54,7 @@ public final class BooleanOp extends Op {
 			IValueEval r = right.eval(vm);
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException(
-						"type mismatch for boolean operation", getSourceLocation());
+						"Type mismatch for boolean operation", getSourceLocation());
 			return r;
 		}
 

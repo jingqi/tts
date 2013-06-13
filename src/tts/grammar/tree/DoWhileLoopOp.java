@@ -29,7 +29,7 @@ public final class DoWhileLoopOp extends Op {
 
 			IValueEval ve = brk_exp.eval(vm);
 			if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-				throw new ScriptRuntimeException("boolean value needed",
+				throw new ScriptRuntimeException("Boolean value needed",
 						brk_exp.getSourceLocation());
 			BooleanEval be = (BooleanEval) ve;
 			if (!be.getValue())

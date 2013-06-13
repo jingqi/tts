@@ -29,7 +29,7 @@ import tts.lexer.stream.IScanReader;
  * @author jingqi
  *
  */
-public class TokenScanner {
+public class LexerScanner {
 
 	// 输入
 	private IScanReader reader;
@@ -74,13 +74,13 @@ public class TokenScanner {
 			"{", "}", ">", "<", "=", "+", "-", "*", "/", "%", "!", "~", "^",
 			"&", "|", "(", ")", ";", ";", ".", ":", "[", "]", ",", "?" };
 
-	public TokenScanner(IScanReader reader, String file) {
+	public LexerScanner(IScanReader reader, String file) {
 		this.reader = reader;
 		this.file = file;
 		this.line = 1;
 	}
 
-	public TokenScanner(IScanReader reader, String file, int line,
+	public LexerScanner(IScanReader reader, String file, int line,
 			boolean inBlockCode) {
 		this.reader = reader;
 		this.file = file;
@@ -104,7 +104,7 @@ public class TokenScanner {
 				return null;
 
 			if (oldPos == reader.tell())
-				throw new ScannerException("token not recognised", file, line);
+				throw new LexerException("Token not recognised", file, line);
 			oldPos = reader.tell();
 
 			if (!inLineCode && !inBlockCode) {
@@ -282,7 +282,7 @@ public class TokenScanner {
 				else
 					reader.skip(1);
 			}
-			throw new ScannerException("need an end of block comment", file,
+			throw new LexerException("need an end of block comment", file,
 					line);
 		}
 	}
@@ -374,7 +374,7 @@ public class TokenScanner {
 		reader.skip(2);
 
 		if (reader.eof())
-			throw new ScannerException("hex number expected", file, line);
+			throw new LexerException("Hex number expected", file, line);
 
 		long v = 0;
 		boolean over_flow = false;
@@ -407,7 +407,7 @@ public class TokenScanner {
 	// 处理转义字符
 	private char convertChar() throws IOException {
 		if (reader.eof())
-			throw new ScannerException("end of const string expected", file,
+			throw new LexerException("End of const string expected", file,
 					line);
 		char c = reader.read();
 		switch (c) {
@@ -479,7 +479,7 @@ public class TokenScanner {
 			return c;
 
 		default:
-			throw new ScannerException("unknow char convertion in string",
+			throw new LexerException("Unknow char convertion in string",
 					file, line);
 		}
 	}
@@ -493,7 +493,7 @@ public class TokenScanner {
 
 		final char string_dec = c;
 		if (reader.eof())
-			throw new ScannerException("end of const string expected", file,
+			throw new LexerException("End of const string expected", file,
 					line);
 
 		c = reader.read();
@@ -509,7 +509,7 @@ public class TokenScanner {
 			final String str_end = "" + string_dec + string_dec + string_dec;
 			while (true) {
 				if (reader.eof())
-					throw new ScannerException("string block expected", file,
+					throw new LexerException("String block expected", file,
 							line);
 
 				if (reader.match(str_end)) {
@@ -532,8 +532,8 @@ public class TokenScanner {
 			if (c == '\\') {
 				sb.append(convertChar());
 			} else if (c == '\n' || c == '\r') {
-				throw new ScannerException(
-						"unexpected line end in const string", file, line);
+				throw new LexerException(
+						"Unexpected line end in const string", file, line);
 			} else if (c == string_dec) {
 				break;
 			} else {
@@ -541,7 +541,7 @@ public class TokenScanner {
 			}
 
 			if (reader.eof())
-				throw new ScannerException("end of string expected", file, line);
+				throw new LexerException("End of string expected", file, line);
 			c = reader.read();
 		}
 

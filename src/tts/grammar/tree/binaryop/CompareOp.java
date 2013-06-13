@@ -35,7 +35,7 @@ public final class CompareOp extends Op {
 		switch (l.getType()) {
 		case BOOLEAN:
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
-				throw new ScriptRuntimeException("type mismatch in comparison",
+				throw new ScriptRuntimeException("Type mismatch in comparison",
 						sl);
 			return l == r;
 
@@ -50,7 +50,7 @@ public final class CompareOp extends Op {
 						.getValue();
 
 			default:
-				throw new ScriptRuntimeException("type mismatch in comparison",
+				throw new ScriptRuntimeException("Type mismatch in comparison",
 						sl);
 			}
 
@@ -65,13 +65,13 @@ public final class CompareOp extends Op {
 						.getValue();
 
 			default:
-				throw new ScriptRuntimeException("type mismatch in comparison",
+				throw new ScriptRuntimeException("Type mismatch in comparison",
 						sl);
 			}
 
 		default:
 			if (r.getType() != EvalType.NULL && l.getType() != EvalType.NULL && r.getType() != l.getType())
-				throw new ScriptRuntimeException("type mismatch in comparison",
+				throw new ScriptRuntimeException("Type mismatch in comparison",
 						sl);
 			return l.equals(r);
 		}
@@ -81,7 +81,7 @@ public final class CompareOp extends Op {
 		switch (l.getType()) {
 		case STRING:
 			if (r.getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException("type mismatch in comparison",
+				throw new ScriptRuntimeException("Type mismatch in comparison",
 						sl);
 			return ((StringEval) l).getValue().compareTo(
 					((StringEval) r).getValue()) < 0;
@@ -97,7 +97,7 @@ public final class CompareOp extends Op {
 						.getValue();
 
 			default:
-				throw new ScriptRuntimeException("type mismatch in comparison",
+				throw new ScriptRuntimeException("Type mismatch in comparison",
 						sl);
 			}
 
@@ -112,12 +112,12 @@ public final class CompareOp extends Op {
 						.getValue();
 
 			default:
-				throw new ScriptRuntimeException("type mismatch in comparison",
+				throw new ScriptRuntimeException("Type mismatch in comparison",
 						sl);
 			}
 
 		default:
-			throw new ScriptRuntimeException("type mismatch in comparison", sl);
+			throw new ScriptRuntimeException("Type mismatch in comparison", sl);
 		}
 	}
 

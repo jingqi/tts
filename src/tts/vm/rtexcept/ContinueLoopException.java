@@ -16,9 +16,4 @@ public final class ContinueLoopException extends ScriptLogicException {
 	public ContinueLoopException(SourceLocation sl) {
 		super(sl);
 	}
-
-	@Override
-	public String toString() {
-		return "File \"" + sl.file + "\", line " + sl.line;
-	}
 }

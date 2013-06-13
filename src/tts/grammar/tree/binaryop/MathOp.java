@@ -75,7 +75,7 @@ public final class MathOp extends Op {
 			break;
 
 		default:
-			throw new ScriptRuntimeException("type mismatch in math operation",
+			throw new ScriptRuntimeException("Type mismatch in math operation",
 					getSourceLocation());
 		}
 
@@ -93,7 +93,7 @@ public final class MathOp extends Op {
 			break;
 
 		default:
-			throw new ScriptRuntimeException("type mismatch in math operation",
+			throw new ScriptRuntimeException("Type mismatch in math operation",
 					getSourceLocation());
 		}
 

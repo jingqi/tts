@@ -20,7 +20,7 @@ public final class IfElseOp extends Op {
 	public IValueEval eval(ScriptVM vm) {
 		IValueEval ve = cond.eval(vm);
 		if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-			throw new ScriptRuntimeException("boolean value needed", cond.getSourceLocation());
+			throw new ScriptRuntimeException("Boolean value needed", cond.getSourceLocation());
 
 		BooleanEval be = (BooleanEval) ve;
 		if (be.getValue()) {
@@ -45,7 +45,7 @@ public final class IfElseOp extends Op {
 			if (((Operand) cond).isConst()) {
 				IValueEval ve = cond.eval(null);
 				if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-					throw new ScriptRuntimeException("boolean value needed",
+					throw new ScriptRuntimeException("Boolean value needed",
 							cond.getSourceLocation());
 
 				BooleanEval be = (BooleanEval) ve;

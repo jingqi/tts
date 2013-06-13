@@ -7,11 +7,11 @@ import tts.lexer.scanner.Token.TokenType;
 
 public class TokenStream {
 
-	private TokenScanner scanner;
+	private LexerScanner scanner;
 	private Stack<Token> readed = new Stack<Token>();
 	private Stack<Token> unreaded = new Stack<Token>();
 
-	public TokenStream(TokenScanner scanner) {
+	public TokenStream(LexerScanner scanner) {
 		this.scanner = scanner;
 	}
 

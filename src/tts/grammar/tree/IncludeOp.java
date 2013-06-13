@@ -22,14 +22,14 @@ public final class IncludeOp extends Op {
 	public IValueEval eval(ScriptVM vm) {
 		File cur = vm.getCurrentScriptPath();
 		if (cur == null)
-			throw new ScriptRuntimeException("file not found", getSourceLocation());
+			throw new ScriptRuntimeException("File not found", getSourceLocation());
 
 		File dst = new File(cur.getParentFile().getAbsolutePath() + "/" + path);
 		Op op;
 		try {
 			op = vm.loadScript(dst, getSourceLocation());
 		} catch (IOException e) {
-			throw new ScriptRuntimeException("can not load file:" + path, getSourceLocation());
+			throw new ScriptRuntimeException("Can not load file:" + path, getSourceLocation());
 		}
 
 		vm.enterScriptFile(dst);

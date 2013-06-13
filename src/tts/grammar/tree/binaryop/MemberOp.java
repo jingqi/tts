@@ -24,7 +24,7 @@ public final class MemberOp extends Op {
 		if (b.getType() == EvalType.NULL)
 			throw new ScriptNullPointerException(body.getSourceLocation());
 		else if (!(b instanceof ObjectEval))
-			throw new ScriptRuntimeException("value/object has no member", body.getSourceLocation());
+			throw new ScriptRuntimeException("Value/object has no such member", body.getSourceLocation());
 
 		return ((ObjectEval) b).member(member, getSourceLocation());
 	}

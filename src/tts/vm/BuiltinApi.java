@@ -19,9 +19,9 @@ class BuiltinApi {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument", sl);
+				throw new ScriptRuntimeException("Need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException("need string argument", sl);
+				throw new ScriptRuntimeException("Need string argument", sl);
 
 			String path = ((StringEval) args.get(0)).getValue();
 			File dst = new File(path);
@@ -35,7 +35,7 @@ class BuiltinApi {
 			try {
 				op = vm.loadScript(dst, sl);
 			} catch (IOException e) {
-				throw new ScriptRuntimeException("can not load file:" + path,
+				throw new ScriptRuntimeException("Can not load file:" + path,
 						sl);
 			}
 
@@ -58,9 +58,9 @@ class BuiltinApi {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument", sl);
+				throw new ScriptRuntimeException("Need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException("need string argument", sl);
+				throw new ScriptRuntimeException("Need string argument", sl);
 
 			String output = ((StringEval) args.get(0)).getValue();
 			File f = new File(output);
@@ -73,7 +73,7 @@ class BuiltinApi {
 			try {
 				vm.setTextOutput(new OutputStreamWriter(new FileOutputStream(f), "UTF-8"));
 			} catch (IOException e) {
-				throw new ScriptRuntimeException("can not write to file: "
+				throw new ScriptRuntimeException("Can not write to file: "
 						+ output, sl);
 			}
 			return VoidEval.instance;
@@ -87,7 +87,7 @@ class BuiltinApi {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need no argument", sl);
+				throw new ScriptRuntimeException("Need no argument", sl);
 			throw new ExitException(sl);
 		}
 	}
@@ -130,10 +130,10 @@ class BuiltinApi {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 1 || args.get(0).getType() != EvalType.INTEGER)
-				throw new ScriptRuntimeException("need 1 integer argument", sl);
+				throw new ScriptRuntimeException("Need 1 integer argument", sl);
 			long v = ((IntegerEval) args.get(0)).getValue();
 			if (v != (char) v)
-				throw new ScriptRuntimeException("value out of range", sl);
+				throw new ScriptRuntimeException("Value out of range", sl);
 			return new StringEval(new String(new char[] { (char) v }));
 		}
 	}
@@ -143,10 +143,10 @@ class BuiltinApi {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 1 || args.get(0).getType() != EvalType.STRING)
-				throw new ScriptRuntimeException("need 1 string argument", sl);
+				throw new ScriptRuntimeException("Need 1 string argument", sl);
 			String v = ((StringEval) args.get(0)).getValue();
 			if (v.length() != 1)
-				throw new ScriptRuntimeException("string length must be 1", sl);
+				throw new ScriptRuntimeException("String length must be 1", sl);
 			return new IntegerEval(v.charAt(0));
 		}
 	}
@@ -156,7 +156,7 @@ class BuiltinApi {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument", sl);
+				throw new ScriptRuntimeException("Need 1 argument", sl);
 
 			IValueEval ve = args.get(0);
 			if (ve instanceof StringEval)

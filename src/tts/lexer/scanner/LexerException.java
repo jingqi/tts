@@ -2,18 +2,18 @@ package tts.lexer.scanner;
 
 import tts.util.SourceLocation;
 
-public class ScannerException extends RuntimeException {
+public class LexerException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
 	private SourceLocation sl;
 
-	public ScannerException(String description, String file, int line) {
+	public LexerException(String description, String file, int line) {
 		super(description);
 		sl = new SourceLocation(file, line);
 	}
 
-	public ScannerException(String description, SourceLocation sl) {
+	public LexerException(String description, SourceLocation sl) {
 		super(description);
 		this.sl = sl;
 	}

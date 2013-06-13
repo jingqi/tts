@@ -27,7 +27,7 @@ public final class ForLoopOp extends Op {
 				if (break_exp != null) {
 					IValueEval ve = break_exp.eval(vm);
 					if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-						throw new ScriptRuntimeException("boolean value needed",
+						throw new ScriptRuntimeException("Boolean value needed",
 								break_exp.getSourceLocation());
 					BooleanEval be = (BooleanEval) ve;
 					if (!be.getValue())
@@ -71,13 +71,13 @@ public final class ForLoopOp extends Op {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("for(");
+		sb.append("for (");
 		if (init_exp != null)
 			sb.append(init_exp);
-		sb.append(";");
+		sb.append("; ");
 		if (break_exp != null)
 			sb.append(break_exp);
-		sb.append(";");
+		sb.append("; ");
 		if (fin_exp != null)
 			sb.append(fin_exp);
 		sb.append(")\n").append(body);

@@ -15,8 +15,7 @@ public class CharList {
 
 	public CharList(int initialCapacity) {
 		if (initialCapacity <= 0)
-			throw new IllegalArgumentException("Illegal capacity:"
-					+ initialCapacity);
+			throw new IllegalArgumentException("Illegal capacity:" + initialCapacity);
 		buffer = new char[initialCapacity];
 		size = 0;
 	}

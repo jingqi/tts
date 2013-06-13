@@ -75,7 +75,7 @@ public final class ArrayEval extends ObjectEval {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument", sl);
+				throw new ScriptRuntimeException("Need 0 argument", sl);
 
 			return new IntegerEval(size());
 		}
@@ -87,9 +87,9 @@ public final class ArrayEval extends ObjectEval {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument", sl);
+				throw new ScriptRuntimeException("Need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException("need integer", sl);
+				throw new ScriptRuntimeException("Need integer", sl);
 
 			long i = ((IntegerEval) args.get(0)).getValue();
 			return get((int) i);
@@ -113,7 +113,7 @@ public final class ArrayEval extends ObjectEval {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument", sl);
+				throw new ScriptRuntimeException("Need 1 argument", sl);
 
 			IValueEval ve = args.get(0);
 			return BooleanEval.valueOf(values.contains(ve));
@@ -126,9 +126,9 @@ public final class ArrayEval extends ObjectEval {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 1)
-				throw new ScriptRuntimeException("need 1 argument", sl);
+				throw new ScriptRuntimeException("Need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException("integer needed", sl);
+				throw new ScriptRuntimeException("Integer needed", sl);
 
 			int i = (int) ((IntegerEval) args.get(0)).getValue();
 			values.remove(i);
@@ -142,9 +142,9 @@ public final class ArrayEval extends ObjectEval {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 2)
-				throw new ScriptRuntimeException("need 2 argument", sl);
+				throw new ScriptRuntimeException("Need 2 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
-				throw new ScriptRuntimeException("integer needed", sl);
+				throw new ScriptRuntimeException("Integer needed", sl);
 
 			long i = ((IntegerEval) args.get(0)).getValue();
 			return values.set((int) i, args.get(1));
@@ -157,7 +157,7 @@ public final class ArrayEval extends ObjectEval {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument", sl);
+				throw new ScriptRuntimeException("Need 0 argument", sl);
 			values.clear();
 			return VoidEval.instance;
 		}
@@ -168,7 +168,7 @@ public final class ArrayEval extends ObjectEval {
 		public IValueEval call(List<IValueEval> args, ScriptVM vm,
 				SourceLocation sl) {
 			if (args.size() != 0)
-				throw new ScriptRuntimeException("need 0 argument", sl);
+				throw new ScriptRuntimeException("Need 0 argument", sl);
 
 			return ArrayEval.this.clone();
 		}
@@ -192,6 +192,6 @@ public final class ArrayEval extends ObjectEval {
 			return new FuncClear();
 		else if (name.equals("clone"))
 			return new FuncClone();
-		throw new ScriptRuntimeException("array no such member: " + name, sl);
+		throw new ScriptRuntimeException("Array has no such member: " + name, sl);
 	}
 }

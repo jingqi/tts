@@ -21,9 +21,4 @@ public final class ReturnFuncException extends ScriptLogicException {
 		super(sl);
 		this.value = v;
 	}
-
-	@Override
-	public String toString() {
-		return "File \"" + sl.file + "\", line " + sl.line;
-	}
 }

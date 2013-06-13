@@ -34,7 +34,7 @@ public final class AssignOp extends Op {
 		case BOOLEAN:
 			if (vv.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException(
-						"type not match in assignment", sl);
+						"Type not match in assignment", sl);
 			v.setValue(vv);
 			break;
 
@@ -45,7 +45,7 @@ public final class AssignOp extends Op {
 				v.setValue(new DoubleEval(((IntegerEval) vv).getValue()));
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", sl);
+						"Type not match in assignment", sl);
 			break;
 
 		case INTEGER:
@@ -55,7 +55,7 @@ public final class AssignOp extends Op {
 				v.setValue(new IntegerEval((long) ((DoubleEval) vv).getValue()));
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", sl);
+						"Type not match in assignment", sl);
 			break;
 
 		case STRING:
@@ -63,7 +63,7 @@ public final class AssignOp extends Op {
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", sl);
+						"Type not match in assignment", sl);
 			break;
 
 		case ARRAY:
@@ -71,7 +71,7 @@ public final class AssignOp extends Op {
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", sl);
+						"Type not match in assignment", sl);
 			break;
 
 		case MAP:
@@ -79,7 +79,7 @@ public final class AssignOp extends Op {
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", sl);
+						"Type not match in assignment", sl);
 			break;
 
 		case FUNCTION:
@@ -87,12 +87,12 @@ public final class AssignOp extends Op {
 				v.setValue(vv);
 			else
 				throw new ScriptRuntimeException(
-						"type not match in assignment", sl);
+						"Type not match in assignment", sl);
 			break;
 
 		default:
 			throw new ScriptRuntimeException(
-					"assignment not supported for type " + v.getType().name, sl);
+					"Assignment not supported for type " + v.getType().name, sl);
 		}
 	}
 
