@@ -2,7 +2,7 @@ package tts.eval;
 
 public final class DoubleEval implements IValueEval {
 
-	private double value;
+	private final double value;
 
 	public DoubleEval(double v) {
 		value = v;
