@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 
 /**
  * 操作列表
@@ -38,10 +38,10 @@ public final class OpList extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
+	public IValueEval eval(Frame f) {
 		IValueEval ret = VoidEval.instance;
 		for (int i = 0, size = list.size(); i < size; ++i) {
-			ret = list.get(i).eval(vm);
+			ret = list.get(i).eval(f);
 		}
 		return ret;
 	}

@@ -6,12 +6,11 @@ import java.io.IOException;
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
-import tts.vm.rtexcept.*;
+import tts.vm.Frame;
 
 public final class IncludeOp extends Op {
 
-	String path;
+	private final String path;
 
 	public IncludeOp(String path, String file, int line) {
 		super(new SourceLocation(file, line));
@@ -19,37 +18,18 @@ public final class IncludeOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		File cur = vm.getCurrentScriptPath();
-		if (cur == null)
-			throw new ScriptRuntimeException("File not found", getSourceLocation());
-
+	public IValueEval eval(Frame f) {
+		File cur = new File(getSourceLocation().file);
 		File dst = new File(cur.getParentFile().getAbsolutePath() + "/" + path);
-		Op op;
+		final Op op;
 		try {
-			op = vm.loadScript(dst, getSourceLocation());
+			op = f.getVM().loadScript(dst, getSourceLocation());
 		} catch (IOException e) {
-			throw new ScriptRuntimeException("Can not load file:" + path, getSourceLocation());
+			throw new RuntimeException(e);
 		}
 
-		vm.enterScriptFile(dst);
-		vm.pushFrameLocation(getSourceLocation(), SourceLocation.NATIVE_MODULE);
-		try {
-			if (op != null)
-				op.eval(vm);
-		} catch (BreakLoopException e) {
-			throw new ScriptRuntimeException("Break without loop", e.sl);
-		} catch (ContinueLoopException e) {
-			throw new ScriptRuntimeException("Continue without loop", e.sl);
-		} catch (ReturnFuncException e) {
-			throw new ScriptRuntimeException("Return without function", e.sl);
-		} catch (ScriptLogicException e) {
-			vm.popFrameLocation();
-			vm.leaveScriptFile();
-			throw e;
-		}
-		vm.popFrameLocation();
-		vm.leaveScriptFile();
+		if (op != null)
+			op.eval(f);
 
 		return VoidEval.instance;
 	}

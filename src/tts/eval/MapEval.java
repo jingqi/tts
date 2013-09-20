@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class MapEval extends ObjectEval {
@@ -77,8 +77,7 @@ public final class MapEval extends ObjectEval {
 	private class FuncSize extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 
@@ -89,8 +88,7 @@ public final class MapEval extends ObjectEval {
 	private class FuncGet extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument", sl);
 
@@ -101,8 +99,7 @@ public final class MapEval extends ObjectEval {
 	private class FuncPut extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 2)
 				throw new ScriptRuntimeException("need 1 argument", sl);
 
@@ -113,8 +110,7 @@ public final class MapEval extends ObjectEval {
 	private class FuncKeys extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 
@@ -127,8 +123,7 @@ public final class MapEval extends ObjectEval {
 
 	private class FuncValues extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 
@@ -140,8 +135,7 @@ public final class MapEval extends ObjectEval {
 
 	private class FuncClone extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 

@@ -4,7 +4,7 @@ import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class MathOp extends Op {
@@ -30,8 +30,8 @@ public final class MathOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		IValueEval l = left.eval(vm), r = right.eval(vm);
+	public IValueEval eval(Frame f) {
+		IValueEval l = left.eval(f), r = right.eval(f);
 		switch (op) {
 		case ADD:
 			if (l.getType() == EvalType.STRING

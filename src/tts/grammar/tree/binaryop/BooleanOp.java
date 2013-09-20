@@ -4,7 +4,7 @@ import tts.eval.BooleanEval;
 import tts.eval.IValueEval;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class BooleanOp extends Op {
@@ -30,8 +30,8 @@ public final class BooleanOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		IValueEval _l = left.eval(vm);
+	public IValueEval eval(Frame f) {
+		IValueEval _l = left.eval(f);
 		if (_l.getType() != IValueEval.EvalType.BOOLEAN)
 			throw new ScriptRuntimeException(
 					"Type mismatch for boolean operation", getSourceLocation());
@@ -41,7 +41,7 @@ public final class BooleanOp extends Op {
 		case AND: {
 			if (!l.getValue())
 				return BooleanEval.FALSE;
-			IValueEval r = right.eval(vm);
+			IValueEval r = right.eval(f);
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException(
 						"Type mismatch for boolean operation", getSourceLocation());
@@ -51,7 +51,7 @@ public final class BooleanOp extends Op {
 		case OR: {
 			if (l.getValue())
 				return BooleanEval.TRUE;
-			IValueEval r = right.eval(vm);
+			IValueEval r = right.eval(f);
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
 				throw new ScriptRuntimeException(
 						"Type mismatch for boolean operation", getSourceLocation());

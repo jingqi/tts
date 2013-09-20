@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import tts.eval.ArrayEval;
 import tts.eval.IValueEval;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 
 public final class ArrayOp extends Op {
 
@@ -21,10 +21,10 @@ public final class ArrayOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
+	public IValueEval eval(Frame f) {
 		ArrayEval ret = new ArrayEval();
 		for (Op op : elements) {
-			ret.add(op.eval(vm));
+			ret.add(op.eval(f));
 		}
 		return ret;
 	}

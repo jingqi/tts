@@ -4,7 +4,7 @@ import tts.eval.IValueEval;
 import tts.eval.IntegerEval;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class BitOp extends Op {
@@ -31,8 +31,8 @@ public final class BitOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		IValueEval l = left.eval(vm), r = right.eval(vm);
+	public IValueEval eval(Frame f) {
+		IValueEval l = left.eval(f), r = right.eval(f);
 		if (l.getType() != IValueEval.EvalType.INTEGER
 				|| r.getType() != IValueEval.EvalType.INTEGER)
 			throw new ScriptRuntimeException("type not match in bit operation",

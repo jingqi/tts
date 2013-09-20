@@ -3,14 +3,14 @@ package tts.eval;
 import java.util.List;
 
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 
 public abstract class FunctionEval implements IValueEval {
 
-	public abstract IValueEval call(List<IValueEval> args, ScriptVM vm, SourceLocation sl);
+	public abstract IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl);
 
-	public String getModuleName() {
-		return SourceLocation.NATIVE_MODULE;
+	public String getFunctionName() {
+		return SourceLocation.NATIVE_FUNCTION;
 	}
 
 	@Override

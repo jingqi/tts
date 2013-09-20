@@ -2,28 +2,88 @@ package tts.vm;
 
 import java.util.ArrayList;
 
+import tts.util.*;
+
 /**
- * 调用栈有效范围
+ * 线程调用栈帧
  */
-class Frame {
+public final class Frame {
 
-	// 局部范围
-	ArrayList<Scope> scopes = new ArrayList<Scope>();
+	// 虚拟机
+	private final ScriptVM vm;
 
-	public Variable getVariable(String name) {
-		for (int i = scopes.size() - 1; i >= 0; --i) {
-			Variable ret = scopes.get(i).getVariable(name);
-			if (ret != null)
-				return ret;
-		}
-		return null;
+	// 作用域栈，存放用户变量
+	private final ArrayList<Scope> scopeStack = new ArrayList<Scope>();
+
+	// 调用栈，存放调用路径
+	private final ArrayList<RuntimeLocation> callingStack = new ArrayList<RuntimeLocation>();
+
+	public Frame(ScriptVM vm) {
+		this.vm = vm;
 	}
 
-	public void enterScope() {
-		scopes.add(new Scope());
+	public ScriptVM getVM() {
+		return vm;
 	}
 
-	public void leaveScope() {
-		scopes.remove(scopes.size()  - 1);
+	/**
+	 * scope 压栈
+	 */
+	public void pushScope(Scope s) {
+		scopeStack.add(s);
+	}
+
+	/**
+	 * scope 弹出栈
+	 */
+	public void popScope() {
+		scopeStack.remove(scopeStack.size() - 1);
+	}
+
+	/**
+	 * 当前 scope (最后一个压栈的 scope)
+	 */
+	public Scope currentScope() {
+		return scopeStack.get(scopeStack.size() - 1);
+	}
+
+	/**
+	 * 函数调用路径压栈
+	 */
+	public void pushFuncCalling(SourceLocation from, String toFunc) {
+		callingStack.add(new RuntimeLocation(from, toFunc));
+	}
+
+	/**
+	 * 函数调用路径弹出栈
+	 */
+	public void popFuncCalling() {
+		callingStack.remove(callingStack.size() - 1);
+	}
+
+	/**
+	 * 当前调用栈
+	 */
+	public CallingStack currentCallingStack(SourceLocation sl) {
+	    ArrayList<RuntimeLocation> ret = new ArrayList<RuntimeLocation>();
+	    for (int i = 0, s = callingStack.size(); i < s; ++i) {
+	        String func = callingStack.get(i).funcName;
+	        SourceLocation source = null;
+	        if (i < s - 1)
+	            source = callingStack.get(i + 1).sl;
+	        else
+	            source = sl;
+
+	        ret.add(new RuntimeLocation(source, func));
+	    }
+	    return new CallingStack(ret);
+	}
+
+	public Variable getVariable(String name, SourceLocation sl) {
+		return currentScope().getVariableUpward(name, sl);
+	}
+
+	public void addVariable(String name, Variable var, SourceLocation sl) {
+		currentScope().addVariable(name, var, sl);
 	}
 }

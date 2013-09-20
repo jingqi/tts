@@ -3,7 +3,7 @@ package tts.grammar.tree.binaryop;
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.Op;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptNullPointerException;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
@@ -19,8 +19,8 @@ public final class MemberOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		IValueEval b = body.eval(vm);
+	public IValueEval eval(Frame f) {
+		IValueEval b = body.eval(f);
 		if (b.getType() == EvalType.NULL)
 			throw new ScriptNullPointerException(body.getSourceLocation());
 		else if (!(b instanceof ObjectEval))

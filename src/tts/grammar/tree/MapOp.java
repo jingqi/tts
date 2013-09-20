@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import tts.eval.IValueEval;
 import tts.eval.MapEval;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 
 public class MapOp extends Op {
 
@@ -26,11 +26,11 @@ public class MapOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
+	public IValueEval eval(Frame f) {
 		MapEval me = new MapEval();
 		for (int i = 0, size = entries.size(); i < size; ++i) {
-			IValueEval k = entries.get(i).key.eval(vm);
-			IValueEval v = entries.get(i).value.eval(vm);
+			IValueEval k = entries.get(i).key.eval(f);
+			IValueEval v = entries.get(i).value.eval(f);
 			me.put(k, v);
 		}
 		return me;

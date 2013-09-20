@@ -4,7 +4,7 @@ import java.util.List;
 
 import tts.util.CharList;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class StringEval extends ObjectEval {
@@ -64,8 +64,7 @@ public final class StringEval extends ObjectEval {
 	private class FuncLen extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 
@@ -76,8 +75,7 @@ public final class StringEval extends ObjectEval {
 	private class FuncCharAt extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER)
@@ -91,8 +89,7 @@ public final class StringEval extends ObjectEval {
 	private class FuncStartsWith extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.STRING)
@@ -106,8 +103,7 @@ public final class StringEval extends ObjectEval {
 	private class FuncEndsWith extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.STRING)
@@ -121,8 +117,7 @@ public final class StringEval extends ObjectEval {
 	private class FuncSubstr extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 2)
 				throw new ScriptRuntimeException("need 2 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.INTEGER
@@ -138,8 +133,7 @@ public final class StringEval extends ObjectEval {
 	private class FuncToLowerCase extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 
@@ -150,8 +144,7 @@ public final class StringEval extends ObjectEval {
 	private class FuncToUpperCase extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 
@@ -162,8 +155,7 @@ public final class StringEval extends ObjectEval {
 	private class FuncIndexOf extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1 && args.size() != 2)
 				throw new ScriptRuntimeException("need 1 or 2 argument", sl);
 
@@ -185,8 +177,7 @@ public final class StringEval extends ObjectEval {
 	private class FuncLastIndexOf extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1 && args.size() != 2)
 				throw new ScriptRuntimeException("need 1 or 2 argument", sl);
 
@@ -207,8 +198,7 @@ public final class StringEval extends ObjectEval {
 
 	private class FuncReplace extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 2)
 				throw new ScriptRuntimeException("need 2 argument", sl);
 
@@ -226,8 +216,7 @@ public final class StringEval extends ObjectEval {
 
 	private class FuncAppend extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1 || args.get(0).getType() != EvalType.STRING)
 				throw new ScriptRuntimeException("need 1 string argument", sl);
 
@@ -241,8 +230,7 @@ public final class StringEval extends ObjectEval {
 
 	private class FuncClone extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("need 0 argument", sl);
 

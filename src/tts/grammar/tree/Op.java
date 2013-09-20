@@ -1,8 +1,9 @@
 package tts.grammar.tree;
 
+
 import tts.eval.IValueEval;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 
 /**
  * 语法树节点
@@ -17,7 +18,7 @@ public abstract class Op {
 		sourceLocation = sl;
 	}
 
-	public abstract IValueEval eval(ScriptVM vm);
+	public abstract IValueEval eval(Frame f);
 
 	public Op optimize() {
 		// 默认实现是不优化

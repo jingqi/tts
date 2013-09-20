@@ -2,7 +2,8 @@ package tts.grammar.tree;
 
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
+import tts.vm.Scope;
 import tts.vm.rtexcept.ScriptLogicException;
 
 public final class ScopeOp extends Op {
@@ -15,17 +16,18 @@ public final class ScopeOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		vm.enterScope();
+	public IValueEval eval(Frame f) {
+		Scope s = new Scope(f.currentScope());
+		f.pushScope(s);
 		IValueEval ret = VoidEval.instance;
 		try {
 			if (op != null)
-				ret = op.eval(vm);
+				ret = op.eval(f);
 		} catch (ScriptLogicException e) {
-			vm.leaveScope();
+			f.popScope();
 			throw e;
 		}
-		vm.leaveScope();
+		f.popScope();
 		return ret;
 	}
 

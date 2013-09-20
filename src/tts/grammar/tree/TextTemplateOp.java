@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 
 public final class TextTemplateOp extends Op {
 
@@ -48,21 +48,21 @@ public final class TextTemplateOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
+	public IValueEval eval(Frame f) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0, size = template.size(); i < size; ++i) {
 			Object o = template.get(i);
 			if (o instanceof String) {
 				sb.append(o);
 			} else if (o instanceof Op) {
-				IValueEval ve = ((Op) o).eval(vm);
+				IValueEval ve = ((Op) o).eval(f);
 				sb.append(resolveValue(ve));
 			} else {
 				throw new RuntimeException();
 			}
 		}
 
-		vm.writeText(sb.toString());
+		f.getVM().writeText(sb.toString());
 		return VoidEval.instance;
 	}
 

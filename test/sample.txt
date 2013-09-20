@@ -1,0 +1,47 @@
+this is beginning
+$${
+    // 行代码以 $$ 开头， 块代码为 $${、}$$ 包含的区间
+    // 其他部分视为文本模板,模板中使用变量为${VAR}
+
+    int a = 0; // 指定类型的变量
+    var b = 0; // 动态类型
+
+    // 循环, for-loop, do-while-loop, while-loop
+    for (int i = 0; i < 10; ++i) {
+}$$
+    ${i}
+$$ } // for循环结束
+
+$${
+    string i = "sdf"; // 常量字符串，定义方式通python
+    int bb = 0; // 实际用java long类型存储，没有支持 short unsigned 等
+    double c = 0.; // 没有float
+    
+    // 函数的返回值看成是 var 类型，默认返回 void
+    function f1(int i) {
+        return f2(i);
+    }
+    
+    function f2(int i) {
+        return f3(i);
+    }
+    
+    function f3(int i) {
+}$$
+    文本模板可以看成是一个输出语句, i: ${i}
+$${
+        int m = 12;
+        int m = 3; // 这句会产生重定义错误，用来测试调用栈
+    } // 函数结束
+    
+    // lambda
+    var f = function (int i) {
+        f1(12);
+    };
+    f(2013);
+    
+    int i = (true ? 12 : 13);
+    array arr = [1,2,[3,4],];
+    map m = {12:"sdf", 1:[23,], };
+}$$
+

@@ -4,74 +4,33 @@ import java.io.*;
 import java.util.List;
 
 import tts.eval.*;
-import tts.grammar.tree.Op;
 import tts.util.SourceLocation;
-import tts.vm.rtexcept.*;
+import tts.vm.rtexcept.ExitException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 class BuiltinApi {
 
 	private BuiltinApi() {
 	}
 
-	// 包含其他源文件
-	static class FuncEval extends FunctionEval {
-		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
-			if (args.size() != 1)
-				throw new ScriptRuntimeException("Need 1 argument", sl);
-			if (args.get(0).getType() != IValueEval.EvalType.STRING)
-				throw new ScriptRuntimeException("Need string argument", sl);
-
-			String path = ((StringEval) args.get(0)).getValue();
-			File dst = new File(path);
-			if (!dst.isAbsolute()) {
-				String parent = vm.getCurrentScriptPath().getParentFile()
-						.getAbsolutePath();
-				dst = new File(parent + "/" + path);
-			}
-
-			Op op;
-			try {
-				op = vm.loadScript(dst, sl);
-			} catch (IOException e) {
-				throw new ScriptRuntimeException("Can not load file:" + path,
-						sl);
-			}
-
-			vm.enterScriptFile(dst);
-			try {
-				if (op != null)
-					op.eval(vm);
-			} catch (ScriptLogicException e) {
-				vm.leaveScriptFile();
-				throw e;
-			}
-			vm.leaveScriptFile();
-			return VoidEval.instance;
-		}
-	}
-
 	// 更改输出文件
 	static class FuncOutput extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("Need 1 argument", sl);
 			if (args.get(0).getType() != IValueEval.EvalType.STRING)
 				throw new ScriptRuntimeException("Need string argument", sl);
 
 			String output = ((StringEval) args.get(0)).getValue();
-			File f = new File(output);
-			if (!f.isAbsolute()) {
-				String parent = vm.getCurrentScriptPath().getParentFile()
-						.getAbsolutePath();
-				f = new File(parent + "/" + output);
+			File of = new File(output);
+			if (!of.isAbsolute()) {
+				String parent = new File(sl.file).getParentFile().getAbsolutePath();
+				of = new File(parent + "/" + output);
 			}
 
 			try {
-				vm.setTextOutput(new OutputStreamWriter(new FileOutputStream(f), "UTF-8"));
+				f.getVM().setTextOutput(new OutputStreamWriter(new FileOutputStream(of), "UTF-8"));
 			} catch (IOException e) {
 				throw new ScriptRuntimeException("Can not write to file: "
 						+ output, sl);
@@ -84,8 +43,7 @@ class BuiltinApi {
 	static class FuncExit extends FunctionEval {
 
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 0)
 				throw new ScriptRuntimeException("Need no argument", sl);
 			throw new ExitException(sl);
@@ -94,8 +52,7 @@ class BuiltinApi {
 
 	static class FuncPrint extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i) {
 				IValueEval ve = args.get(i);
 				if (ve instanceof StringEval) {
@@ -110,8 +67,7 @@ class BuiltinApi {
 
 	static class FuncPrintln extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i) {
 				IValueEval ve = args.get(i);
 				if (ve instanceof StringEval) {
@@ -127,8 +83,7 @@ class BuiltinApi {
 
 	static class FuncChr extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1 || args.get(0).getType() != EvalType.INTEGER)
 				throw new ScriptRuntimeException("Need 1 integer argument", sl);
 			long v = ((IntegerEval) args.get(0)).getValue();
@@ -140,8 +95,7 @@ class BuiltinApi {
 
 	static class FuncOrd extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1 || args.get(0).getType() != EvalType.STRING)
 				throw new ScriptRuntimeException("Need 1 string argument", sl);
 			String v = ((StringEval) args.get(0)).getValue();
@@ -153,8 +107,7 @@ class BuiltinApi {
 
 	static class FuncTostring extends FunctionEval {
 		@Override
-		public IValueEval call(List<IValueEval> args, ScriptVM vm,
-				SourceLocation sl) {
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
 				throw new ScriptRuntimeException("Need 1 argument", sl);
 

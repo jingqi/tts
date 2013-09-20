@@ -1,9 +1,10 @@
 package tts.grammar.tree.binaryop;
 
+
 import tts.eval.*;
 import tts.grammar.tree.Op;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.Variable;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
@@ -97,9 +98,9 @@ public final class AssignOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		Variable v = vm.getVariable(varname, this.getSourceLocation());
-		IValueEval vv = value.eval(vm);
+	public IValueEval eval(Frame f) {
+		Variable v = f.getVariable(varname, this.getSourceLocation());
+		IValueEval vv = value.eval(f);
 		assign(v, vv, getSourceLocation());
 		return v.getValue();
 	}

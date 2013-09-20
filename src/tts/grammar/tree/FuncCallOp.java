@@ -4,8 +4,9 @@ import java.util.ArrayList;
 
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
-import tts.vm.ScriptVM;
-import tts.vm.rtexcept.*;
+import tts.vm.Frame;
+import tts.vm.rtexcept.ScriptNullPointerException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class FuncCallOp extends Op {
 
@@ -19,8 +20,8 @@ public final class FuncCallOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		IValueEval b = func.eval(vm);
+	public IValueEval eval(Frame f) {
+		IValueEval b = func.eval(f);
 		if (b.getType() == EvalType.NULL)
 			throw new ScriptNullPointerException(func.getSourceLocation());
 		else if (b.getType() != IValueEval.EvalType.FUNCTION)
@@ -32,19 +33,10 @@ public final class FuncCallOp extends Op {
 		for (int i = 0; i < arg_count; ++i)
 			as.add(null);
 		for (int i = arg_count - 1; i >= 0; --i)
-			as.set(i, args.get(i).eval(vm));
+			as.set(i, args.get(i).eval(f));
 
 		FunctionEval fe = (FunctionEval) b;
-		vm.enterFrame(func.getSourceLocation(), fe.getModuleName());
-		final IValueEval ret;
-		try {
-			ret = fe.call(as, vm, getSourceLocation());
-		} catch (ScriptLogicException e) {
-			vm.leaveFrame();
-			throw e;
-		}
-		vm.leaveFrame();
-		return ret;
+		return fe.call(f, as, getSourceLocation());
 	}
 
 	@Override

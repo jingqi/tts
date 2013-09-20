@@ -11,7 +11,7 @@ import tts.lexer.scanner.Token.TokenType;
 import tts.lexer.stream.CharArrayScanReader;
 import tts.lexer.stream.IScanReader;
 import tts.util.SourceLocation;
-import tts.vm.VarType;
+import tts.vm.Variable.VarType;
 
 /**
  * 语法分析，并构建出语法树
@@ -35,7 +35,6 @@ public class GrammarScanner {
 			if (op == null)
 				break;
 			ret.add(op);
-			tokenStream.clearHistory();
 		}
 		if (!tokenStream.eof())
 			throw new GrammarException("Next sentence not recognised", tokenStream);
@@ -916,9 +915,9 @@ public class GrammarScanner {
 		if (ops == null)
 			throw new GrammarException("Function body expected", tokenStream);
 
-		UserFunctionEval ufe = new UserFunctionEval(name, ops, params);
-		Op fop = new Operand(ufe, t.file, t.line);
-		return new DefinationOp(VarType.FUNCTION, name, fop, t.file, t.line);
+		SourceLocation sl = new SourceLocation(tokenStream.getFile(), t.line);
+		FuncDefOp ufo = new FuncDefOp(name, ops, params, sl);
+		return new DefinationOp(VarType.FUNCTION, name, ufo, t.file, t.line);
 	}
 
 	// lambda = 'function' '(' (type param(',' type param)*)? ')'
@@ -973,8 +972,8 @@ public class GrammarScanner {
 		if (ops == null)
 			throw new GrammarException("Function body expected", tokenStream);
 
-		UserFunctionEval ufe = new UserFunctionEval("<lambda>", ops, params);
-		return new Operand(ufe, t.file, t.line);
+		SourceLocation sl = new SourceLocation(tokenStream.getFile(), t.line);
+		return new FuncDefOp("<lambda>", ops, params, sl);
 	}
 
 	// map_entry = rvalue ':' rvalue

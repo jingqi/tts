@@ -2,7 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**
@@ -39,7 +39,7 @@ public final class Operand extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
+	public IValueEval eval(Frame f) {
 		if (eval == null)
 			return null;
 
@@ -57,7 +57,7 @@ public final class Operand extends Op {
 
 		case VARIABLE:
 			VariableEval ve = (VariableEval) eval;
-			IValueEval ret = vm.getVariable(ve.getName(), getSourceLocation()).getValue();
+			IValueEval ret = f.getVariable(ve.getName(), getSourceLocation()).getValue();
 			if (ret == null)
 				throw new ScriptRuntimeException("Variable not initialized",
 						getSourceLocation());

@@ -1,7 +1,7 @@
 package tts.grammar.tree;
 
 import tts.eval.IValueEval;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ReturnFuncException;
 
 public class ReturnFuncOp extends Op {
@@ -14,10 +14,9 @@ public class ReturnFuncOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		IValueEval v = value.eval(vm);
-		throw new ReturnFuncException(v, getSourceLocation().file,
-				getSourceLocation().line);
+	public IValueEval eval(Frame f) {
+		IValueEval v = value.eval(f);
+		throw new ReturnFuncException(v, getSourceLocation());
 	}
 
 	@Override

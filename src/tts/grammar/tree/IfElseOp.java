@@ -2,7 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class IfElseOp extends Op {
@@ -17,17 +17,17 @@ public final class IfElseOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		IValueEval ve = cond.eval(vm);
+	public IValueEval eval(Frame f) {
+		IValueEval ve = cond.eval(f);
 		if (ve.getType() != IValueEval.EvalType.BOOLEAN)
 			throw new ScriptRuntimeException("Boolean value needed", cond.getSourceLocation());
 
 		BooleanEval be = (BooleanEval) ve;
 		if (be.getValue()) {
 			if (body != null)
-				body.eval(vm);
+				body.eval(f);
 		} else if (else_body != null) {
-			else_body.eval(vm);
+			else_body.eval(f);
 		}
 		return VoidEval.instance;
 	}

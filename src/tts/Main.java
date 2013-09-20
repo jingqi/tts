@@ -2,8 +2,6 @@ package tts;
 
 import java.io.*;
 
-import tts.vm.ScriptVM;
-
 public class Main {
 
 	private static void printInfo() {
@@ -11,6 +9,25 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws IOException {
+		// 检测目录中的测试文件
+		String dir = "./test";
+		File[] fs = new File(dir).listFiles();
+		for (int i = 0; i < fs.length; ++i) {
+			File f = fs[i];
+			if (f.getName().endsWith(".tts")) {
+				ScriptEngine en = new ScriptEngine();
+				en.run(f);
+				System.out.print('.');
+			}
+		}
+
+		// 单独跑某个文件
+		String s = "test/test_loop.tts";
+		ScriptEngine en = new ScriptEngine();
+		en.run(new File(s));
+	}
+
+	public static void main1(String[] args) throws IOException {
 		// 处理参数
 		String input = null, output = null;
 		for (int i = 0, len = args.length; i < len; ++i) {
@@ -41,9 +58,11 @@ public class Main {
 		}
 
 		// 启动脚本
-		ScriptVM vm = new ScriptVM();
+		ScriptEngine en;
 		if (output != null)
-			vm.setTextOutput(new OutputStreamWriter(new FileOutputStream(output), "UTF-8"));
-		vm.run(new File(input));
+			en = new ScriptEngine(new OutputStreamWriter(new FileOutputStream(output), "UTF-8"));
+		else
+			en = new ScriptEngine();
+		en.run(new File(input));
 	}
 }

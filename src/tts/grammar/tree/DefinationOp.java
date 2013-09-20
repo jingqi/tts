@@ -4,6 +4,7 @@ import tts.eval.*;
 import tts.grammar.tree.binaryop.AssignOp;
 import tts.util.SourceLocation;
 import tts.vm.*;
+import tts.vm.Variable.VarType;
 
 public final class DefinationOp extends Op {
 
@@ -36,13 +37,13 @@ public final class DefinationOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
+	public IValueEval eval(Frame f) {
 		Variable v = new Variable(name, type, null);
 		if (value != null)
-			AssignOp.assign(v, value.eval(vm), getSourceLocation());
+			AssignOp.assign(v, value.eval(f), getSourceLocation());
 		else
 			AssignOp.assign(v, NullEval.instance, getSourceLocation());
-		vm.addVariable(name, v, getSourceLocation());
+		f.addVariable(name, v, getSourceLocation());
 		return VoidEval.instance;
 	}
 

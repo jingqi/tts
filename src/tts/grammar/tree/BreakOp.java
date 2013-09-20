@@ -2,7 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.IValueEval;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.BreakLoopException;
 
 public final class BreakOp extends Op {
@@ -12,7 +12,7 @@ public final class BreakOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
+	public IValueEval eval(Frame f) {
 		throw new BreakLoopException(getSourceLocation());
 	}
 

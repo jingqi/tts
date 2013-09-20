@@ -7,9 +7,29 @@ import tts.eval.IValueEval;
  */
 public class Variable {
 
-	String name;
-	VarType type;
-	IValueEval value;
+	/**
+	 * 变量类型
+	 */
+	public enum VarType {
+		BOOLEAN("bool"),
+		INTEGER("int"),
+		DOUBLE("double"),
+		STRING("string"),
+		ARRAY("array"),
+		FUNCTION("function"),
+		MAP("map"),
+		VAR("var");
+
+		public final String name;
+
+		private VarType(String name) {
+			this.name = name;
+		}
+	}
+
+	private final String name;
+	private final VarType type;
+	private IValueEval value;
 
 	public Variable(String name, VarType type, IValueEval value) {
 		this.name = name;

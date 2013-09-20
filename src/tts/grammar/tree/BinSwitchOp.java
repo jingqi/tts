@@ -2,7 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.BooleanEval;
 import tts.eval.IValueEval;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class BinSwitchOp extends Op {
@@ -17,14 +17,14 @@ public final class BinSwitchOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
-		IValueEval c = cond.eval(vm);
+	public IValueEval eval(Frame f) {
+		IValueEval c = cond.eval(f);
 		if (c.getType() != IValueEval.EvalType.BOOLEAN)
 			throw new ScriptRuntimeException("Boolean value needed", cond.getSourceLocation());
 
 		if (((BooleanEval) c).getValue())
-			return true_value.eval(vm);
-		return false_value.eval(vm);
+			return true_value.eval(f);
+		return false_value.eval(f);
 	}
 
 	@Override

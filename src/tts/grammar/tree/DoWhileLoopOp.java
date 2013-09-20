@@ -2,7 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.util.SourceLocation;
-import tts.vm.ScriptVM;
+import tts.vm.Frame;
 import tts.vm.rtexcept.*;
 
 public final class DoWhileLoopOp extends Op {
@@ -16,21 +16,20 @@ public final class DoWhileLoopOp extends Op {
 	}
 
 	@Override
-	public IValueEval eval(ScriptVM vm) {
+	public IValueEval eval(Frame f) {
 		while (true) {
 			try {
 				if (body != null)
-					body.eval(vm);
+					body.eval(f);
 			} catch (BreakLoopException e) {
 				break;
 			} catch (ContinueLoopException e) {
 				// do nothing
 			}
 
-			IValueEval ve = brk_exp.eval(vm);
+			IValueEval ve = brk_exp.eval(f);
 			if (ve.getType() != IValueEval.EvalType.BOOLEAN)
-				throw new ScriptRuntimeException("Boolean value needed",
-						brk_exp.getSourceLocation());
+				throw new ScriptRuntimeException("Boolean value needed", brk_exp.getSourceLocation());
 			BooleanEval be = (BooleanEval) ve;
 			if (!be.getValue())
 				break;
