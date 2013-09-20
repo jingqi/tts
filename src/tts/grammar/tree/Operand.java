@@ -3,6 +3,7 @@ package tts.grammar.tree;
 import tts.eval.*;
 import tts.util.SourceLocation;
 import tts.vm.Frame;
+import tts.vm.Variable;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**
@@ -57,10 +58,13 @@ public final class Operand extends Op {
 
 		case VARIABLE:
 			VariableEval ve = (VariableEval) eval;
+			Variable v = f.getVariable(ve.getName(), getSourceLocation());
+			if (v == null)
+				throw new ScriptRuntimeException("Variable " + ve.getName() + " not found", getSourceLocation());
+
 			IValueEval ret = f.getVariable(ve.getName(), getSourceLocation()).getValue();
 			if (ret == null)
-				throw new ScriptRuntimeException("Variable not initialized",
-						getSourceLocation());
+				throw new ScriptRuntimeException("Variable " + ve.getName() + " not initialized", getSourceLocation());
 			return ret;
 		}
 		throw new ScriptRuntimeException("Wrong type of value", getSourceLocation());

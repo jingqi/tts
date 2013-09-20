@@ -185,7 +185,7 @@ public class ScriptVM {
 
 		// 解析文件
 		ss.seek(0);
-		LexerScanner tsn = new LexerScanner(ss, dst.getName());
+		LexerScanner tsn = new LexerScanner(ss, dst.getPath());
 		TokenStream ts = new TokenStream(tsn);
 		GrammarScanner gs = new GrammarScanner(ts);
 

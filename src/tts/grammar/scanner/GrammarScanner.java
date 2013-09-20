@@ -45,9 +45,10 @@ public class GrammarScanner {
 	// block | include;
 	private Op sentence() {
 		final int p = tokenStream.tell();
-		Op ret = expression();
+
+		Op ret = varDefination();
 		if (ret == null)
-			ret = defination();
+			ret = expression();
 
 		Token t = tokenStream.match(TokenType.SEPARATOR, ";");
 		if (t != null) {
@@ -63,7 +64,9 @@ public class GrammarScanner {
 		if (ret == null)
 			ret = statement();
 		if (ret == null)
-			ret = include();
+			ret = includeDeclare();
+		if (ret == null)
+			ret = importDeclare();
 		return ret;
 	}
 
@@ -675,7 +678,7 @@ public class GrammarScanner {
 	}
 
 	// defination = type variable ('=' rvalue)? (',' varialbe ('=' rvalue)?)*;
-	private Op defination() {
+	private Op varDefination() {
 		VarType vt;
 		Token t = tokenStream.match(TokenType.KEY_WORD);
 		if (t == null) {
@@ -742,7 +745,7 @@ public class GrammarScanner {
 
 		Op init_exp = expression();
 		if (init_exp == null)
-			init_exp = defination();
+			init_exp = varDefination();
 		if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
 			throw new GrammarException("Token ';' expected", tokenStream);
 
@@ -840,7 +843,7 @@ public class GrammarScanner {
 	}
 
 	// include = 'include' (('"' path '"') | ('<' path '>'));
-	private Op include() {
+	private Op includeDeclare() {
 		Token t = tokenStream.match(TokenType.KEY_WORD, "include");
 		if (t == null)
 			return null;
@@ -848,6 +851,17 @@ public class GrammarScanner {
 		if (f == null)
 			throw new GrammarException("File path expected", tokenStream);
 		return new IncludeOp((String) f.value, t.file, t.line);
+	}
+
+	// import = 'import' path
+	private Op importDeclare() {
+		Token t = tokenStream.match(TokenType.KEY_WORD, "import");
+		if (t == null)
+			return null;
+		Token f = tokenStream.match(TokenType.STRING);
+		if (f == null)
+			throw new GrammarException("File path expected", tokenStream);
+		return new ImportOp((String) f.value, new SourceLocation(t.file, t.line));
 	}
 
 	// function = 'function' name '(' (type param(',' type param)*)? ')'

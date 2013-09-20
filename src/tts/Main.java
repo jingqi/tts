@@ -21,10 +21,12 @@ public class Main {
 			}
 		}
 
+		/*
 		// 单独跑某个文件
-		String s = "test/test_loop.tts";
+		String s = "test/test_import.tts";
 		ScriptEngine en = new ScriptEngine();
 		en.run(new File(s));
+		*/
 	}
 
 	public static void main1(String[] args) throws IOException {

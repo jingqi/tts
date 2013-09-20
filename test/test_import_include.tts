@@ -1,0 +1,11 @@
+$$ function assert(var b) {
+$$  if (!b)
+ERROR
+$$ }
+$${
+
+import "_pice.txt";
+assert(_pice.a == 1);
+include "_pice.txt";
+assert(a == 1);
+}$$
