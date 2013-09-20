@@ -139,6 +139,7 @@ public class ScriptVM {
 			return null;
 
 		String abspath = p.getAbsolutePath();
+		p = new File(abspath);
 		IValueEval ret = modules.get(abspath);
 		if (ret != null)
 			return ret;
