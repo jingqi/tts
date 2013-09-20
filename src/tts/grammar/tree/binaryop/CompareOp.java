@@ -32,6 +32,12 @@ public final class CompareOp extends Op {
 	}
 
 	static boolean eq(IValueEval l, IValueEval r, SourceLocation sl) {
+		// null 需要特殊处理
+		if (l.getType() == IValueEval.EvalType.NULL)
+			return r.getType() == IValueEval.EvalType.NULL;
+		else if (r.getType() == IValueEval.EvalType.NULL)
+			return false;
+
 		switch (l.getType()) {
 		case BOOLEAN:
 			if (r.getType() != IValueEval.EvalType.BOOLEAN)
