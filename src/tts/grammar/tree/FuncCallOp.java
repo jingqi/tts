@@ -9,8 +9,8 @@ import tts.vm.rtexcept.*;
 
 public final class FuncCallOp extends Op {
 
-	Op func;
-	ArrayList<Op> args;
+	private Op func;
+	private ArrayList<Op> args;
 
 	public FuncCallOp(Op func, ArrayList<Op> args) {
 		super(func.getSourceLocation());
@@ -24,11 +24,15 @@ public final class FuncCallOp extends Op {
 		if (b.getType() == EvalType.NULL)
 			throw new ScriptNullPointerException(func.getSourceLocation());
 		else if (b.getType() != IValueEval.EvalType.FUNCTION)
-			throw new ScriptRuntimeException("function value needed", func.getSourceLocation());
+			throw new ScriptRuntimeException("Function value needed", func.getSourceLocation());
 
-		ArrayList<IValueEval> as = new ArrayList<IValueEval>();
-		for (int i = 0, size = args.size(); i < size; ++i)
-			as.add(args.get(i).eval(vm));
+		// 从右向左计算实参的值
+		final int arg_count = args.size();
+		ArrayList<IValueEval> as = new ArrayList<IValueEval>(arg_count);
+		for (int i = 0; i < arg_count; ++i)
+			as.add(null);
+		for (int i = arg_count - 1; i >= 0; --i)
+			as.set(i, args.get(i).eval(vm));
 
 		FunctionEval fe = (FunctionEval) b;
 		vm.enterFrame(func.getSourceLocation(), fe.getModuleName());
@@ -46,7 +50,7 @@ public final class FuncCallOp extends Op {
 	@Override
 	public Op optimize() {
 		func = func.optimize();
-		for (int i = 0, size = args.size(); i < size; ++i)
+		for (int i = args.size() - 1; i >= 0; --i)
 			args.set(i, args.get(i).optimize());
 		return this;
 	}

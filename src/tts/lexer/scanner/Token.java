@@ -3,7 +3,14 @@ package tts.lexer.scanner;
 public class Token {
 
 	public enum TokenType {
-		TEXT_TEMPLATE, BOOLEAN, INTEGER, DOUBLE, STRING, SEPARATOR, IDENTIFIER, KEY_WORD
+		TEXT_TEMPLATE,
+		BOOLEAN,
+		INTEGER,
+		DOUBLE,
+		STRING,
+		SEPARATOR,
+		IDENTIFIER,
+		KEY_WORD
 	}
 
 	public final TokenType type;

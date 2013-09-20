@@ -16,9 +16,7 @@ public final class BooleanEval implements IValueEval {
 	}
 
 	public static BooleanEval valueOf(boolean b) {
-		if (b)
-			return TRUE;
-		return FALSE;
+		return b ? TRUE : FALSE;
 	}
 
 	@Override

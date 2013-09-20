@@ -34,24 +34,24 @@ public class GrammarScanner {
 			Op op = sentence();
 			if (op == null)
 				break;
-			else
-				ret.add(op);
+			ret.add(op);
+			tokenStream.clearHistory();
 		}
 		if (!tokenStream.eof())
-			throw new GrammarException("Next sentence not recognised",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Next sentence not recognised", tokenStream);
 		return ret;
 	}
 
 	// sentence = ((expression | defination)? ';') | statement | text_template |
 	// block | include;
 	private Op sentence() {
-		int p = tokenStream.tell();
+		final int p = tokenStream.tell();
 		Op ret = expression();
 		if (ret == null)
 			ret = defination();
-		Token t = tokenStream.nextToken();
-		if (t != null && t.type == TokenType.SEPARATOR && t.value.equals(";")) {
+
+		Token t = tokenStream.match(TokenType.SEPARATOR, ";");
+		if (t != null) {
 			if (ret == null)
 				return new OpList(t.file, t.line); // 空语句
 			return ret;
@@ -84,8 +84,7 @@ public class GrammarScanner {
 		}
 
 		if (tokenStream.match(TokenType.SEPARATOR, "}") == null)
-			throw new GrammarException("token '}' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("token '}' expected", tokenStream);
 
 		return new ScopeOp(ret);
 	}
@@ -113,9 +112,9 @@ public class GrammarScanner {
 					GrammarScanner gs = new GrammarScanner(tst);
 					Op op = gs.expression();
 					if (op == null)
-						throw new GrammarException("Expression needed", tst.getFile(), tst.getLine());
+						throw new GrammarException("Expression needed", tst);
 					if (tst.match(TokenType.SEPARATOR, "}") == null)
-						throw new GrammarException("Token '{' needed", tst.getFile(), tst.getLine());
+						throw new GrammarException("Token '{' needed", tst);
 
 					if (sb.length() > 0) {
 						ret.add(sb.toString());
@@ -146,19 +145,16 @@ public class GrammarScanner {
 		if (t != null) {
 			if (t.value.equals("break")) {
 				if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
-					throw new GrammarException("Token ';' expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Token ';' expected", tokenStream);
 				return new BreakOp(t.file, t.line);
 			} else if (t.value.equals("continue")) {
 				if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
-					throw new GrammarException("Token ';' expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Token ';' expected", tokenStream);
 				return new ContinueOp(t.file, t.line);
 			} else if (t.value.equals("return")) {
 				Op r = expression();
 				if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
-					throw new GrammarException("Token ';' expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Token ';' expected", tokenStream);
 
 				if (r == null)
 					return new ReturnFuncOp(new OpList(t.file, t.line));
@@ -245,12 +241,10 @@ public class GrammarScanner {
 			return new AssignOp(name, v, sl);
 		} else if (op instanceof MathOp.OpType) {
 			MathOp.OpType mop = (MathOp.OpType) op;
-			return new AssignOp(name, new MathOp(new Operand(new VariableEval(
-					name), sl), mop, v), sl);
+			return new AssignOp(name, new MathOp(new Operand(new VariableEval(name), sl), mop, v), sl);
 		} else if (op instanceof BitOp.OpType) {
 			BitOp.OpType bop = (BitOp.OpType) op;
-			return new AssignOp(name, new BitOp(new Operand(new VariableEval(
-					name), sl), bop, v), sl);
+			return new AssignOp(name, new BitOp(new Operand(new VariableEval(name), sl), bop, v), sl);
 		} else {
 			throw new RuntimeException();
 		}
@@ -301,8 +295,7 @@ public class GrammarScanner {
 		while (tokenStream.match(TokenType.SEPARATOR, "||") != null) {
 			Op vv = booleanAnd();
 			if (vv == null)
-				throw new GrammarException("Expression expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Expression expected", tokenStream);
 			v = new BooleanOp(v, BooleanOp.OpType.OR, vv);
 		}
 		return v;
@@ -317,8 +310,7 @@ public class GrammarScanner {
 		while (tokenStream.match(TokenType.SEPARATOR, "&&") != null) {
 			Op vv = bitOr();
 			if (vv == null)
-				throw new GrammarException("Expression expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Expression expected", tokenStream);
 			v = new BooleanOp(v, BooleanOp.OpType.AND, vv);
 		}
 		return v;
@@ -333,8 +325,7 @@ public class GrammarScanner {
 		while (tokenStream.match(TokenType.SEPARATOR, "|") != null) {
 			Op vv = bitXor();
 			if (vv == null)
-				throw new GrammarException("Expression expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Expression expected", tokenStream);
 			v = new BitOp(v, BitOp.OpType.BIT_OR, vv);
 		}
 		return v;
@@ -349,8 +340,7 @@ public class GrammarScanner {
 		while (tokenStream.match(TokenType.SEPARATOR, "^") != null) {
 			Op vv = bitAnd();
 			if (vv == null)
-				throw new GrammarException("Expression expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Expression expected", tokenStream);
 			v = new BitOp(v, BitOp.OpType.BIT_XOR, vv);
 		}
 		return v;
@@ -365,8 +355,7 @@ public class GrammarScanner {
 		while (tokenStream.match(TokenType.SEPARATOR, "&") != null) {
 			Op vv = eqCmp();
 			if (vv == null)
-				throw new GrammarException("Expression expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Expression expected", tokenStream);
 			v = new BitOp(v, BitOp.OpType.BIT_AND, vv);
 		}
 		return v;
@@ -393,8 +382,7 @@ public class GrammarScanner {
 
 			Op vv = lessCmp();
 			if (vv == null)
-				throw new GrammarException("Expression expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Expression expected", tokenStream);
 			v = new CompareOp(v, op, vv);
 		}
 		return v;
@@ -420,8 +408,7 @@ public class GrammarScanner {
 
 		Op vv = bitShift();
 		if (vv == null)
-			throw new GrammarException("Expression expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Expression expected", tokenStream);
 		return new CompareOp(v, op, vv);
 	}
 
@@ -444,8 +431,7 @@ public class GrammarScanner {
 
 			Op vv = part();
 			if (vv == null)
-				throw new GrammarException("Expression expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Expression expected", tokenStream);
 			v = new BitOp(v, op, vv);
 		}
 		return v;
@@ -467,14 +453,12 @@ public class GrammarScanner {
 			} else if (t.value.equals("+")) {
 				Op vv = term();
 				if (vv == null)
-					throw new GrammarException("Expression expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Expression expected", tokenStream);
 				v = new MathOp(v, MathOp.OpType.ADD, vv);
 			} else if (t.value.equals("-")) {
 				Op vv = term();
 				if (vv == null)
-					throw new GrammarException("Expression expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Expression expected", tokenStream);
 				v = new MathOp(v, MathOp.OpType.SUB, vv);
 			} else {
 				tokenStream.putBack();
@@ -499,20 +483,17 @@ public class GrammarScanner {
 			} else if (t.value.equals("*")) {
 				Op vv = factor();
 				if (vv == null)
-					throw new GrammarException("Expression expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Expression expected", tokenStream);
 				v = new MathOp(v, MathOp.OpType.MULTIPLY, vv);
 			} else if (t.value.equals("/")) {
 				Op vv = factor();
 				if (vv == null)
-					throw new GrammarException("Expression expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Expression expected", tokenStream);
 				v = new MathOp(v, MathOp.OpType.DIVID, vv);
 			} else if (t.value.equals("%")) {
 				Op vv = factor();
 				if (vv == null)
-					throw new GrammarException("Expression expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Expression expected", tokenStream);
 				v = new MathOp(v, MathOp.OpType.MOD, vv);
 			} else {
 				tokenStream.putBack();
@@ -578,10 +559,7 @@ public class GrammarScanner {
 						if (args.size() == 0)
 							break;
 						else
-							throw new GrammarException(
-									"Function argument expected",
-									tokenStream.getFile(),
-									tokenStream.getLine());
+							throw new GrammarException("Function argument expected", tokenStream);
 					}
 					args.add(arg);
 
@@ -589,25 +567,21 @@ public class GrammarScanner {
 						break;
 				}
 				if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
-					throw new GrammarException("Token ')' expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Token ')' expected", tokenStream);
 				body = new FuncCallOp(body, args);
 			} else if (tokenStream.match(TokenType.SEPARATOR, "[") != null) {
 				// 数组索引
 				Op i = expression();
 				if (i == null)
-					throw new GrammarException("Expression expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Expression expected", tokenStream);
 				if (tokenStream.match(TokenType.SEPARATOR, "]") == null)
-					throw new GrammarException("Token ']' expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Token ']' expected", tokenStream);
 				body = new IndexOp(body, i);
 			} else if (tokenStream.match(TokenType.SEPARATOR, ".") != null) {
 				// 取成员
 				Token t = tokenStream.match(TokenType.IDENTIFIER);
 				if (t == null)
-					throw new GrammarException("Identifier token expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Identifier token expected", tokenStream);
 				body = new MemberOp(body, (String) t.value);
 			} else {
 				break;
@@ -657,11 +631,9 @@ public class GrammarScanner {
 			if (t.value.equals("(")) {
 				Op v = expression();
 				if (v == null)
-					throw new GrammarException("Expression expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Expression expected", tokenStream);
 				if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
-					throw new GrammarException("Token ')' expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Token ')' expected", tokenStream);
 				return v;
 			} else if (t.value.equals("[")) {
 				tokenStream.putBack();
@@ -698,8 +670,7 @@ public class GrammarScanner {
 				break;
 		}
 		if (tokenStream.match(TokenType.SEPARATOR, "]") == null)
-			throw new GrammarException("Token ']' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ']' expected", tokenStream);
 
 		return new ArrayOp(l, t.file, t.line);
 	}
@@ -746,15 +717,13 @@ public class GrammarScanner {
 		do {
 			t = tokenStream.match(TokenType.IDENTIFIER);
 			if (t == null)
-				throw new GrammarException("Identifier token expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Identifier token expected", tokenStream);
 
 			String name = (String) t.value;
 			if (tokenStream.match(TokenType.SEPARATOR, "=") != null) {
 				Op v = expression();
 				if (v == null)
-					throw new GrammarException("Expression expected",
-							tokenStream.getFile(), tokenStream.getLine());
+					throw new GrammarException("Expression expected", tokenStream);
 				l.add(new DefinationOp(vt, name, v, t.file, t.line));
 			} else {
 				l.add(new DefinationOp(vt, name, null, t.file, t.line));
@@ -770,30 +739,25 @@ public class GrammarScanner {
 		if (t == null)
 			return null;
 		if (tokenStream.match(TokenType.SEPARATOR, "(") == null)
-			throw new GrammarException("Token '(' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token '(' expected", tokenStream);
 
 		Op init_exp = expression();
 		if (init_exp == null)
 			init_exp = defination();
 		if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
-			throw new GrammarException("Token ';' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ';' expected", tokenStream);
 
 		Op break_exp = rvalue();
 		if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
-			throw new GrammarException("Token ';' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ';' expected", tokenStream);
 
 		Op fin_exp = expression();
 		if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
-			throw new GrammarException("Token ')' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ')' expected", tokenStream);
 
 		Op body = sentence();
 		if (body == null)
-			throw new GrammarException("Expression expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Expression expected", tokenStream);
 
 		return new ForLoopOp(init_exp, break_exp, fin_exp, body, t.file, t.line);
 	}
@@ -806,27 +770,21 @@ public class GrammarScanner {
 
 		Op body = block();
 		if (body == null)
-			throw new GrammarException("Expression block expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Expression block expected", tokenStream);
 
 		if (tokenStream.match(TokenType.KEY_WORD, "while") == null)
-			throw new GrammarException("Keyword 'while' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Keyword 'while' expected", tokenStream);
 		if (tokenStream.match(TokenType.SEPARATOR, "(") == null)
-			throw new GrammarException("Token '(' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token '(' expected", tokenStream);
 
 		Op brk_exp = expression();
 		if (brk_exp == null)
-			throw new GrammarException("Expression expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Expression expected", tokenStream);
 
 		if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
-			throw new GrammarException("Token ')' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ')' expected", tokenStream);
 		if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
-			throw new GrammarException("Token ';' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ';' expected", tokenStream);
 
 		return new DoWhileLoopOp(body, brk_exp, t.file, t.line);
 	}
@@ -837,22 +795,18 @@ public class GrammarScanner {
 		if (t == null)
 			return null;
 		if (tokenStream.match(TokenType.SEPARATOR, "(") == null)
-			throw new GrammarException("Token '(' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token '(' expected", tokenStream);
 
 		Op brk_exp = expression();
 		if (brk_exp == null)
-			throw new GrammarException("Expression expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Expression expected", tokenStream);
 
 		if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
-			throw new GrammarException("Token ')' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ')' expected", tokenStream);
 
 		Op body = sentence();
 		if (body == null)
-			throw new GrammarException("Expression expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Expression expected", tokenStream);
 
 		return new WhileLoop(brk_exp, body, t.file, t.line);
 	}
@@ -863,29 +817,24 @@ public class GrammarScanner {
 		if (t == null)
 			return null;
 		if (tokenStream.match(TokenType.SEPARATOR, "(") == null)
-			throw new GrammarException("Token '(' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token '(' expected", tokenStream);
 
 		Op cond = expression();
 		if (cond == null)
-			throw new GrammarException("Expression expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Expression expected", tokenStream);
 
 		if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
-			throw new GrammarException("Token ')' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ')' expected", tokenStream);
 
 		Op body = sentence();
 		if (body == null)
-			throw new GrammarException("Expression expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Expression expected", tokenStream);
 
 		Op else_body = null;
 		if (tokenStream.match(TokenType.KEY_WORD, "else") != null) {
 			else_body = sentence();
 			if (else_body == null)
-				throw new GrammarException("Expression expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Expression expected", tokenStream);
 		}
 
 		return new IfElseOp(cond, body, else_body, t.file, t.line);
@@ -898,8 +847,7 @@ public class GrammarScanner {
 			return null;
 		Token f = tokenStream.match(TokenType.STRING);
 		if (f == null)
-			throw new GrammarException("File path expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("File path expected", tokenStream);
 		return new IncludeOp((String) f.value, t.file, t.line);
 	}
 
@@ -952,7 +900,7 @@ public class GrammarScanner {
 			tt = tokenStream.match(TokenType.IDENTIFIER);
 			if (tt == null)
 				throw new GrammarException("Identifier token expected",
-						tokenStream.getFile(), tokenStream.getLine());
+						tokenStream);
 
 			String pname = (String) tt.value;
 			params.add(new ParamInfo(pname, vt));
@@ -961,14 +909,12 @@ public class GrammarScanner {
 		}
 
 		if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
-			throw new GrammarException("Token ')' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ')' expected", tokenStream);
 
 		// 函数体
 		Op ops = block();
 		if (ops == null)
-			throw new GrammarException("Function body expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Function body expected", tokenStream);
 
 		UserFunctionEval ufe = new UserFunctionEval(name, ops, params);
 		Op fop = new Operand(ufe, t.file, t.line);
@@ -1011,8 +957,7 @@ public class GrammarScanner {
 
 			tt = tokenStream.match(TokenType.IDENTIFIER);
 			if (tt == null)
-				throw new GrammarException("Identifier token expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Identifier token expected", tokenStream);
 
 			String pname = (String) tt.value;
 			params.add(new ParamInfo(pname, vt));
@@ -1021,14 +966,12 @@ public class GrammarScanner {
 		}
 
 		if (tokenStream.match(TokenType.SEPARATOR, ")") == null)
-			throw new GrammarException("Token ')' expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Token ')' expected", tokenStream);
 
 		// 函数体
 		Op ops = block();
 		if (ops == null)
-			throw new GrammarException("Function body expected",
-					tokenStream.getFile(), tokenStream.getLine());
+			throw new GrammarException("Function body expected", tokenStream);
 
 		UserFunctionEval ufe = new UserFunctionEval("<lambda>", ops, params);
 		return new Operand(ufe, t.file, t.line);
@@ -1055,8 +998,7 @@ public class GrammarScanner {
 
 			Op v = expression();
 			if (v == null)
-				throw new GrammarException("Value of map entry expected",
-						tokenStream.getFile(), tokenStream.getLine());
+				throw new GrammarException("Value of map entry expected", tokenStream);
 
 			l.add(new MapOp.Entry(k, v));
 

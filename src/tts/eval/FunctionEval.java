@@ -7,8 +7,7 @@ import tts.vm.ScriptVM;
 
 public abstract class FunctionEval implements IValueEval {
 
-	public abstract IValueEval call(List<IValueEval> args, ScriptVM vm,
-			SourceLocation sl);
+	public abstract IValueEval call(List<IValueEval> args, ScriptVM vm, SourceLocation sl);
 
 	public String getModuleName() {
 		return SourceLocation.NATIVE_MODULE;

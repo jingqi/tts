@@ -165,8 +165,7 @@ public class ScriptVM {
 
 		// 读取文件内容
 		if (!dst.exists())
-			throw new ScriptRuntimeException("file not exists: "
-					+ dst.getName(), sl);
+			throw new ScriptRuntimeException("File not exists: " + dst.getName(), sl);
 		Reader fr = new InputStreamReader(new FileInputStream(dst), "UTF-8");
 		CharArrayScanReader ss = new CharArrayScanReader();
 		char[] buf = new char[4096];
@@ -203,24 +202,14 @@ public class ScriptVM {
 		currentModule = "<module>";
 
 		// 默认全局变量
-		addVariable("eval", new Variable("eval", VarType.FUNCTION,
-				new FuncEval()), SourceLocation.NATIVE);
-		addVariable("output", new Variable("output", VarType.FUNCTION,
-				new FuncOutput()), SourceLocation.NATIVE);
-		addVariable("exit", new Variable("exit", VarType.FUNCTION,
-				new FuncExit()), SourceLocation.NATIVE);
-		addVariable("print", new Variable("print", VarType.FUNCTION,
-				new FuncPrint()), SourceLocation.NATIVE);
-		addVariable("println", new Variable("println", VarType.FUNCTION,
-				new FuncPrintln()), SourceLocation.NATIVE);
-		addVariable("chr",
-				new Variable("chr", VarType.FUNCTION, new FuncChr()),
-				SourceLocation.NATIVE);
-		addVariable("ord",
-				new Variable("ord", VarType.FUNCTION, new FuncOrd()),
-				SourceLocation.NATIVE);
-		addVariable("toString", new Variable("toString", VarType.FUNCTION,
-				new FuncTostring()), SourceLocation.NATIVE);
+		addVariable("eval", new Variable("eval", VarType.FUNCTION, new FuncEval()), SourceLocation.NATIVE);
+		addVariable("output", new Variable("output", VarType.FUNCTION, new FuncOutput()), SourceLocation.NATIVE);
+		addVariable("exit", new Variable("exit", VarType.FUNCTION, new FuncExit()), SourceLocation.NATIVE);
+		addVariable("print", new Variable("print", VarType.FUNCTION, new FuncPrint()), SourceLocation.NATIVE);
+		addVariable("println", new Variable("println", VarType.FUNCTION, new FuncPrintln()), SourceLocation.NATIVE);
+		addVariable("chr", new Variable("chr", VarType.FUNCTION, new FuncChr()), SourceLocation.NATIVE);
+		addVariable("ord", new Variable("ord", VarType.FUNCTION, new FuncOrd()), SourceLocation.NATIVE);
+		addVariable("toString", new Variable("toString", VarType.FUNCTION, new FuncTostring()), SourceLocation.NATIVE);
 	}
 
 	// 调用栈
@@ -228,9 +217,7 @@ public class ScriptVM {
 		StringBuilder sb = new StringBuilder();
 		for (int i = callingStack.size() - 1; i >= 1; --i) {
 			RuntimeLocation rl = callingStack.get(i);
-			sb.append("\t").append("at ").append(rl.module).append("(")
-					.append(rl.sl.file).append(":").append(rl.sl.line)
-					.append(")\n");
+			sb.append("\t").append("at ").append(rl.module).append("(").append(rl.sl.file).append(":").append(rl.sl.line).append(")\n");
 		}
 		return sb.toString();
 	}

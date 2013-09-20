@@ -107,4 +107,8 @@ public class TokenStream {
 		}
 		return t;
 	}
+
+	public void clearHistory() {
+		unreaded.clear();
+	}
 }

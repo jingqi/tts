@@ -1,5 +1,6 @@
 package tts.grammar.scanner;
 
+import tts.lexer.scanner.TokenStream;
 import tts.util.SourceLocation;
 
 public class GrammarException extends RuntimeException {
@@ -8,9 +9,12 @@ public class GrammarException extends RuntimeException {
 
 	private SourceLocation sl;
 
+	public GrammarException(String description, TokenStream ts) {
+		this(description, ts.getFile(), ts.getLine());
+	}
+
 	public GrammarException(String description, String file, int line) {
-		super(description);
-		sl = new SourceLocation(file, line);
+		this(description, new SourceLocation(file, line));
 	}
 
 	public GrammarException(String description, SourceLocation sl) {
