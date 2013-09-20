@@ -47,5 +47,6 @@ public class ScriptEngine {
 			System.err.println(e.getMessage());
 			System.err.println(e.toString());
 		}
+		vm.flush();
 	}
 }

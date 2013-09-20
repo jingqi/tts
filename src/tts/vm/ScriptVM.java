@@ -71,6 +71,14 @@ public class ScriptVM {
 		}
 	}
 
+	public void flush() {
+		try {
+			textOutput.flush();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public Frame getMainFrame() {
 		return mainFrame;
 	}

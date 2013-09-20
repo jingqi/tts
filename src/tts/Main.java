@@ -8,7 +8,7 @@ public class Main {
 		System.out.println("tts InputFile [-o OutputFile]");
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main1(String[] args) throws IOException {/*
 		// 检测目录中的测试文件
 		String dir = "./test";
 		File[] fs = new File(dir).listFiles();
@@ -19,17 +19,17 @@ public class Main {
 				en.run(f);
 				System.out.print('.');
 			}
-		}
+		}*/
 
-		/*
+
 		// 单独跑某个文件
-		String s = "test/test_import.tts";
+		String s = "E:\\data\\workspace\\java\\grape\\others\\primeval_stack.tts";
 		ScriptEngine en = new ScriptEngine();
 		en.run(new File(s));
-		*/
+
 	}
 
-	public static void main1(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 		// 处理参数
 		String input = null, output = null;
 		for (int i = 0, len = args.length; i < len; ++i) {
