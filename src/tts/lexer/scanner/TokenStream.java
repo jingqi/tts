@@ -1,15 +1,15 @@
 package tts.lexer.scanner;
 
 import java.io.IOException;
-import java.util.Stack;
+import java.util.LinkedList;
 
 import tts.lexer.scanner.Token.TokenType;
 
 public class TokenStream {
 
 	private LexerScanner scanner;
-	private Stack<Token> readed = new Stack<Token>();
-	private Stack<Token> unreaded = new Stack<Token>();
+	private LinkedList<Token> readed = new LinkedList<Token>();
+	private LinkedList<Token> unreaded = new LinkedList<Token>();
 
 	public TokenStream(LexerScanner scanner) {
 		this.scanner = scanner;
