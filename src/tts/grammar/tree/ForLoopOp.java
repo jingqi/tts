@@ -1,9 +1,9 @@
 package tts.grammar.tree;
 
 import tts.eval.*;
+import tts.eval.scope.Scope;
 import tts.util.SourceLocation;
 import tts.vm.Frame;
-import tts.vm.Scope;
 import tts.vm.rtexcept.*;
 
 public final class ForLoopOp extends Op {

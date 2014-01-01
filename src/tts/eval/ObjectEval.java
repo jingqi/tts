@@ -1,10 +1,19 @@
 package tts.eval;
 
-import tts.util.SourceLocation;
+import tts.eval.scope.EvalSlot;
+
 
 public abstract class ObjectEval implements IValueEval {
 
-	public abstract IValueEval member(String name, SourceLocation sl);
+	/**
+	 * 取右值成员
+	 */
+	public abstract IValueEval member(String name);
+
+	/**
+	 * 取左值成员
+	 */
+	public abstract EvalSlot lvalueMember(String name);
 
 	@Override
 	public EvalType getType() {

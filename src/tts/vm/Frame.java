@@ -2,6 +2,8 @@ package tts.vm;
 
 import java.util.ArrayList;
 
+import tts.eval.scope.EvalSlot;
+import tts.eval.scope.Scope;
 import tts.util.*;
 
 /**
@@ -79,11 +81,11 @@ public final class Frame {
 	    return new CallingStack(ret);
 	}
 
-	public Variable getVariable(String name, SourceLocation sl) {
-		return currentScope().getVariableUpward(name, sl);
+	public EvalSlot getVariable(String name) {
+		return currentScope().getVariableUpward(name);
 	}
 
-	public void addVariable(String name, Variable var, SourceLocation sl) {
+	public void addVariable(String name, EvalSlot var, SourceLocation sl) {
 		currentScope().addVariable(name, var, sl);
 	}
 }

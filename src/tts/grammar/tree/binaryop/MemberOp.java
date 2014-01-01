@@ -9,8 +9,9 @@ import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class MemberOp extends Op {
 
-	Op body;
-	String member;
+	private Op body;
+	private String member;
+	private final boolean lvalue = false;
 
 	public MemberOp(Op body, String member) {
 		super(body.getSourceLocation());
@@ -26,7 +27,7 @@ public final class MemberOp extends Op {
 		else if (!(b instanceof ObjectEval))
 			throw new ScriptRuntimeException("Value/object has no such member", body.getSourceLocation());
 
-		return ((ObjectEval) b).member(member, getSourceLocation());
+		return ((ObjectEval) b).member(member);
 	}
 
 	@Override

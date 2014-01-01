@@ -3,6 +3,7 @@ package tts.eval;
 import java.util.*;
 import java.util.Map.Entry;
 
+import tts.eval.scope.EvalSlot;
 import tts.util.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
@@ -144,7 +145,7 @@ public final class MapEval extends ObjectEval {
 	}
 
 	@Override
-	public IValueEval member(String name, SourceLocation sl) {
+	public IValueEval member(String name) {
 		if (name.equals("size"))
 			return new FuncSize();
 		if (name.equals("get"))
@@ -157,6 +158,11 @@ public final class MapEval extends ObjectEval {
 			return new FuncValues();
 		if (name.equals("clone"))
 			return new FuncClone();
-		throw new ScriptRuntimeException("map no such member: " + name, sl);
+		return null;
+	}
+
+	@Override
+	public EvalSlot lvalueMember(String name) {
+		return null;
 	}
 }

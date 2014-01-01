@@ -2,10 +2,10 @@ package tts.grammar.tree.binaryop;
 
 
 import tts.eval.*;
+import tts.eval.scope.EvalSlot;
 import tts.grammar.tree.Op;
 import tts.util.SourceLocation;
 import tts.vm.Frame;
-import tts.vm.Variable;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**
@@ -26,8 +26,8 @@ public final class AssignOp extends Op {
 		this(name, value, new SourceLocation(file, line));
 	}
 
-	public static void assign(Variable v, IValueEval vv, SourceLocation sl) {
-		switch (v.getType()) {
+	public static void assign(EvalSlot v, IValueEval vv, SourceLocation sl) {
+		switch (v.getVarType()) {
 		case VAR:
 			v.setValue(vv);
 			break;
@@ -93,13 +93,13 @@ public final class AssignOp extends Op {
 
 		default:
 			throw new ScriptRuntimeException(
-					"Assignment not supported for type " + v.getType().name, sl);
+					"Assignment not supported for type " + v.getVarType().name, sl);
 		}
 	}
 
 	@Override
 	public IValueEval eval(Frame f) {
-		Variable v = f.getVariable(varname, this.getSourceLocation());
+		EvalSlot v = f.getVariable(varname);
 		IValueEval vv = value.eval(f);
 		assign(v, vv, getSourceLocation());
 		return v.getValue();

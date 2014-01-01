@@ -1,10 +1,11 @@
 package tts.grammar.tree;
 
 import tts.eval.*;
+import tts.eval.scope.EvalSlot;
+import tts.eval.scope.VarType;
 import tts.grammar.tree.binaryop.AssignOp;
 import tts.util.SourceLocation;
-import tts.vm.*;
-import tts.vm.Variable.VarType;
+import tts.vm.Frame;
 
 public final class DefinationOp extends Op {
 
@@ -38,7 +39,7 @@ public final class DefinationOp extends Op {
 
 	@Override
 	public IValueEval eval(Frame f) {
-		Variable v = new Variable(name, type, null);
+		EvalSlot v = new EvalSlot(type, null);
 		if (value != null)
 			AssignOp.assign(v, value.eval(f), getSourceLocation());
 		else

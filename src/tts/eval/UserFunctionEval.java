@@ -3,11 +3,11 @@ package tts.eval;
 import java.util.ArrayList;
 import java.util.List;
 
+import tts.eval.scope.*;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.binaryop.AssignOp;
 import tts.util.SourceLocation;
-import tts.vm.*;
-import tts.vm.Variable.VarType;
+import tts.vm.Frame;
 import tts.vm.rtexcept.*;
 
 /**
@@ -54,7 +54,7 @@ public final class UserFunctionEval extends FunctionEval {
 			// 设置参数
 			for (int i = 0, size = params.size(); i < size; ++i) {
 				ParamInfo p = params.get(i);
-				Variable v = new Variable(p.name, p.type, null);
+				EvalSlot v = new EvalSlot(p.type, null);
 				AssignOp.assign(v, args.get(i), sl);
 				f.addVariable(p.name, v, sl);
 			}

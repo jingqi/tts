@@ -6,6 +6,7 @@ import java.util.Map;
 
 import tts.eval.IValueEval;
 import tts.eval.ModuleScopeEval;
+import tts.eval.scope.*;
 import tts.grammar.scanner.GrammarScanner;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.OpList;
@@ -21,7 +22,6 @@ import tts.vm.BuiltinApi.FuncOutput;
 import tts.vm.BuiltinApi.FuncPrint;
 import tts.vm.BuiltinApi.FuncPrintln;
 import tts.vm.BuiltinApi.FuncTostring;
-import tts.vm.Variable.VarType;
 import tts.vm.rtexcept.*;
 
 /**
@@ -91,13 +91,13 @@ public class ScriptVM {
 			return;
 
 		globalScope = new Scope(null);
-		globalScope.addVariable("output", new Variable("output", VarType.FUNCTION, new FuncOutput()), SourceLocation.NATIVE);
-		globalScope.addVariable("exit", new Variable("exit", VarType.FUNCTION, new FuncExit()), SourceLocation.NATIVE);
-		globalScope.addVariable("print", new Variable("print", VarType.FUNCTION, new FuncPrint()), SourceLocation.NATIVE);
-		globalScope.addVariable("println", new Variable("println", VarType.FUNCTION, new FuncPrintln()), SourceLocation.NATIVE);
-		globalScope.addVariable("chr", new Variable("chr", VarType.FUNCTION, new FuncChr()), SourceLocation.NATIVE);
-		globalScope.addVariable("ord", new Variable("ord", VarType.FUNCTION, new FuncOrd()), SourceLocation.NATIVE);
-		globalScope.addVariable("toString", new Variable("toString", VarType.FUNCTION, new FuncTostring()), SourceLocation.NATIVE);
+		globalScope.addVariable("output", new EvalSlot(VarType.FUNCTION, new FuncOutput()), SourceLocation.NATIVE);
+		globalScope.addVariable("exit", new EvalSlot(VarType.FUNCTION, new FuncExit()), SourceLocation.NATIVE);
+		globalScope.addVariable("print", new EvalSlot(VarType.FUNCTION, new FuncPrint()), SourceLocation.NATIVE);
+		globalScope.addVariable("println", new EvalSlot(VarType.FUNCTION, new FuncPrintln()), SourceLocation.NATIVE);
+		globalScope.addVariable("chr", new EvalSlot(VarType.FUNCTION, new FuncChr()), SourceLocation.NATIVE);
+		globalScope.addVariable("ord", new EvalSlot(VarType.FUNCTION, new FuncOrd()), SourceLocation.NATIVE);
+		globalScope.addVariable("toString", new EvalSlot(VarType.FUNCTION, new FuncTostring()), SourceLocation.NATIVE);
 
 		mainFrame = new Frame(this);
 		mainFrame.pushScope(globalScope);

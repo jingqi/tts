@@ -1,9 +1,10 @@
 package tts.grammar.tree;
 
 import tts.eval.IValueEval;
+import tts.eval.scope.EvalSlot;
+import tts.eval.scope.VarType;
 import tts.util.SourceLocation;
-import tts.vm.*;
-import tts.vm.Variable.VarType;
+import tts.vm.Frame;
 
 public final class ImportOp extends Op {
 
@@ -31,7 +32,7 @@ public final class ImportOp extends Op {
 	public IValueEval eval(Frame f) {
 		IValueEval vv = f.getVM().importModule(f, path, getSourceLocation());
 		String as_name = getFileName(path);
-		Variable v = new Variable(as_name, VarType.VAR, vv);
+		EvalSlot v = new EvalSlot(VarType.VAR, vv);
 		f.addVariable(as_name, v, getSourceLocation());
 		return vv;
 	}

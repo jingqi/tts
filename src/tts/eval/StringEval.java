@@ -2,6 +2,7 @@ package tts.eval;
 
 import java.util.List;
 
+import tts.eval.scope.EvalSlot;
 import tts.util.CharList;
 import tts.util.SourceLocation;
 import tts.vm.Frame;
@@ -239,7 +240,7 @@ public final class StringEval extends ObjectEval {
 	}
 
 	@Override
-	public IValueEval member(String name, SourceLocation sl) {
+	public IValueEval member(String name) {
 		if (name.equals("length"))
 			return new FuncLen();
 		else if (name.equals("charAt"))
@@ -264,6 +265,11 @@ public final class StringEval extends ObjectEval {
 			return new FuncAppend();
 		else if (name.equals("clone"))
 			return new FuncClone();
-		throw new ScriptRuntimeException("string no such member: " + name, sl);
+		return null;
+	}
+
+	@Override
+	public EvalSlot lvalueMember(String name) {
+		return null;
 	}
 }

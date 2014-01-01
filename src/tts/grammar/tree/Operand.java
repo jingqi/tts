@@ -1,9 +1,9 @@
 package tts.grammar.tree;
 
 import tts.eval.*;
+import tts.eval.scope.EvalSlot;
 import tts.util.SourceLocation;
 import tts.vm.Frame;
-import tts.vm.Variable;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**
@@ -58,11 +58,11 @@ public final class Operand extends Op {
 
 		case VARIABLE:
 			VariableEval ve = (VariableEval) eval;
-			Variable v = f.getVariable(ve.getName(), getSourceLocation());
+			EvalSlot v = f.getVariable(ve.getName());
 			if (v == null)
 				throw new ScriptRuntimeException("Variable " + ve.getName() + " not found", getSourceLocation());
 
-			IValueEval ret = f.getVariable(ve.getName(), getSourceLocation()).getValue();
+			IValueEval ret = v.getValue();
 			if (ret == null)
 				throw new ScriptRuntimeException("Variable " + ve.getName() + " not initialized", getSourceLocation());
 			return ret;

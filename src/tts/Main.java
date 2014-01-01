@@ -23,7 +23,7 @@ public class Main {
 
 
 		// 单独跑某个文件
-		String s = "E:\\data\\workspace\\java\\grape\\others\\primeval_stack.tts";
+		String s = "D:\\data\\wks\\java\\grape\\others\\primeval_stack.tts";
 		ScriptEngine en = new ScriptEngine();
 		en.run(new File(s));
 

@@ -2,6 +2,7 @@ package tts.eval;
 
 import java.util.*;
 
+import tts.eval.scope.EvalSlot;
 import tts.util.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
@@ -167,7 +168,7 @@ public final class ArrayEval extends ObjectEval {
 	}
 
 	@Override
-	public IValueEval member(String name, SourceLocation sl) {
+	public IValueEval member(String name) {
 		if (name.equals("size"))
 			return new FuncSize();
 		else if (name.equals("get"))
@@ -184,6 +185,11 @@ public final class ArrayEval extends ObjectEval {
 			return new FuncClear();
 		else if (name.equals("clone"))
 			return new FuncClone();
-		throw new ScriptRuntimeException("Array has no such member: " + name, sl);
+		return null;
+	}
+
+	@Override
+	public EvalSlot lvalueMember(String name) {
+		return null;
 	}
 }

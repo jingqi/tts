@@ -2,8 +2,8 @@ package tts.grammar.tree;
 
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
+import tts.eval.scope.Scope;
 import tts.vm.Frame;
-import tts.vm.Scope;
 import tts.vm.rtexcept.ScriptLogicException;
 
 public final class ScopeOp extends Op {
