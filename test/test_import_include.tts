@@ -1,11 +1,7 @@
-$$ function assert(var b) {
-$$  if (!b)
-ERROR
-$$ }
 $${
 
-import "_pice.txt";
+import "_pice.inl";
 assert(_pice.a == 1);
-include "_pice.txt";
+include "_pice.inl";
 assert(a == 1);
 }$$

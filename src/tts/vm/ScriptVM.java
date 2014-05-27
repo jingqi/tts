@@ -1,12 +1,19 @@
 package tts.vm;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
 import tts.eval.IValueEval;
 import tts.eval.ModuleScopeEval;
-import tts.eval.scope.*;
+import tts.eval.scope.EvalSlot;
+import tts.eval.scope.Scope;
+import tts.eval.scope.VarType;
 import tts.grammar.scanner.GrammarScanner;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.OpList;
@@ -15,6 +22,7 @@ import tts.lexer.scanner.TokenStream;
 import tts.lexer.stream.CharArrayScanReader;
 import tts.trace.SourceLocation;
 import tts.util.PrintStreamWriter;
+import tts.vm.BuiltinApi.FuncAssert;
 import tts.vm.BuiltinApi.FuncChr;
 import tts.vm.BuiltinApi.FuncExit;
 import tts.vm.BuiltinApi.FuncOrd;
@@ -22,7 +30,10 @@ import tts.vm.BuiltinApi.FuncOutput;
 import tts.vm.BuiltinApi.FuncPrint;
 import tts.vm.BuiltinApi.FuncPrintln;
 import tts.vm.BuiltinApi.FuncTostring;
-import tts.vm.rtexcept.*;
+import tts.vm.rtexcept.BreakLoopException;
+import tts.vm.rtexcept.ContinueLoopException;
+import tts.vm.rtexcept.ReturnFuncException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**
  * 脚本运行虚拟机
@@ -98,6 +109,7 @@ public class ScriptVM {
 		globalScope.addVariable("chr", new EvalSlot(VarType.FUNCTION, new FuncChr()), SourceLocation.NATIVE);
 		globalScope.addVariable("ord", new EvalSlot(VarType.FUNCTION, new FuncOrd()), SourceLocation.NATIVE);
 		globalScope.addVariable("toString", new EvalSlot(VarType.FUNCTION, new FuncTostring()), SourceLocation.NATIVE);
+		globalScope.addVariable("assert", new EvalSlot(VarType.FUNCTION, new FuncAssert()), SourceLocation.NATIVE);
 
 		mainFrame = new Frame(this);
 		mainFrame.pushScope(globalScope);

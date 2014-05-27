@@ -1,21 +1,28 @@
 package tts.vm;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 
-import tts.eval.*;
+import tts.eval.BooleanEval;
+import tts.eval.IValueEval;
+import tts.eval.IntegerEval;
+import tts.eval.StringEval;
+import tts.eval.VoidEval;
 import tts.eval.function.FunctionEval;
 import tts.trace.SourceLocation;
 import tts.vm.rtexcept.ExitException;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
-class BuiltinApi {
+final class BuiltinApi {
 
 	private BuiltinApi() {
 	}
 
 	// 更改输出文件
-	static class FuncOutput extends FunctionEval {
+	static final class FuncOutput extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
@@ -41,7 +48,7 @@ class BuiltinApi {
 	}
 
 	// 退出程序
-	static class FuncExit extends FunctionEval {
+	static final class FuncExit extends FunctionEval {
 
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
@@ -51,7 +58,8 @@ class BuiltinApi {
 		}
 	}
 
-	static class FuncPrint extends FunctionEval {
+	// 打印
+	static final class FuncPrint extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i) {
@@ -66,7 +74,8 @@ class BuiltinApi {
 		}
 	}
 
-	static class FuncPrintln extends FunctionEval {
+	// 打印
+	static final class FuncPrintln extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i) {
@@ -82,7 +91,8 @@ class BuiltinApi {
 		}
 	}
 
-	static class FuncChr extends FunctionEval {
+	// 编码转字符
+	static final class FuncChr extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1 || args.get(0).getType() != EvalType.INTEGER)
@@ -94,7 +104,8 @@ class BuiltinApi {
 		}
 	}
 
-	static class FuncOrd extends FunctionEval {
+	// 字符转编码
+	static final class FuncOrd extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1 || args.get(0).getType() != EvalType.STRING)
@@ -106,7 +117,8 @@ class BuiltinApi {
 		}
 	}
 
-	static class FuncTostring extends FunctionEval {
+	// 字符串化
+	static final class FuncTostring extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
@@ -116,6 +128,24 @@ class BuiltinApi {
 			if (ve instanceof StringEval)
 				return ve;
 			return new StringEval(ve.toString());
+		}
+	}
+
+	// 断言
+	static final class FuncAssert extends FunctionEval {
+
+		@Override
+		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
+			if (args.size() != 1)
+				throw new ScriptRuntimeException("Need 1 boolean argument", sl);
+
+			IValueEval ve = args.get(0);
+			if (!(ve instanceof BooleanEval))
+				throw new ScriptRuntimeException("Need 1 boolean argument", sl);
+			BooleanEval be = (BooleanEval) ve;
+			if (!be.getValue())
+				throw new ScriptRuntimeException("Asstion failed", sl);
+			return VoidEval.instance;
 		}
 	}
 }
