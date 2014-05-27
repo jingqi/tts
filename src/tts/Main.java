@@ -1,14 +1,17 @@
 package tts;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 public class Main {
 
 	private static void printInfo() {
-		System.out.println("tts InputFile [-o OutputFile]");
+		System.out.println("tts input_file [-o output_file]");
 	}
 
-	public static void main1(String[] args) throws IOException {/*
+	public static void main(String[] args) throws IOException {
 		// 检测目录中的测试文件
 		String dir = "./test";
 		File[] fs = new File(dir).listFiles();
@@ -19,17 +22,17 @@ public class Main {
 				en.run(f);
 				System.out.print('.');
 			}
-		}*/
+		}
 
-
+		/*
 		// 单独跑某个文件
 		String s = "D:\\data\\wks\\java\\grape\\others\\primeval_stack.tts";
 		ScriptEngine en = new ScriptEngine();
 		en.run(new File(s));
-
+		 */
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main1(String[] args) throws IOException {
 		// 处理参数
 		String input = null, output = null;
 		for (int i = 0, len = args.length; i < len; ++i) {

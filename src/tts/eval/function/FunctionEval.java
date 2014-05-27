@@ -1,8 +1,9 @@
-package tts.eval;
+package tts.eval.function;
 
 import java.util.List;
 
-import tts.util.SourceLocation;
+import tts.eval.IValueEval;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
 public abstract class FunctionEval implements IValueEval {

@@ -4,7 +4,7 @@ import tts.eval.*;
 import tts.eval.scope.EvalSlot;
 import tts.eval.scope.VarType;
 import tts.grammar.tree.binaryop.AssignOp;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
 public final class DefinationOp extends Op {

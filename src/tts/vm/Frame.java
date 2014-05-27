@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import tts.eval.scope.EvalSlot;
 import tts.eval.scope.Scope;
+import tts.trace.*;
 import tts.util.*;
 
 /**

@@ -1,6 +1,6 @@
 package tts.vm.rtexcept;
 
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 
 /**
  * 脚本运行过程中的异常

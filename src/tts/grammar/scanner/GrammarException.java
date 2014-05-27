@@ -1,7 +1,7 @@
 package tts.grammar.scanner;
 
 import tts.lexer.scanner.TokenStream;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 
 public class GrammarException extends RuntimeException {
 

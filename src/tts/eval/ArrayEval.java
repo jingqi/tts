@@ -2,8 +2,9 @@ package tts.eval;
 
 import java.util.*;
 
+import tts.eval.function.FunctionEval;
 import tts.eval.scope.EvalSlot;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 

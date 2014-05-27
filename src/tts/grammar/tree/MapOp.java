@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import tts.eval.IValueEval;
 import tts.eval.MapEval;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
 public class MapOp extends Op {

@@ -1,6 +1,6 @@
 package tts.lexer.scanner;
 
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 
 public class LexerException extends RuntimeException {
 

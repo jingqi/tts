@@ -4,7 +4,8 @@ import java.io.*;
 import java.util.List;
 
 import tts.eval.*;
-import tts.util.SourceLocation;
+import tts.eval.function.FunctionEval;
+import tts.trace.SourceLocation;
 import tts.vm.rtexcept.ExitException;
 import tts.vm.rtexcept.ScriptRuntimeException;
 

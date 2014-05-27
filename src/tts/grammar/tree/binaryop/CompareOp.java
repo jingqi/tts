@@ -4,7 +4,7 @@ import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.Operand;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 

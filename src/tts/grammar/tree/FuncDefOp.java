@@ -3,8 +3,9 @@ package tts.grammar.tree;
 import java.util.ArrayList;
 
 import tts.eval.*;
-import tts.eval.UserFunctionEval.ParamInfo;
-import tts.util.SourceLocation;
+import tts.eval.function.UserFunctionEval;
+import tts.eval.function.UserFunctionEval.ParamInfo;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
 public class FuncDefOp extends Op {

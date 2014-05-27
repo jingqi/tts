@@ -4,7 +4,7 @@ package tts.grammar.tree.binaryop;
 import tts.eval.*;
 import tts.eval.scope.EvalSlot;
 import tts.grammar.tree.Op;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 

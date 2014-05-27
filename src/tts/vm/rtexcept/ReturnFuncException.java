@@ -1,7 +1,7 @@
 package tts.vm.rtexcept;
 
 import tts.eval.IValueEval;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 
 /**
  * return from function

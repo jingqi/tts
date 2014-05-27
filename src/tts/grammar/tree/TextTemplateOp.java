@@ -3,7 +3,7 @@ package tts.grammar.tree;
 import java.util.ArrayList;
 
 import tts.eval.*;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
 public final class TextTemplateOp extends Op {

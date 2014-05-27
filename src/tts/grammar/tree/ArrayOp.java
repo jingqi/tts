@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import tts.eval.ArrayEval;
 import tts.eval.IValueEval;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
 public final class ArrayOp extends Op {

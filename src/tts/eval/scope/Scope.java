@@ -3,7 +3,7 @@ package tts.eval.scope;
 import java.util.HashMap;
 import java.util.Map;
 
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**

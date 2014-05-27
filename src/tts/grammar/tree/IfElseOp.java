@@ -1,7 +1,7 @@
 package tts.grammar.tree;
 
 import tts.eval.*;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
 

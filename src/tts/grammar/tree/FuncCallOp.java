@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
+import tts.eval.function.FunctionEval;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptNullPointerException;
 import tts.vm.rtexcept.ScriptRuntimeException;

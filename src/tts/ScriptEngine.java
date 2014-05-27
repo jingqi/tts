@@ -5,7 +5,7 @@ import java.io.Writer;
 
 import tts.grammar.scanner.GrammarException;
 import tts.lexer.scanner.LexerException;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.ScriptVM;
 import tts.vm.rtexcept.*;
 

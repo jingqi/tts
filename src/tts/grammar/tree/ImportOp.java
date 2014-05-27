@@ -3,7 +3,7 @@ package tts.grammar.tree;
 import tts.eval.IValueEval;
 import tts.eval.scope.EvalSlot;
 import tts.eval.scope.VarType;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
 public final class ImportOp extends Op {

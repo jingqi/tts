@@ -1,7 +1,7 @@
 package tts.grammar.tree;
 
 import tts.eval.IValueEval;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.BreakLoopException;
 

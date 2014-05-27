@@ -3,7 +3,7 @@ package tts.grammar.scanner;
 import java.util.ArrayList;
 
 import tts.eval.*;
-import tts.eval.UserFunctionEval.ParamInfo;
+import tts.eval.function.UserFunctionEval.ParamInfo;
 import tts.eval.scope.VarType;
 import tts.grammar.tree.*;
 import tts.grammar.tree.binaryop.*;
@@ -11,7 +11,7 @@ import tts.lexer.scanner.*;
 import tts.lexer.scanner.Token.TokenType;
 import tts.lexer.stream.CharArrayScanReader;
 import tts.lexer.stream.IScanReader;
-import tts.util.SourceLocation;
+import tts.trace.SourceLocation;
 
 /**
  * 语法分析，并构建出语法树
