@@ -13,7 +13,7 @@ import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class IncludeOp extends Op {
 
-	private final Op path;
+	private Op path;
 
 	public IncludeOp(Op path, String file, int line) {
 		super(new SourceLocation(file, line));
@@ -46,11 +46,12 @@ public final class IncludeOp extends Op {
 
 	@Override
 	public Op optimize() {
+		path = path.optimize();
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "include \"" + path + "\"";
+		return "include " + path.toString() + ";";
 	}
 }

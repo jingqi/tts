@@ -35,6 +35,7 @@ import tts.grammar.tree.binaryop.MathOp;
 import tts.grammar.tree.binaryop.MemberOp;
 import tts.grammar.tree.declare.ImportOp;
 import tts.grammar.tree.declare.IncludeOp;
+import tts.grammar.tree.declare.ProduceOp;
 import tts.grammar.tree.loop.DoWhileLoopOp;
 import tts.grammar.tree.loop.ForLoopOp;
 import tts.grammar.tree.loop.WhileLoop;
@@ -100,6 +101,8 @@ public class GrammarScanner {
 			ret = includeDeclare();
 		if (ret == null)
 			ret = importDeclare();
+		if (ret == null)
+			ret = produceDeclare();
 		return ret;
 	}
 
@@ -910,6 +913,19 @@ public class GrammarScanner {
 		if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
 			throw new GrammarException("Token ';' expected", tokenStream);
 		return new ImportOp(path, as, new SourceLocation(t.file, t.line));
+	}
+
+	private Op produceDeclare() {
+		Token t = tokenStream.match(TokenType.KEY_WORD, "produce");
+		if (t == null)
+			return null;
+
+		Op path = expression();
+		if (path == null)
+			throw new GrammarException("Produce path expected", tokenStream);
+		if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
+			throw new GrammarException("Token ';' expected", tokenStream);
+		return new ProduceOp(path, t.file, t.line);
 	}
 
 	// function = 'function' name '(' (type param(',' type param)*)? ')'

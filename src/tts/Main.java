@@ -11,7 +11,7 @@ public class Main {
 		System.out.println("tts input_file [-o output_file]");
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main1(String[] args) throws IOException {
 		// 检测目录中的测试文件
 		String dir = "./test";
 		File[] fs = new File(dir).listFiles();
@@ -32,7 +32,7 @@ public class Main {
 		 */
 	}
 
-	public static void main1(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 		// 处理参数
 		String input = null, output = null;
 		for (int i = 0, len = args.length; i < len; ++i) {

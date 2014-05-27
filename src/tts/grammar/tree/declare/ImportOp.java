@@ -11,7 +11,7 @@ import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class ImportOp extends Op {
 
-	private final Op path;
+	private Op path;
 	private final String as;
 
 	public ImportOp(Op path, String as, SourceLocation sl) {
@@ -52,9 +52,15 @@ public final class ImportOp extends Op {
 	}
 
 	@Override
+	public Op optimize() {
+		path = path.optimize();
+		return this;
+	}
+
+	@Override
 	public String toString() {
-	    StringBuilder sb = new StringBuilder("import ");
-	    sb.append(path);
-	    return sb.toString();
+		if (as == null)
+			return "import " + path.toString() + ";";
+		return "import " + path.toString() + " as " + as + ";";
 	}
 }
