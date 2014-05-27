@@ -44,16 +44,27 @@ public class ScriptVM {
 	private Writer textOutput;
 
 	// 全局作用域
-	private Scope globalScope;
+	private final Scope globalScope = new Scope(null);
 
 	// 主线程栈帧
-	private Frame mainFrame;
+	private final Frame mainFrame = new Frame(this);
 
 	// 其他模块
-	private final Map<String, IValueEval> modules = new HashMap<String, IValueEval>();
+	private final Map<String, ModuleScopeEval> modules = new HashMap<String, ModuleScopeEval>();
 
 	public ScriptVM() {
 		this(new PrintStreamWriter(System.out));
+
+		globalScope.addVariable("output", new EvalSlot(VarType.FUNCTION, new FuncOutput()), SourceLocation.NATIVE);
+		globalScope.addVariable("exit", new EvalSlot(VarType.FUNCTION, new FuncExit()), SourceLocation.NATIVE);
+		globalScope.addVariable("print", new EvalSlot(VarType.FUNCTION, new FuncPrint()), SourceLocation.NATIVE);
+		globalScope.addVariable("println", new EvalSlot(VarType.FUNCTION, new FuncPrintln()), SourceLocation.NATIVE);
+		globalScope.addVariable("chr", new EvalSlot(VarType.FUNCTION, new FuncChr()), SourceLocation.NATIVE);
+		globalScope.addVariable("ord", new EvalSlot(VarType.FUNCTION, new FuncOrd()), SourceLocation.NATIVE);
+		globalScope.addVariable("toString", new EvalSlot(VarType.FUNCTION, new FuncTostring()), SourceLocation.NATIVE);
+		globalScope.addVariable("assert", new EvalSlot(VarType.FUNCTION, new FuncAssert()), SourceLocation.NATIVE);
+
+		mainFrame.pushScope(globalScope);
 	}
 
 	public ScriptVM(Writer textOutput) {
@@ -94,30 +105,7 @@ public class ScriptVM {
 		return mainFrame;
 	}
 
-	/**
-	 * 初始化执行环境
-	 */
-	public void initExecEnv() {
-		if (mainFrame != null)
-			return;
-
-		globalScope = new Scope(null);
-		globalScope.addVariable("output", new EvalSlot(VarType.FUNCTION, new FuncOutput()), SourceLocation.NATIVE);
-		globalScope.addVariable("exit", new EvalSlot(VarType.FUNCTION, new FuncExit()), SourceLocation.NATIVE);
-		globalScope.addVariable("print", new EvalSlot(VarType.FUNCTION, new FuncPrint()), SourceLocation.NATIVE);
-		globalScope.addVariable("println", new EvalSlot(VarType.FUNCTION, new FuncPrintln()), SourceLocation.NATIVE);
-		globalScope.addVariable("chr", new EvalSlot(VarType.FUNCTION, new FuncChr()), SourceLocation.NATIVE);
-		globalScope.addVariable("ord", new EvalSlot(VarType.FUNCTION, new FuncOrd()), SourceLocation.NATIVE);
-		globalScope.addVariable("toString", new EvalSlot(VarType.FUNCTION, new FuncTostring()), SourceLocation.NATIVE);
-		globalScope.addVariable("assert", new EvalSlot(VarType.FUNCTION, new FuncAssert()), SourceLocation.NATIVE);
-
-		mainFrame = new Frame(this);
-		mainFrame.pushScope(globalScope);
-	}
-
 	public IValueEval importModule(Frame f, String module, SourceLocation sl) {
-
-		initExecEnv();
 
 		IValueEval ret = null;
 		File mfile = new File(module);
@@ -152,7 +140,7 @@ public class ScriptVM {
 
 		String abspath = p.getAbsolutePath();
 		p = new File(abspath);
-		IValueEval ret = modules.get(abspath);
+		ModuleScopeEval ret = modules.get(abspath);
 		if (ret != null)
 			return ret;
 

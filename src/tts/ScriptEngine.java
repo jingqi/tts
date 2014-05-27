@@ -7,7 +7,11 @@ import tts.grammar.scanner.GrammarException;
 import tts.lexer.scanner.LexerException;
 import tts.trace.SourceLocation;
 import tts.vm.ScriptVM;
-import tts.vm.rtexcept.*;
+import tts.vm.rtexcept.BreakLoopException;
+import tts.vm.rtexcept.ContinueLoopException;
+import tts.vm.rtexcept.ExitException;
+import tts.vm.rtexcept.ReturnFuncException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public class ScriptEngine {
 
@@ -23,7 +27,6 @@ public class ScriptEngine {
 
 	public void run(File input) {
 		try {
-			vm.initExecEnv();
 			vm.importModule(vm.getMainFrame(), input.getPath(), SourceLocation.NATIVE);
 		} catch (BreakLoopException e) {
 			System.err.println("Break without loop:");

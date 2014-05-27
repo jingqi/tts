@@ -4,8 +4,9 @@ import java.util.ArrayList;
 
 import tts.eval.scope.EvalSlot;
 import tts.eval.scope.Scope;
-import tts.trace.*;
-import tts.util.*;
+import tts.trace.CallingStack;
+import tts.trace.RuntimeLocation;
+import tts.trace.SourceLocation;
 
 /**
  * 线程调用栈帧

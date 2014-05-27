@@ -1,7 +1,8 @@
 package tts.grammar.tree.binaryop;
 
-import tts.eval.*;
+import tts.eval.IValueEval;
 import tts.eval.IValueEval.EvalType;
+import tts.eval.ObjectEval;
 import tts.grammar.tree.Op;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptNullPointerException;
@@ -11,7 +12,6 @@ public final class MemberOp extends Op {
 
 	private Op body;
 	private String member;
-	private final boolean lvalue = false;
 
 	public MemberOp(Op body, String member) {
 		super(body.getSourceLocation());

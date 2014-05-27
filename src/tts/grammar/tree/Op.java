@@ -2,7 +2,6 @@ package tts.grammar.tree;
 
 
 import tts.eval.IValueEval;
-import tts.grammar.scanner.GrammarException;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
