@@ -22,14 +22,14 @@ import tts.lexer.scanner.TokenStream;
 import tts.lexer.stream.CharArrayScanReader;
 import tts.trace.SourceLocation;
 import tts.util.PrintStreamWriter;
-import tts.vm.BuiltinApi.FuncAssert;
-import tts.vm.BuiltinApi.FuncChr;
-import tts.vm.BuiltinApi.FuncExit;
-import tts.vm.BuiltinApi.FuncOrd;
-import tts.vm.BuiltinApi.FuncOutput;
-import tts.vm.BuiltinApi.FuncPrint;
-import tts.vm.BuiltinApi.FuncPrintln;
-import tts.vm.BuiltinApi.FuncTostring;
+import tts.vm.BuiltinFuncs.Assert;
+import tts.vm.BuiltinFuncs.Chr;
+import tts.vm.BuiltinFuncs.Exit;
+import tts.vm.BuiltinFuncs.Ord;
+import tts.vm.BuiltinFuncs.Print;
+import tts.vm.BuiltinFuncs.Println;
+import tts.vm.BuiltinFuncs.Redirect;
+import tts.vm.BuiltinFuncs.ToString;
 import tts.vm.rtexcept.BreakLoopException;
 import tts.vm.rtexcept.ContinueLoopException;
 import tts.vm.rtexcept.ReturnFuncException;
@@ -55,14 +55,14 @@ public class ScriptVM {
 	public ScriptVM() {
 		this(new PrintStreamWriter(System.out));
 
-		globalScope.addVariable("output", new EvalSlot(VarType.FUNCTION, new FuncOutput()), SourceLocation.NATIVE);
-		globalScope.addVariable("exit", new EvalSlot(VarType.FUNCTION, new FuncExit()), SourceLocation.NATIVE);
-		globalScope.addVariable("print", new EvalSlot(VarType.FUNCTION, new FuncPrint()), SourceLocation.NATIVE);
-		globalScope.addVariable("println", new EvalSlot(VarType.FUNCTION, new FuncPrintln()), SourceLocation.NATIVE);
-		globalScope.addVariable("chr", new EvalSlot(VarType.FUNCTION, new FuncChr()), SourceLocation.NATIVE);
-		globalScope.addVariable("ord", new EvalSlot(VarType.FUNCTION, new FuncOrd()), SourceLocation.NATIVE);
-		globalScope.addVariable("toString", new EvalSlot(VarType.FUNCTION, new FuncTostring()), SourceLocation.NATIVE);
-		globalScope.addVariable("assert", new EvalSlot(VarType.FUNCTION, new FuncAssert()), SourceLocation.NATIVE);
+		globalScope.addVariable("redirect", new EvalSlot(VarType.FUNCTION, new Redirect()), SourceLocation.NATIVE);
+		globalScope.addVariable("exit", new EvalSlot(VarType.FUNCTION, new Exit()), SourceLocation.NATIVE);
+		globalScope.addVariable("print", new EvalSlot(VarType.FUNCTION, new Print()), SourceLocation.NATIVE);
+		globalScope.addVariable("println", new EvalSlot(VarType.FUNCTION, new Println()), SourceLocation.NATIVE);
+		globalScope.addVariable("chr", new EvalSlot(VarType.FUNCTION, new Chr()), SourceLocation.NATIVE);
+		globalScope.addVariable("ord", new EvalSlot(VarType.FUNCTION, new Ord()), SourceLocation.NATIVE);
+		globalScope.addVariable("toString", new EvalSlot(VarType.FUNCTION, new ToString()), SourceLocation.NATIVE);
+		globalScope.addVariable("assert", new EvalSlot(VarType.FUNCTION, new Assert()), SourceLocation.NATIVE);
 
 		mainFrame.pushScope(globalScope);
 	}

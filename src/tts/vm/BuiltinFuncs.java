@@ -16,13 +16,13 @@ import tts.trace.SourceLocation;
 import tts.vm.rtexcept.ExitException;
 import tts.vm.rtexcept.ScriptRuntimeException;
 
-final class BuiltinApi {
+final class BuiltinFuncs {
 
-	private BuiltinApi() {
+	private BuiltinFuncs() {
 	}
 
 	// 更改输出文件
-	static final class FuncOutput extends FunctionEval {
+	static final class Redirect extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
@@ -48,7 +48,7 @@ final class BuiltinApi {
 	}
 
 	// 退出程序
-	static final class FuncExit extends FunctionEval {
+	static final class Exit extends FunctionEval {
 
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
@@ -59,7 +59,7 @@ final class BuiltinApi {
 	}
 
 	// 打印
-	static final class FuncPrint extends FunctionEval {
+	static final class Print extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i) {
@@ -75,7 +75,7 @@ final class BuiltinApi {
 	}
 
 	// 打印
-	static final class FuncPrintln extends FunctionEval {
+	static final class Println extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			for (int i = 0, size = args.size(); i < size; ++i) {
@@ -92,7 +92,7 @@ final class BuiltinApi {
 	}
 
 	// 编码转字符
-	static final class FuncChr extends FunctionEval {
+	static final class Chr extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1 || args.get(0).getType() != EvalType.INTEGER)
@@ -105,7 +105,7 @@ final class BuiltinApi {
 	}
 
 	// 字符转编码
-	static final class FuncOrd extends FunctionEval {
+	static final class Ord extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1 || args.get(0).getType() != EvalType.STRING)
@@ -118,7 +118,7 @@ final class BuiltinApi {
 	}
 
 	// 字符串化
-	static final class FuncTostring extends FunctionEval {
+	static final class ToString extends FunctionEval {
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 			if (args.size() != 1)
@@ -132,7 +132,7 @@ final class BuiltinApi {
 	}
 
 	// 断言
-	static final class FuncAssert extends FunctionEval {
+	static final class Assert extends FunctionEval {
 
 		@Override
 		public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
