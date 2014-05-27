@@ -2,16 +2,46 @@ package tts.grammar.scanner;
 
 import java.util.ArrayList;
 
-import tts.eval.*;
+import tts.eval.BooleanEval;
+import tts.eval.DoubleEval;
+import tts.eval.IntegerEval;
+import tts.eval.NullEval;
+import tts.eval.StringEval;
+import tts.eval.VariableEval;
 import tts.eval.function.UserFunctionEval.ParamInfo;
 import tts.eval.scope.VarType;
-import tts.grammar.tree.*;
-import tts.grammar.tree.binaryop.*;
+import tts.grammar.tree.BinSwitchOp;
+import tts.grammar.tree.BreakOp;
+import tts.grammar.tree.ContinueOp;
+import tts.grammar.tree.DefinationOp;
+import tts.grammar.tree.FuncCallOp;
+import tts.grammar.tree.IfElseOp;
+import tts.grammar.tree.MakeArrayOp;
+import tts.grammar.tree.MakeFuncOp;
+import tts.grammar.tree.MakeMapOp;
+import tts.grammar.tree.Op;
+import tts.grammar.tree.OpList;
+import tts.grammar.tree.Operand;
+import tts.grammar.tree.ReturnFuncOp;
+import tts.grammar.tree.ScopeOp;
+import tts.grammar.tree.TextTemplateOp;
+import tts.grammar.tree.UnaryOp;
+import tts.grammar.tree.binaryop.AssignOp;
+import tts.grammar.tree.binaryop.BitOp;
+import tts.grammar.tree.binaryop.BooleanOp;
+import tts.grammar.tree.binaryop.CompareOp;
+import tts.grammar.tree.binaryop.IndexOp;
+import tts.grammar.tree.binaryop.MathOp;
+import tts.grammar.tree.binaryop.MemberOp;
+import tts.grammar.tree.declare.ImportOp;
+import tts.grammar.tree.declare.IncludeOp;
 import tts.grammar.tree.loop.DoWhileLoopOp;
 import tts.grammar.tree.loop.ForLoopOp;
 import tts.grammar.tree.loop.WhileLoop;
-import tts.lexer.scanner.*;
+import tts.lexer.scanner.LexerScanner;
+import tts.lexer.scanner.Token;
 import tts.lexer.scanner.Token.TokenType;
+import tts.lexer.scanner.TokenStream;
 import tts.lexer.stream.CharArrayScanReader;
 import tts.lexer.stream.IScanReader;
 import tts.trace.SourceLocation;
@@ -845,26 +875,41 @@ public class GrammarScanner {
 		return new IfElseOp(cond, body, else_body, t.file, t.line);
 	}
 
-	// include = 'include' (('"' path '"') | ('<' path '>'));
+	// include = 'include' expression;
 	private Op includeDeclare() {
 		Token t = tokenStream.match(TokenType.KEY_WORD, "include");
 		if (t == null)
 			return null;
-		Token f = tokenStream.match(TokenType.STRING);
-		if (f == null)
-			throw new GrammarException("File path expected", tokenStream);
-		return new IncludeOp((String) f.value, t.file, t.line);
+
+		Op path = expression();
+		if (path == null)
+			throw new GrammarException("Includ path expected", tokenStream);
+		if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
+			throw new GrammarException("Token ';' expected", tokenStream);
+		return new IncludeOp(path, t.file, t.line);
 	}
 
-	// import = 'import' path
+	// import = 'import' path;
 	private Op importDeclare() {
 		Token t = tokenStream.match(TokenType.KEY_WORD, "import");
 		if (t == null)
 			return null;
-		Token f = tokenStream.match(TokenType.STRING);
-		if (f == null)
-			throw new GrammarException("File path expected", tokenStream);
-		return new ImportOp((String) f.value, new SourceLocation(t.file, t.line));
+
+		Op path = expression();
+		if (path == null)
+			throw new GrammarException("Import path expected", tokenStream);
+
+		String as = null;
+		if (tokenStream.match(TokenType.KEY_WORD, "as") != null) {
+			Token ast = tokenStream.match(TokenType.IDENTIFIER);
+			if (ast == null)
+				throw new GrammarException("Identifier expected following 'as' token", tokenStream);
+			as = (String) ast.value;
+		}
+
+		if (tokenStream.match(TokenType.SEPARATOR, ";") == null)
+			throw new GrammarException("Token ';' expected", tokenStream);
+		return new ImportOp(path, as, new SourceLocation(t.file, t.line));
 	}
 
 	// function = 'function' name '(' (type param(',' type param)*)? ')'

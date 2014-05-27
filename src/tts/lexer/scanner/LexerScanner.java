@@ -52,10 +52,11 @@ public class LexerScanner {
 	// 关键字
 	static final Set<String> KEY_WORDS = new HashSet<String>();
 	static {
-		String[] keywords = { "if", "else", "for", "do", "while", "break",
+		String[] keywords = {
+				"if", "else", "for", "do", "while", "break",
 				"continue", "bool", "int", "double", "string", "return",
-				"array", "include", "import", "function", "new", "map", "var", "null",
-				"throw", "catch"};
+				"array", "function", "new", "map", "var", "null",
+				"throw", "catch", "include", "import", "as"};
 		for (int i = 0, len = keywords.length; i < len; ++i)
 			KEY_WORDS.add(keywords[i]);
 	}

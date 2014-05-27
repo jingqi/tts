@@ -1,21 +1,26 @@
-package tts.grammar.tree;
+package tts.grammar.tree.declare;
 
 import tts.eval.IValueEval;
+import tts.eval.StringEval;
 import tts.eval.scope.EvalSlot;
 import tts.eval.scope.VarType;
+import tts.grammar.tree.Op;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class ImportOp extends Op {
 
-	private final String path;
+	private final Op path;
+	private final String as;
 
-	public ImportOp(String path, SourceLocation sl) {
+	public ImportOp(Op path, String as, SourceLocation sl) {
 		super(sl);
 		this.path = path;
+		this.as = as;
 	}
 
-	private static String getFileName(String s) {
+	private static String getAsName(String s) {
 		int i = s.lastIndexOf('\\');
 		if (i >= 0)
 			s = s.substring(i);
@@ -30,8 +35,17 @@ public final class ImportOp extends Op {
 
 	@Override
 	public IValueEval eval(Frame f) {
-		IValueEval vv = f.getVM().importModule(f, path, getSourceLocation());
-		String as_name = getFileName(path);
+		// evaluate path string value
+		IValueEval ve = path.eval(f);
+		if (!(ve instanceof StringEval))
+			throw new ScriptRuntimeException("String value expected", getSourceLocation());
+		String p = ((StringEval) ve).getValue();
+
+		// import
+		IValueEval vv = f.getVM().importModule(f, p, getSourceLocation());
+		String as_name = as;
+		if (as_name == null)
+			as_name = getAsName(p);
 		EvalSlot v = new EvalSlot(VarType.VAR, vv);
 		f.addVariable(as_name, v, getSourceLocation());
 		return vv;

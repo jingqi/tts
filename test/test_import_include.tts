@@ -1,7 +1,8 @@
 $${
 
-import "_pice.inl";
-assert(_pice.a == 1);
-include "_pice.inl";
+string path = "_pice.inl";
+import path as b;
+assert(b.a == 1);
+include path;
 assert(a == 1);
 }$$

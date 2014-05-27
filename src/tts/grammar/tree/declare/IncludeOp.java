@@ -1,26 +1,36 @@
-package tts.grammar.tree;
+package tts.grammar.tree.declare;
 
 import java.io.File;
 import java.io.IOException;
 
 import tts.eval.IValueEval;
+import tts.eval.StringEval;
 import tts.eval.VoidEval;
+import tts.grammar.tree.Op;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 public final class IncludeOp extends Op {
 
-	private final String path;
+	private final Op path;
 
-	public IncludeOp(String path, String file, int line) {
+	public IncludeOp(Op path, String file, int line) {
 		super(new SourceLocation(file, line));
 		this.path = path;
 	}
 
 	@Override
 	public IValueEval eval(Frame f) {
+		// evaluate path string value
+		IValueEval v = path.eval(f);
+		if (!(v instanceof StringEval))
+			throw new ScriptRuntimeException("String value expected", getSourceLocation());
+		String p = ((StringEval) v).getValue();
+
+		// include
 		File cur = new File(getSourceLocation().file);
-		File dst = new File(cur.getParentFile().getAbsolutePath() + "/" + path);
+		File dst = new File(cur.getParentFile(), p);
 		final Op op;
 		try {
 			op = f.getVM().loadScript(dst, getSourceLocation());
