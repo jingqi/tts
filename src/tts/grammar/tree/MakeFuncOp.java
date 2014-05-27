@@ -8,13 +8,13 @@ import tts.eval.function.UserFunctionEval.ParamInfo;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
-public class FuncDefOp extends Op {
+public class MakeFuncOp extends Op {
 
 	private String func;
 	private Op ops;
 	private ArrayList<ParamInfo> params;
 
-	public FuncDefOp(String func, Op ops, ArrayList<ParamInfo> params, SourceLocation sl) {
+	public MakeFuncOp(String func, Op ops, ArrayList<ParamInfo> params, SourceLocation sl) {
 		super(sl);
 		this.func = func;
 		this.ops = ops;

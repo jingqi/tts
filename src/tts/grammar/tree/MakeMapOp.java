@@ -7,7 +7,7 @@ import tts.eval.MapEval;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
-public class MapOp extends Op {
+public class MakeMapOp extends Op {
 
 	public static class Entry {
 		Op key, value;
@@ -20,7 +20,7 @@ public class MapOp extends Op {
 
 	ArrayList<Entry> entries;
 
-	public MapOp(ArrayList<Entry> e, String file, int line) {
+	public MakeMapOp(ArrayList<Entry> e, String file, int line) {
 		super(new SourceLocation(file, line));
 		entries = e;
 	}

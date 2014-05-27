@@ -7,16 +7,16 @@ import tts.eval.IValueEval;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 
-public final class ArrayOp extends Op {
+public final class MakeArrayOp extends Op {
 
 	ArrayList<Op> elements;
 
-	public ArrayOp(ArrayList<Op> v, SourceLocation sl) {
+	public MakeArrayOp(ArrayList<Op> v, SourceLocation sl) {
 		super(sl);
 		elements = v;
 	}
 
-	public ArrayOp(ArrayList<Op> v, String file, int line) {
+	public MakeArrayOp(ArrayList<Op> v, String file, int line) {
 		this(v, new SourceLocation(file, line));
 	}
 

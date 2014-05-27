@@ -7,6 +7,9 @@ import tts.eval.function.UserFunctionEval.ParamInfo;
 import tts.eval.scope.VarType;
 import tts.grammar.tree.*;
 import tts.grammar.tree.binaryop.*;
+import tts.grammar.tree.loop.DoWhileLoopOp;
+import tts.grammar.tree.loop.ForLoopOp;
+import tts.grammar.tree.loop.WhileLoop;
 import tts.lexer.scanner.*;
 import tts.lexer.scanner.Token.TokenType;
 import tts.lexer.stream.CharArrayScanReader;
@@ -656,7 +659,7 @@ public class GrammarScanner {
 	}
 
 	// array = '[' ((expression ',')* expression ','?)? ']';
-	private ArrayOp array() {
+	private MakeArrayOp array() {
 		Token t = tokenStream.match(TokenType.SEPARATOR, "[");
 		if (t == null)
 			return null;
@@ -674,7 +677,7 @@ public class GrammarScanner {
 		if (tokenStream.match(TokenType.SEPARATOR, "]") == null)
 			throw new GrammarException("Token ']' expected", tokenStream);
 
-		return new ArrayOp(l, t.file, t.line);
+		return new MakeArrayOp(l, t.file, t.line);
 	}
 
 	// defination = type variable ('=' rvalue)? (',' varialbe ('=' rvalue)?)*;
@@ -930,7 +933,7 @@ public class GrammarScanner {
 			throw new GrammarException("Function body expected", tokenStream);
 
 		SourceLocation sl = new SourceLocation(tokenStream.getFile(), t.line);
-		FuncDefOp ufo = new FuncDefOp(name, ops, params, sl);
+		MakeFuncOp ufo = new MakeFuncOp(name, ops, params, sl);
 		return new DefinationOp(VarType.FUNCTION, name, ufo, t.file, t.line);
 	}
 
@@ -987,7 +990,7 @@ public class GrammarScanner {
 			throw new GrammarException("Function body expected", tokenStream);
 
 		SourceLocation sl = new SourceLocation(tokenStream.getFile(), t.line);
-		return new FuncDefOp("<lambda>", ops, params, sl);
+		return new MakeFuncOp("<lambda>", ops, params, sl);
 	}
 
 	// map_entry = rvalue ':' rvalue
@@ -998,7 +1001,7 @@ public class GrammarScanner {
 		if (t == null)
 			return null;
 
-		ArrayList<MapOp.Entry> l = new ArrayList<MapOp.Entry>();
+		ArrayList<MakeMapOp.Entry> l = new ArrayList<MakeMapOp.Entry>();
 		while (true) {
 			Op k = expression();
 			if (k == null)
@@ -1013,7 +1016,7 @@ public class GrammarScanner {
 			if (v == null)
 				throw new GrammarException("Value of map entry expected", tokenStream);
 
-			l.add(new MapOp.Entry(k, v));
+			l.add(new MakeMapOp.Entry(k, v));
 
 			if (tokenStream.match(TokenType.SEPARATOR, ",") == null)
 				break;
@@ -1023,6 +1026,6 @@ public class GrammarScanner {
 			return null;
 		}
 
-		return new MapOp(l, t.file, t.line);
+		return new MakeMapOp(l, t.file, t.line);
 	}
 }

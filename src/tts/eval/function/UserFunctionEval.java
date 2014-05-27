@@ -5,12 +5,17 @@ import java.util.List;
 
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
-import tts.eval.scope.*;
+import tts.eval.scope.EvalSlot;
+import tts.eval.scope.Scope;
+import tts.eval.scope.VarType;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.binaryop.AssignOp;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
-import tts.vm.rtexcept.*;
+import tts.vm.rtexcept.BreakLoopException;
+import tts.vm.rtexcept.ContinueLoopException;
+import tts.vm.rtexcept.ReturnFuncException;
+import tts.vm.rtexcept.ScriptRuntimeException;
 
 /**
  * 用户函数
@@ -45,8 +50,7 @@ public final class UserFunctionEval extends FunctionEval {
 	@Override
 	public IValueEval call(Frame f, List<IValueEval> args, SourceLocation sl) {
 		if (args.size() != params.size())
-			throw new ScriptRuntimeException(
-					"count of argument not match in calling function", sl);
+			throw new ScriptRuntimeException("count of argument not match in calling function", sl);
 
 		Scope s = new Scope(upperScope);
 		f.pushScope(s);
