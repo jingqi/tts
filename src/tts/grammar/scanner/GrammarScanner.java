@@ -9,7 +9,6 @@ import tts.eval.NullEval;
 import tts.eval.StringEval;
 import tts.eval.VariableEval;
 import tts.eval.function.UserFunctionEval.ParamInfo;
-import tts.eval.scope.VarType;
 import tts.grammar.tree.BinSwitchOp;
 import tts.grammar.tree.BreakOp;
 import tts.grammar.tree.ContinueOp;
@@ -45,6 +44,7 @@ import tts.lexer.scanner.Token.TokenType;
 import tts.lexer.scanner.TokenStream;
 import tts.lexer.stream.CharArrayScanReader;
 import tts.lexer.stream.IScanReader;
+import tts.scope.VarType;
 import tts.trace.SourceLocation;
 
 /**

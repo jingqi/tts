@@ -11,15 +11,15 @@ import java.util.Map;
 
 import tts.eval.IValueEval;
 import tts.eval.ModuleScopeEval;
-import tts.eval.scope.EvalSlot;
-import tts.eval.scope.Scope;
-import tts.eval.scope.VarType;
 import tts.grammar.scanner.GrammarScanner;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.OpList;
 import tts.lexer.scanner.LexerScanner;
 import tts.lexer.scanner.TokenStream;
 import tts.lexer.stream.CharArrayScanReader;
+import tts.scope.Variable;
+import tts.scope.Scope;
+import tts.scope.VarType;
 import tts.trace.SourceLocation;
 import tts.util.PrintStreamWriter;
 import tts.vm.BuiltinFuncs.Assert;
@@ -55,14 +55,14 @@ public class ScriptVM {
 	public ScriptVM() {
 		this(new PrintStreamWriter(System.out));
 
-		globalScope.addVariable("redirect", new EvalSlot(VarType.FUNCTION, new Redirect()), SourceLocation.NATIVE);
-		globalScope.addVariable("exit", new EvalSlot(VarType.FUNCTION, new Exit()), SourceLocation.NATIVE);
-		globalScope.addVariable("print", new EvalSlot(VarType.FUNCTION, new Print()), SourceLocation.NATIVE);
-		globalScope.addVariable("println", new EvalSlot(VarType.FUNCTION, new Println()), SourceLocation.NATIVE);
-		globalScope.addVariable("chr", new EvalSlot(VarType.FUNCTION, new Chr()), SourceLocation.NATIVE);
-		globalScope.addVariable("ord", new EvalSlot(VarType.FUNCTION, new Ord()), SourceLocation.NATIVE);
-		globalScope.addVariable("toString", new EvalSlot(VarType.FUNCTION, new ToString()), SourceLocation.NATIVE);
-		globalScope.addVariable("assert", new EvalSlot(VarType.FUNCTION, new Assert()), SourceLocation.NATIVE);
+		globalScope.addVariable("redirect", new Variable(VarType.FUNCTION, new Redirect()), SourceLocation.NATIVE);
+		globalScope.addVariable("exit", new Variable(VarType.FUNCTION, new Exit()), SourceLocation.NATIVE);
+		globalScope.addVariable("print", new Variable(VarType.FUNCTION, new Print()), SourceLocation.NATIVE);
+		globalScope.addVariable("println", new Variable(VarType.FUNCTION, new Println()), SourceLocation.NATIVE);
+		globalScope.addVariable("chr", new Variable(VarType.FUNCTION, new Chr()), SourceLocation.NATIVE);
+		globalScope.addVariable("ord", new Variable(VarType.FUNCTION, new Ord()), SourceLocation.NATIVE);
+		globalScope.addVariable("toString", new Variable(VarType.FUNCTION, new ToString()), SourceLocation.NATIVE);
+		globalScope.addVariable("assert", new Variable(VarType.FUNCTION, new Assert()), SourceLocation.NATIVE);
 
 		mainFrame.pushScope(globalScope);
 	}

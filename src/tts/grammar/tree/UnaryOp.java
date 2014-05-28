@@ -2,9 +2,9 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.eval.IValueEval.EvalType;
-import tts.eval.scope.EvalSlot;
 import tts.grammar.tree.binaryop.AssignOp;
 import tts.grammar.tree.binaryop.MathOp;
+import tts.scope.Variable;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
@@ -47,7 +47,7 @@ public final class UnaryOp extends Op {
 				throw new ScriptRuntimeException("Operand can not be assigned",
 						eval.getSourceLocation());
 			String name = ((VariableEval) ve).getName();
-			EvalSlot v = f.getVariable(name);
+			Variable v = f.getVariable(name);
 
 			switch (op) {
 			case PRE_INCREMENT: {

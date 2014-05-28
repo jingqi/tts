@@ -2,8 +2,8 @@ package tts.vm;
 
 import java.util.ArrayList;
 
-import tts.eval.scope.EvalSlot;
-import tts.eval.scope.Scope;
+import tts.scope.Variable;
+import tts.scope.Scope;
 import tts.trace.CallingStack;
 import tts.trace.RuntimeLocation;
 import tts.trace.SourceLocation;
@@ -83,11 +83,11 @@ public final class Frame {
 	    return new CallingStack(ret);
 	}
 
-	public EvalSlot getVariable(String name) {
+	public Variable getVariable(String name) {
 		return currentScope().getVariableUpward(name);
 	}
 
-	public void addVariable(String name, EvalSlot var, SourceLocation sl) {
+	public void addVariable(String name, Variable var, SourceLocation sl) {
 		currentScope().addVariable(name, var, sl);
 	}
 }

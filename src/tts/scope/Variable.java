@@ -1,16 +1,16 @@
-package tts.eval.scope;
+package tts.scope;
 
 import tts.eval.IValueEval;
 
 /**
- * 用来存放值的孔
+ * 变量
  */
-public final class EvalSlot {
+public final class Variable {
 
 	private final VarType type;
 	private IValueEval value;
 
-	public EvalSlot(VarType t, IValueEval v) {
+	public Variable(VarType t, IValueEval v) {
 		type = t;
 		value = v;
 	}

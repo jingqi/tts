@@ -5,11 +5,11 @@ import java.util.List;
 
 import tts.eval.IValueEval;
 import tts.eval.VoidEval;
-import tts.eval.scope.EvalSlot;
-import tts.eval.scope.Scope;
-import tts.eval.scope.VarType;
 import tts.grammar.tree.Op;
 import tts.grammar.tree.binaryop.AssignOp;
+import tts.scope.Variable;
+import tts.scope.Scope;
+import tts.scope.VarType;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.BreakLoopException;
@@ -60,7 +60,7 @@ public final class UserFunctionEval extends FunctionEval {
 			// 设置参数
 			for (int i = 0, size = params.size(); i < size; ++i) {
 				ParamInfo p = params.get(i);
-				EvalSlot v = new EvalSlot(p.type, null);
+				Variable v = new Variable(p.type, null);
 				AssignOp.assign(v, args.get(i), sl);
 				f.addVariable(p.name, v, sl);
 			}

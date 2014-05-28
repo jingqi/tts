@@ -1,7 +1,7 @@
 package tts.eval;
 
-import tts.eval.scope.EvalSlot;
-import tts.eval.scope.Scope;
+import tts.scope.Variable;
+import tts.scope.Scope;
 
 public class ModuleScopeEval extends ObjectEval {
 
@@ -13,14 +13,14 @@ public class ModuleScopeEval extends ObjectEval {
 
 	@Override
 	public IValueEval member(String name) {
-		EvalSlot v = scope.getVariable(name);
+		Variable v = scope.getVariable(name);
 		if (v != null)
 			return v.getValue();
 		return null;
 	}
 
 	@Override
-	public EvalSlot lvalueMember(String name) {
+	public Variable lvalueMember(String name) {
 		return scope.getVariable(name);
 	}
 }

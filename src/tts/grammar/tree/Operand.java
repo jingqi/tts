@@ -2,7 +2,7 @@ package tts.grammar.tree;
 
 import tts.eval.*;
 import tts.eval.function.UserFunctionEval;
-import tts.eval.scope.EvalSlot;
+import tts.scope.Variable;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
@@ -59,7 +59,7 @@ public final class Operand extends Op {
 
 		case VARIABLE:
 			VariableEval ve = (VariableEval) eval;
-			EvalSlot v = f.getVariable(ve.getName());
+			Variable v = f.getVariable(ve.getName());
 			if (v == null)
 				throw new ScriptRuntimeException("Variable " + ve.getName() + " not found", getSourceLocation());
 

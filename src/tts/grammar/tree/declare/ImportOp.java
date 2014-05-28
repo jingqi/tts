@@ -2,9 +2,9 @@ package tts.grammar.tree.declare;
 
 import tts.eval.IValueEval;
 import tts.eval.StringEval;
-import tts.eval.scope.EvalSlot;
-import tts.eval.scope.VarType;
 import tts.grammar.tree.Op;
+import tts.scope.Variable;
+import tts.scope.VarType;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
@@ -46,7 +46,7 @@ public final class ImportOp extends Op {
 		String as_name = as;
 		if (as_name == null)
 			as_name = getAsName(p);
-		EvalSlot v = new EvalSlot(VarType.VAR, vv);
+		Variable v = new Variable(VarType.VAR, vv);
 		f.addVariable(as_name, v, getSourceLocation());
 		return vv;
 	}

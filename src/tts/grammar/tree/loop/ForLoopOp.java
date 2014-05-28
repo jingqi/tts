@@ -1,8 +1,8 @@
 package tts.grammar.tree.loop;
 
 import tts.eval.*;
-import tts.eval.scope.Scope;
 import tts.grammar.tree.Op;
+import tts.scope.Scope;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.*;

@@ -1,4 +1,4 @@
-package tts.eval.scope;
+package tts.scope;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ public final class Scope {
 	private final Scope upper;
 
 	// 局部变量
-	private final Map<String, EvalSlot> variables = new HashMap<String, EvalSlot>();
+	private final Map<String, Variable> variables = new HashMap<String, Variable>();
 
 	public Scope(Scope upper) {
 		this.upper = upper;
@@ -24,17 +24,17 @@ public final class Scope {
 	/**
 	 * 获取变量的值
 	 */
-	public EvalSlot getVariable(String name) {
+	public Variable getVariable(String name) {
 		return variables.get(name);
 	}
 
 	/**
 	 * 获取变量的值
 	 */
-	public EvalSlot getVariableUpward(String name) {
+	public Variable getVariableUpward(String name) {
 		Scope current = this;
 		while (current != null) {
-			EvalSlot ret = current.getVariable(name);
+			Variable ret = current.getVariable(name);
 			if (ret != null)
 				return ret;
 			current = current.upper;
@@ -45,7 +45,7 @@ public final class Scope {
 	/**
 	 * 添加定义的变量
 	 */
-	public void addVariable(String name, EvalSlot var, SourceLocation sl) {
+	public void addVariable(String name, Variable var, SourceLocation sl) {
 		if (variables.containsKey(name))
 			throw new ScriptRuntimeException("Variable " + name + " redefined", sl);
 		variables.put(name, var);

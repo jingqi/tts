@@ -3,7 +3,7 @@ package tts.eval;
 import java.util.*;
 
 import tts.eval.function.FunctionEval;
-import tts.eval.scope.EvalSlot;
+import tts.scope.Variable;
 import tts.trace.SourceLocation;
 import tts.vm.Frame;
 import tts.vm.rtexcept.ScriptRuntimeException;
@@ -190,7 +190,7 @@ public final class ArrayEval extends ObjectEval {
 	}
 
 	@Override
-	public EvalSlot lvalueMember(String name) {
+	public Variable lvalueMember(String name) {
 		return null;
 	}
 }

@@ -1,6 +1,6 @@
 package tts.eval;
 
-import tts.eval.scope.EvalSlot;
+import tts.scope.Variable;
 
 
 public abstract class ObjectEval implements IValueEval {
@@ -13,7 +13,7 @@ public abstract class ObjectEval implements IValueEval {
 	/**
 	 * 取左值成员
 	 */
-	public abstract EvalSlot lvalueMember(String name);
+	public abstract Variable lvalueMember(String name);
 
 	@Override
 	public EvalType getType() {
